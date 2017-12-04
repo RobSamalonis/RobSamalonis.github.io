@@ -1,0 +1,7 @@
+aside { 
+    display: block;
+    background-color: lightgrey;
+    float: left;
+    height: 40rem;
+    padding: 2rem;
+}
