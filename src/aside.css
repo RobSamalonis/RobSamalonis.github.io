@@ -1,7 +1,30 @@
 aside { 
     display: block;
-    background-color: lightgrey;
     float: left;
     height: 40rem;
+    margin: 2rem;
     padding: 2rem;
+    background-color: white;
+    text-align: center;
+}
+.me {
+    border-radius: 50%;
+}
+.address {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: .5rem;
+}
+.location {
+    width: 1rem;
+    padding-right: 1rem;
+}
+.mail {
+    width: 1rem;
+    padding-right: 1rem;
+}
+h4 {
+    color: grey;
+    border-bottom: black;
+    border-bottom-width: 10px;
 }
