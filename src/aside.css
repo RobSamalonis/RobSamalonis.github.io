@@ -1,30 +1,36 @@
 aside { 
     display: block;
     float: left;
-    height: 40rem;
+    height: 29rem;
     margin: 2rem;
     padding: 2rem;
     background-color: white;
+    border-radius: 1rem;;
+}
+.head {
     text-align: center;
+    margin: 1rem;
 }
 .me {
     border-radius: 50%;
 }
-.address {
-    display: block;
-    margin-top: 1rem;
-    margin-bottom: .5rem;
-}
 .location {
+    padding-right: .5rem;
     width: 1rem;
-    padding-right: 1rem;
 }
-.mail {
-    width: 1rem;
-    padding-right: 1rem;
+.linkedinIcon {
+    width: 2rem;
 }
 h4 {
     color: grey;
     border-bottom: black;
     border-bottom-width: 10px;
+}
+.contact {
+}
+.contact span{
+    padding: 1rem;
+}
+.contact img {
+    width: 2rem;
 }

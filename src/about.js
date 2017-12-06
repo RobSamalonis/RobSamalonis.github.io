@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
-import Me from './icons/me.jpg';
-import Location from './icons/location.png';
-import Mail from './icons/mail.png';
-import LinkedIn from './icons/linkedin.png';
-import Twitter from './icons/twitter.png';
-import Github from './icons/github.png';
-import './aside.css'
+
+import './about.css'
 // Make it like the aside on this page http://jonbloomer.com.au/
 class Aside extends Component {
   render() {
