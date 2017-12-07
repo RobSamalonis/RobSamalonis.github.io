@@ -2,10 +2,9 @@ aside {
     display: block;
     float: left;
     height: 29rem;
-    margin: 2rem;
-    padding: 2rem;
+    padding: 1.5rem;
     background-color: white;
-    border-radius: 1rem;;
+    border-radius: 1rem;
 }
 .head {
     text-align: center;
@@ -13,6 +12,7 @@ aside {
 }
 .me {
     border-radius: 50%;
+    width: 18rem;
 }
 .location {
     padding-right: .5rem;
@@ -25,8 +25,6 @@ h4 {
     color: grey;
     border-bottom: black;
     border-bottom-width: 10px;
-}
-.contact {
 }
 .contact span{
     padding: 1rem;
