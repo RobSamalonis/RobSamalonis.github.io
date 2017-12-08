@@ -2,18 +2,20 @@ import React, { Component } from 'react';
 import Aside from './aside';
 import About from './about';
 import Header from './header';
+import Work from './work-experience';
+import SocialMedia from './social-media';
 import './App.css';
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <aside>
+        <div className="comp">
           <Aside />
-        </aside>
-        <about>
           <About />
-        </about>
+          <Work />
+          <SocialMedia />
+        </div>
       </div>
     );
   }

@@ -6,7 +6,7 @@ class About extends Component {
   render() {
     return (
       <div className="about">
-        <h4 className="bitme"><img className="linkedinIcon" src={BitMe} alt="bitme" />About Me</h4>
+        <img src={BitMe} alt="bitme" />About Me
         <hr />
         <p>I'm a recent graduate of Temple University in Philadelphia, now working as a software engineer at Elsevier. 
           Although my core and most recent language is Javascript (working with React and Node), I have also had  

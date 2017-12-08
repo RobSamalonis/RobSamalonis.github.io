@@ -1,8 +1,11 @@
-.about {
+.media {
+    text-align: center;
     padding: 1rem;
     background-color: white;
     border-radius: 1rem;
     max-width: 30rem;
-    max-height: 15rem;
     margin: 1rem; 
+}
+.media img {
+    padding: 2rem;
 }

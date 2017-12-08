@@ -1,34 +1,23 @@
 aside { 
     display: block;
     float: left;
-    height: 29rem;
-    padding: 1.5rem;
+    padding: 1rem;
     background-color: white;
     border-radius: 1rem;
 }
 .head {
     text-align: center;
-    margin: 1rem;
 }
 .me {
     border-radius: 50%;
-    width: 18rem;
+    display: block;
+    margin: auto;
+    width: 50%;
 }
 .location {
     padding-right: .5rem;
     width: 1rem;
 }
-.linkedinIcon {
-    width: 2rem;
-}
 h4 {
     color: grey;
-    border-bottom: black;
-    border-bottom-width: 10px;
-}
-.contact span{
-    padding: 1rem;
-}
-.contact img {
-    width: 2rem;
 }
