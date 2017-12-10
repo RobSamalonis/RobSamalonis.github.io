@@ -1,20 +1,21 @@
 .App {
   background-color: lightgray;
+  padding-top: 1rem;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap; 
-  margin: 2rem;
+  margin: 1rem;
   justify-content: center;
+  border-radius: 2rem;
+  box-shadow: 10px 10px 5px grey;
+  font-family: Baskerville, "Baskerville Old Face", "Goudy Old Style", Garamond, "Times New Roman", serif;
 }
 
 img {
   width: 2rem;
 }
 
-App * {
-  background-color: white;
-  border-radius: 1rem;
-  max-width: 30rem;
-  max-height: 15rem;
-  margin: 1rem; 
+h4 {
+  color: grey;
+  text-align: center;
 }

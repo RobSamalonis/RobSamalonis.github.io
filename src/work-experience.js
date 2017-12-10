@@ -6,10 +6,13 @@ class Work extends Component {
   render() {
     return (
       <div className="work">
-        <h4><img className="Work" src={WorkIcon} alt="work" />Work Experience</h4>
+        <h4>Current Position</h4>
         <hr />
         <p>
-            Elsevier - 6 months -Software Engineer- Technologies: Javascript - Node and React 
+            Elsevier <br />
+            Software Engineer <br />
+            Precision Medicine <br />
+            Working with Node and React
         </p>
       </div>
     );
