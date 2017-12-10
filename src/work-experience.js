@@ -8,12 +8,20 @@ class Work extends Component {
       <div className="work">
         <h4>Current Position</h4>
         <hr />
-        <p>
-            Elsevier <br />
-            Software Engineer <br />
-            Precision Medicine <br />
-            Working with Node and React
-        </p>
+        <div className="wrapper">
+          <p className="job">  
+              <b>Company: </b> <br />
+              <b>Title: </b> <br />
+              <b>Team: </b> <br />
+              <b>Technology: </b>
+          </p>
+          <p className="details">
+          Elsevier <br />
+          Software Engineer <br />
+          Precision Medicine <br />
+          Node and React <br />
+          </p>
+        </div>
       </div>
     );
   }

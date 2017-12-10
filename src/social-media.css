@@ -5,7 +5,7 @@
     border-radius: 1rem;
     max-width: 30rem;
     margin: 1rem; 
-    box-shadow: 10px 10px 5px grey;
+    box-shadow: 10px 10px 5px #808080;
 }
 .media img {
     padding: 2rem;

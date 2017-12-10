@@ -8,6 +8,20 @@
     box-shadow: 10px 10px 5px grey;
 }
 
+.details {
+  display: inline-block;
+  text-align: left;
+}
+.wrapper {
+    text-align: center;
+}
+
+.job {
+    text-align: left;
+    display: inline-block;
+    padding-right: 3rem;
+}
+
 .work img {
     padding-right: 1rem;
 }
