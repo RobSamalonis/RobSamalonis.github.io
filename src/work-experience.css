@@ -3,24 +3,17 @@
   background-color: white;
   border-radius: 1rem;
   max-width: 30rem;
+  height: 10rem;
   max-height: 15rem;
   margin: 1rem;
   box-shadow: 10px 10px 5px grey;
 }
 
 .details {
-  display: inline-block;
   text-align: left;
+  float: right;
 }
-.wrapper {
-  text-align: center;
-}
-
 .job {
+  float: left;
   text-align: left;
-  display: inline-block;
-}
-
-.work img {
-  padding-right: 1rem;
 }
