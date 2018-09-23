@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
-import Aside from './aside';
-import About from './about';
-import Header from './header';
-import Work from './work-experience';
-import SocialMedia from './social-media';
-import './App.css';
+import React, { Component } from "react";
+import Aside from "./aside";
+import About from "./about";
+import Work from "./work-experience";
+import SocialMedia from "./social-media";
+import "./App.css";
 
 class App extends Component {
   render() {

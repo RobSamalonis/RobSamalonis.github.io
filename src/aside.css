@@ -1,19 +1,17 @@
 .head {
-    text-align: center;
+  text-align: center;
 }
 .me {
-    border-radius: 50%;
-    display: block;
-    margin: auto;
-    width: 50%;
-    box-shadow: 8px 5px 5px grey;
+  border-radius: 50%;
+  display: block;
+  margin: auto;
+  width: 50%;
 }
 .location {
-    padding-right: .5rem;
-    width: 1rem;
+  padding-right: 0.5rem;
+  width: 1rem;
 }
-
 .head .mailIcon {
-    padding-right: .5rem;
-    width: 1rem;
+  padding-right: 0.5rem;
+  width: 1rem;
 }
