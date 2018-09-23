@@ -1,9 +1,7 @@
 .about {
-    padding: 1rem;
-    background-color: white;
-    border-radius: 1rem;
-    max-width: 30rem;
-    max-height: 15rem;
-    margin: 1rem; 
-    box-shadow: 10px 10px 5px grey;
+  padding: 0.5em 1rem 1rem 1rem;
+  background-color: white;
+  max-width: 32rem;
+  max-height: 15rem;
+  margin: 1rem;
 }

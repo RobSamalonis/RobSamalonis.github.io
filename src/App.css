@@ -1,18 +1,23 @@
 .App {
-  background-color: lightgray;
+  background-image: url("https://scontent.fphl2-4.fna.fbcdn.net/v/t1.0-9/31416771_1794404493915190_8527346365762633728_n.jpg?_nc_cat=104&oh=6a6f6c844628648223a52a3bfd5a42af&oe=5C2E86DD");
+  background-size: cover;
   padding-top: 1rem;
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap; 
-  margin: 1rem;
+  flex-wrap: wrap;
   justify-content: center;
-  border-radius: 2rem;
-  box-shadow: 10px 10px 5px grey;
-  font-family: Baskerville, "Baskerville Old Face", "Goudy Old Style", Garamond, "Times New Roman", serif;
+  font-family: Baskerville, "Baskerville Old Face", "Goudy Old Style", Garamond,
+    "Times New Roman", serif;
 }
 
 img {
   width: 2rem;
+}
+
+.col {
+  background-color: #f0f0f0;
+  border-radius: 1em;
+  padding-top: 1em;
 }
 
 h4 {

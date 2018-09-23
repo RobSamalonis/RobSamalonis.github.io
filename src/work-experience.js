@@ -12,14 +12,16 @@ class Work extends Component {
           <p className="job">
             <b>Company: </b> <br />
             <b>Title: </b> <br />
-            <b>Team: </b> <br />
-            <b>Technology: </b>
+            <b>Technologies: </b>
           </p>
           <p className="details">
             Elsevier <br />
-            Software Engineer <br />
-            Precision Medicine <br />
-            Node and React <br />
+            Software Engineer II
+            <br />
+            React / Node / AWS / Jenkins
+            <br />
+            Docker / Cypress / Jest / Redux
+            <br />
           </p>
         </div>
       </div>

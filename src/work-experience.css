@@ -1,12 +1,9 @@
 .work {
-  padding: 1rem;
+  padding: 0.5em 1rem 1rem 1rem;
   background-color: white;
-  border-radius: 1rem;
-  max-width: 30rem;
   height: 10rem;
   max-height: 15rem;
   margin: 1rem;
-  box-shadow: 10px 10px 5px grey;
 }
 .details {
   text-align: left;
