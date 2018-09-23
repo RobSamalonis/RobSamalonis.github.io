@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import WorkIcon from "./icons/work-icon.png";
 import "./work-experience.css";
 
 class Work extends Component {
