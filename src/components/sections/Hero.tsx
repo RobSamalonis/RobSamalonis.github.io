@@ -195,13 +195,14 @@ const Hero: React.FC = () => {
                     textShadow: `0 0 30px ${colorPalette.accent.electricBlue}50`,
                     // Enhanced visual hierarchy positioning
                     position: 'relative',
+                    display: 'inline-block',
                     '&::after': {
                       content: '""',
                       position: 'absolute',
                       bottom: -8,
                       left: { xs: '50%', md: 0 },
                       transform: { xs: 'translateX(-50%)', md: 'none' },
-                      width: '80px',
+                      width: '100%',
                       height: '4px',
                       background: `linear-gradient(90deg, ${colorPalette.accent.hotPink}, ${colorPalette.accent.neonGreen})`,
                       borderRadius: '2px',

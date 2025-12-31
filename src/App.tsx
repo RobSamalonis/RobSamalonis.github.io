@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { theme } from './styles';
 import { Navigation } from './components/layout';
-import { PageTransition, LoadingSpinner } from './components/common';
+import { PageTransition, LoadingSpinner, PerformanceOptimizer } from './components/common';
 import { useSEO } from './hooks/useSEO';
 import { initializePerformanceOptimizations } from './utils/performance';
 import './App.css';
@@ -113,59 +113,61 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AnimatePresence>
-        <Box 
-          component="div"
-          sx={{ minHeight: '100vh', backgroundColor: 'background.default' }}
-          role="main"
-          aria-label="Robert Samalonis Portfolio Website"
-        >
-          <Navigation 
-            currentSection={currentSection} 
-            onSectionChange={handleSectionChange} 
-          />
-          
-          {/* Skip to main content link for screen readers */}
-          <Box
-            component="a"
-            href="#hero"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('hero');
-            }}
-            sx={{
-              position: 'absolute',
-              left: '-9999px',
-              zIndex: 999,
-              padding: '8px 16px',
-              backgroundColor: 'primary.main',
-              color: 'white',
-              textDecoration: 'none',
-              '&:focus': {
-                left: '10px',
-                top: '10px',
-              },
-            }}
+      <PerformanceOptimizer>
+        <AnimatePresence>
+          <Box 
+            component="div"
+            sx={{ minHeight: '100vh', backgroundColor: 'background.default' }}
+            role="main"
+            aria-label="Robert Samalonis Portfolio Website"
           >
-            Skip to main content
+            <Navigation 
+              currentSection={currentSection} 
+              onSectionChange={handleSectionChange} 
+            />
+            
+            {/* Skip to main content link for screen readers */}
+            <Box
+              component="a"
+              href="#hero"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('hero');
+              }}
+              sx={{
+                position: 'absolute',
+                left: '-9999px',
+                zIndex: 999,
+                padding: '8px 16px',
+                backgroundColor: 'primary.main',
+                color: 'white',
+                textDecoration: 'none',
+                '&:focus': {
+                  left: '10px',
+                  top: '10px',
+                },
+              }}
+            >
+              Skip to main content
+            </Box>
+            
+            {/* Main content sections with page transitions */}
+            <PageTransition>
+              <main>
+                <Suspense fallback={<LoadingSpinner message="Loading Hero section..." />}>
+                  <Hero />
+                </Suspense>
+                <Suspense fallback={<LoadingSpinner message="Loading Resume section..." />}>
+                  <Resume />
+                </Suspense>
+                <Suspense fallback={<LoadingSpinner message="Loading Contact section..." />}>
+                  <Contact />
+                </Suspense>
+              </main>
+            </PageTransition>
           </Box>
-          
-          {/* Main content sections with page transitions */}
-          <PageTransition>
-            <main>
-              <Suspense fallback={<LoadingSpinner message="Loading Hero section..." />}>
-                <Hero />
-              </Suspense>
-              <Suspense fallback={<LoadingSpinner message="Loading Resume section..." />}>
-                <Resume />
-              </Suspense>
-              <Suspense fallback={<LoadingSpinner message="Loading Contact section..." />}>
-                <Contact />
-              </Suspense>
-            </main>
-          </PageTransition>
-        </Box>
-      </AnimatePresence>
+        </AnimatePresence>
+      </PerformanceOptimizer>
     </ThemeProvider>
   );
 }

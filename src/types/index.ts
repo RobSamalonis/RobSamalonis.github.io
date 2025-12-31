@@ -55,7 +55,7 @@ export interface ContactMethod {
   icon: React.ComponentType;
 }
 
-export interface NavigationItem {
+export interface LegacyNavigationItem {
   id: string;
   label: string;
   href: string;
@@ -92,8 +92,24 @@ export interface HeroProps {
 // Export animation types
 export * from './animation';
 
-// Export theme types
+// Export theme types  
 export * from './theme';
 
-// Export modern navigation types
-export * from './navigation';
+// Export modern navigation types (excluding conflicting types)
+export type {
+  ModernNavigationProps,
+  NavigationState,
+  GlassmorphismBarProps,
+  NavigationIndicator,
+  ParticleEffect,
+  MobileNavigationProps,
+  FloatingActionButton,
+  BottomNavigation,
+  NavigationConfig,
+  FaviconConfig,
+  FaviconGeneration,
+  ModernNavigationTheme
+} from './navigation';
+
+// Re-export NavigationItem from navigation (it's more complete)
+export type { NavigationItem } from './navigation';

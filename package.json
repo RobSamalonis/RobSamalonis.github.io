@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "test": "jest",
     "test:watch": "jest --watch",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
+    "generate:favicons": "tsx scripts/generate-favicons.ts",
+    "prebuild": "npm run generate:favicons"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -43,6 +45,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.1.0",
     "ts-jest": "^29.4.6",
+    "tsx": "^4.21.0",
     "typescript": "^5.2.2",
     "vite": "^4.5.0"
   }

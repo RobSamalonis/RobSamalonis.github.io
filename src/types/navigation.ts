@@ -33,6 +33,22 @@ export interface MicroInteractionConfig {
   animation: any; // Will be properly typed with Framer Motion
   sound?: boolean;
   haptic?: boolean;
+  respectReducedMotion?: boolean;
+  particles?: {
+    enabled: boolean;
+    count: number;
+    color: string;
+  };
+  glow?: {
+    enabled: boolean;
+    color: string;
+    intensity: number;
+  };
+  spring?: {
+    stiffness: number;
+    damping: number;
+    mass?: number;
+  };
 }
 
 export interface NavigationIndicator {
@@ -120,6 +136,21 @@ export interface ModernNavigationTheme {
     hover: any; // Will be properly typed with Framer Motion
     active: any;
     focus: any;
+    spring: {
+      stiffness: number;
+      damping: number;
+      mass: number;
+    };
+    particles: {
+      enabled: boolean;
+      color: string;
+      count: number;
+    };
+    glow: {
+      enabled: boolean;
+      color: string;
+      blur: number;
+    };
   };
   spacing: {
     navigationHeight: string;

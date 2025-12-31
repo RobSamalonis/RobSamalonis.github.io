@@ -217,13 +217,13 @@ const ProfileImage: React.FC<ProfileImageProps> = ({
           },
           
           // Ensure image loads properly and maintains aspect ratio
-          // Scale image by 105% to prevent background peeking through
+          // Scale image by 108% to prevent background peeking through
           '& img': {
             objectFit: 'cover',
             objectPosition: 'center',
-            width: '105%',
-            height: '105%',
-            transform: 'scale(1.05)',
+            width: '108%',
+            height: '108%',
+            transform: 'scale(1.08)',
           },
         }}
       >
