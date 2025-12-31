@@ -5,9 +5,17 @@ import { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { theme } from './styles';
 import { Navigation } from './components/layout';
-import { PageTransition, LoadingSpinner, PerformanceOptimizer } from './components/common';
+import { 
+  PageTransition, 
+  LoadingSpinner, 
+  PerformanceOptimizer,
+  ScrollProgressIndicator,
+  ContextualNavigation 
+} from './components/common';
 import { useSEO } from './hooks/useSEO';
 import { initializePerformanceOptimizations } from './utils/performance';
+import { useSmartScrolling } from './utils/smartScrolling';
+import { useNavigationState } from './utils/navigationState';
 import './App.css';
 
 // Lazy load components for better performance
@@ -18,14 +26,31 @@ const Contact = lazy(() => import('./components/sections/Contact'));
 function App() {
   const [currentSection, setCurrentSection] = useState('hero');
   const [isLoading, setIsLoading] = useState(true);
+  const { scrollToSection, getCurrentSection } = useSmartScrolling();
+  const navigationState = useNavigationState({
+    persistToStorage: true,
+    trackHistory: true,
+    maxHistoryEntries: 10
+  });
 
   // Initialize SEO with default configuration
   useSEO();
 
-  // Initialize performance optimizations
+  // Initialize performance optimizations and restore navigation state
   useEffect(() => {
     initializePerformanceOptimizations();
-  }, []);
+    
+    // Restore navigation state from previous session
+    const storedSection = navigationState.getCurrentSection();
+    if (storedSection && storedSection !== currentSection) {
+      setCurrentSection(storedSection);
+    }
+    
+    // Restore state after component mount
+    setTimeout(() => {
+      navigationState.restoreState();
+    }, 100);
+  }, [navigationState, currentSection]);
 
   // Handle initial loading state
   useEffect(() => {
@@ -36,11 +61,24 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSectionChange = useCallback((section: string) => {
+  const handleSectionChange = useCallback(async (section: string) => {
     setCurrentSection(section);
-  }, []);
+    
+    // Update navigation state for persistence
+    navigationState.updateCurrentSection(section);
+    
+    // Use smart scrolling for enhanced navigation
+    await scrollToSection(section, {
+      offset: 80,
+      duration: 800,
+      easing: 'easeInOut',
+      onComplete: () => {
+        // Navigation completed
+      }
+    });
+  }, [scrollToSection, navigationState]);
 
-  // Enhanced scroll detection with throttling for better performance
+  // Enhanced scroll detection with smart scrolling utilities and state persistence
   useEffect(() => {
     let ticking = false;
     
@@ -48,18 +86,13 @@ function App() {
       if (!ticking) {
         requestAnimationFrame(() => {
           const sections = ['hero', 'resume', 'contact'];
-          const scrollPosition = window.scrollY + 100; // Offset for navbar
-
-          for (const sectionId of sections) {
-            const element = document.getElementById(sectionId);
-            if (element) {
-              const { offsetTop, offsetHeight } = element;
-              if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-                setCurrentSection(sectionId);
-                break;
-              }
-            }
+          const newSection = getCurrentSection(sections);
+          
+          if (newSection && newSection !== currentSection) {
+            setCurrentSection(newSection);
+            navigationState.updateCurrentSection(newSection);
           }
+          
           ticking = false;
         });
         ticking = true;
@@ -72,24 +105,22 @@ function App() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [getCurrentSection, currentSection, navigationState]);
 
-  // Smooth scroll utility for better navigation
-  const scrollToSection = useCallback((sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const headerOffset = 80; // Account for fixed header
-      const elementPosition = element.offsetTop;
-      const offsetPosition = elementPosition - headerOffset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-      
-      setCurrentSection(sectionId);
-    }
-  }, []);
+  // Enhanced scroll utility for navigation with state persistence
+  const scrollToSectionHandler = useCallback(async (sectionId: string) => {
+    await scrollToSection(sectionId, {
+      offset: 80,
+      duration: 800,
+      easing: 'easeInOut',
+      onComplete: () => {
+        // Navigation completed
+      }
+    });
+    
+    setCurrentSection(sectionId);
+    navigationState.updateCurrentSection(sectionId);
+  }, [scrollToSection, navigationState]);
 
   if (isLoading) {
     return (
@@ -132,7 +163,7 @@ function App() {
               href="#hero"
               onClick={(e) => {
                 e.preventDefault();
-                scrollToSection('hero');
+                scrollToSectionHandler('hero');
               }}
               sx={{
                 position: 'absolute',
@@ -150,6 +181,21 @@ function App() {
             >
               Skip to main content
             </Box>
+            
+            {/* Scroll Progress Indicators */}
+            <ScrollProgressIndicator 
+              mode="page" 
+              position="top" 
+            />
+            
+            {/* Contextual Navigation - Responsive breadcrumb positioning */}
+            <ContextualNavigation
+              currentSection={currentSection}
+              onSectionChange={handleSectionChange}
+              showBreadcrumbs={true}
+              showSuggestions={false} // Hide suggestions to focus on breadcrumbs
+              position="responsive-breadcrumbs"
+            />
             
             {/* Main content sections with page transitions */}
             <PageTransition>

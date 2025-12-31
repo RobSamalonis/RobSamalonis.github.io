@@ -27,6 +27,9 @@ export { default as PerformanceOptimizer } from './PerformanceOptimizer';
 
 // UI components
 export { default as ProfileImage } from './ProfileImage';
+export { default as ScrollProgressIndicator } from './ScrollProgressIndicator';
+export { default as ContextualNavigation } from './ContextualNavigation';
+export { default as NavigationBreadcrumbs } from './NavigationBreadcrumbs';
 
 // Re-export animation types and utilities
 export type { 

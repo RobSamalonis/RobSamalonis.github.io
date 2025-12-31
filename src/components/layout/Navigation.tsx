@@ -20,10 +20,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { modernNavigationItems } from '../../config/navigation';
 import { 
   FocusManager, 
-  KeyboardNavigation, 
-  ariaLiveRegionManager,
-  UserPreferences 
+  KeyboardNavigation
 } from '../../utils/accessibility';
+import { useSmartScrolling } from '../../utils/smartScrolling';
+import GlassmorphismBar from './GlassmorphismBar';
+import { OptimizedHoverInteraction, OptimizedClickAnimation } from '../common/OptimizedMicroInteractions';
 
 interface NavigationProps {
   currentSection: string;
@@ -55,32 +56,41 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, onSectionChange
   const navigationRef = useRef<HTMLElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const focusTrapCleanup = useRef<(() => void) | null>(null);
+  const { scrollToSection } = useSmartScrolling();
   
   const isScrolled = useScrollTrigger({
     disableHysteresis: true,
     threshold: 50,
   });
 
-  // Enhanced section navigation with accessibility announcements
-  const handleSectionClick = useCallback((sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const item = modernNavigationItems.find(item => item.id === sectionId);
-      
-      element.scrollIntoView({ 
-        behavior: UserPreferences.prefersReducedMotion() ? 'auto' : 'smooth',
-        block: 'start'
-      });
-      
-      onSectionChange(sectionId);
-      
-      // Announce navigation change to screen readers
-      if (item) {
-        ariaLiveRegionManager.announceNavigation(item.label, item.description);
+  // Enhanced section navigation with smart scrolling
+  const handleSectionClick = useCallback(async (sectionId: string) => {
+    const item = modernNavigationItems.find(item => item.id === sectionId);
+    
+    // Use smart scrolling for enhanced navigation
+    await scrollToSection(sectionId, {
+      offset: 80,
+      duration: 800,
+      easing: 'easeInOut',
+      onComplete: () => {
+        // Announce navigation change to screen readers
+        if (item) {
+          const announcement = `Navigated to ${item.label} section. ${item.description || ''}`;
+          // Create announcement element
+          const announcer = document.createElement('div');
+          announcer.setAttribute('aria-live', 'polite');
+          announcer.style.position = 'absolute';
+          announcer.style.left = '-10000px';
+          document.body.appendChild(announcer);
+          announcer.textContent = announcement;
+          setTimeout(() => document.body.removeChild(announcer), 1000);
+        }
       }
-    }
+    });
+    
+    onSectionChange(sectionId);
     setMobileMenuOpen(false);
-  }, [onSectionChange]);
+  }, [onSectionChange, scrollToSection]);
 
   // Enhanced keyboard navigation
   const handleKeyDown = useCallback((event: React.KeyboardEvent, sectionId: string) => {
@@ -157,15 +167,16 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, onSectionChange
     return () => document.removeEventListener('keydown', handleEscape);
   }, [mobileMenuOpen]);
 
-  // Desktop Navigation
+  // Desktop Navigation - Top Header Style
   const DesktopNavigation = () => (
     <Box 
       component="nav" 
       ref={navigationRef}
       sx={{ 
         display: { xs: 'none', md: 'flex' }, 
-        gap: 2,
+        gap: 3,
         alignItems: 'center',
+        position: 'relative',
       }}
       role="menubar"
       aria-label="Main navigation"
@@ -176,74 +187,101 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, onSectionChange
         const isActive = currentSection === item.id;
         
         return (
-          <Button
+          <Box
             key={item.id}
-            onClick={() => handleSectionClick(item.id)}
-            onKeyDown={(e) => handleKeyDown(e, item.id)}
-            onFocus={() => setFocusedIndex(index)}
-            role="menuitem"
-            tabIndex={focusedIndex === index || (focusedIndex === -1 && index === 0) ? 0 : -1}
-            aria-current={isActive ? 'page' : undefined}
-            aria-label={`Navigate to ${item.label} section${item.description ? `. ${item.description}` : ''}`}
-            aria-describedby={item.description ? `nav-desc-${item.id}` : undefined}
-            startIcon={<IconComponent size={18} aria-hidden="true" />}
-            sx={{
-              color: isActive ? 'primary.main' : 'text.primary',
-              fontWeight: isActive ? 600 : 500,
-              fontSize: '0.95rem',
-              textTransform: 'none',
-              borderRadius: '12px',
-              padding: '10px 20px',
-              minWidth: 'auto',
-              transition: 'all 0.2s ease',
-              
-              '&:hover': {
-                backgroundColor: 'rgba(0, 255, 255, 0.08)',
-                color: 'primary.main',
-                transform: 'translateY(-1px)',
-              },
-              
-              '&:focus-visible': {
-                outline: `3px solid ${theme.palette.primary.main}`,
-                outlineOffset: '2px',
-                backgroundColor: 'rgba(0, 255, 255, 0.08)',
-              },
-              
-              // Active state indicator
-              ...(isActive && {
-                backgroundColor: 'rgba(0, 255, 255, 0.12)',
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  bottom: '-2px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: '60%',
-                  height: '2px',
-                  background: theme.palette.primary.main,
-                  borderRadius: '1px',
-                },
-              }),
-            }}
+            component="div"
+            sx={{ position: 'relative' }}
           >
-            {item.label}
-            {/* Hidden description for screen readers */}
-            {item.description && (
-              <Box
-                id={`nav-desc-${item.id}`}
-                sx={{
-                  position: 'absolute',
-                  left: '-10000px',
-                  width: '1px',
-                  height: '1px',
-                  overflow: 'hidden',
-                }}
-                aria-hidden="true"
+            <OptimizedHoverInteraction
+              hoverScale={1.02}
+              hoverRotation={1}
+              glowColor={theme.palette.primary.main}
+              enableParticles={false}
+            >
+              <OptimizedClickAnimation
+                onClick={() => handleSectionClick(item.id)}
+                rippleColor={theme.palette.primary.main}
+                springIntensity="moderate"
               >
-                {item.description}
-              </Box>
-            )}
-          </Button>
+                <Button
+                  onKeyDown={(e) => handleKeyDown(e, item.id)}
+                  onFocus={() => setFocusedIndex(index)}
+                  role="menuitem"
+                  tabIndex={focusedIndex === index || (focusedIndex === -1 && index === 0) ? 0 : -1}
+                  aria-current={isActive ? 'page' : undefined}
+                  aria-label={`Navigate to ${item.label} section${item.description ? `. ${item.description}` : ''}`}
+                  aria-describedby={item.description ? `nav-desc-${item.id}` : undefined}
+                  startIcon={<IconComponent size={20} aria-hidden="true" />}
+                  sx={{
+                    color: isActive ? 'primary.main' : 'text.primary',
+                    fontWeight: isActive ? 600 : 500,
+                    fontSize: '1rem',
+                    textTransform: 'none',
+                    borderRadius: '16px',
+                    padding: '12px 24px',
+                    minWidth: '120px',
+                    height: '48px',
+                    position: 'relative',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    
+                    // Glassmorphism background
+                    background: isActive 
+                      ? 'linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(0, 255, 255, 0.08) 100%)'
+                      : 'rgba(255, 255, 255, 0.05)',
+                    backdropFilter: 'blur(10px)',
+                    border: `1px solid ${isActive ? theme.palette.primary.main + '40' : 'rgba(255, 255, 255, 0.1)'}`,
+                    
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 255, 255, 0.12)',
+                      borderColor: theme.palette.primary.main + '60',
+                      color: 'primary.main',
+                      transform: 'translateY(-2px)',
+                      boxShadow: `0 8px 25px ${theme.palette.primary.main}20`,
+                    },
+                    
+                    '&:focus-visible': {
+                      outline: `3px solid ${theme.palette.primary.main}`,
+                      outlineOffset: '2px',
+                      backgroundColor: 'rgba(0, 255, 255, 0.12)',
+                    },
+                    
+                    // Active state indicator - top border
+                    ...(isActive && {
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: '0',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '80%',
+                        height: '3px',
+                        background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                        borderRadius: '0 0 2px 2px',
+                      },
+                    }),
+                  }}
+                >
+                  {item.label}
+                  {/* Hidden description for screen readers */}
+                  {item.description && (
+                    <Box
+                      id={`nav-desc-${item.id}`}
+                      sx={{
+                        position: 'absolute',
+                        left: '-10000px',
+                        width: '1px',
+                        height: '1px',
+                        overflow: 'hidden',
+                      }}
+                      aria-hidden="true"
+                    >
+                      {item.description}
+                    </Box>
+                  )}
+                </Button>
+              </OptimizedClickAnimation>
+            </OptimizedHoverInteraction>
+          </Box>
         );
       })}
     </Box>
@@ -260,10 +298,6 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, onSectionChange
         sx: {
           width: { xs: '100%', sm: 320 },
           maxWidth: '320px',
-          backgroundColor: theme.palette.mode === 'dark' 
-            ? 'rgba(0, 0, 0, 0.95)' 
-            : 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(20px)',
         },
       }}
       ModalProps={{
@@ -271,112 +305,133 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, onSectionChange
         'aria-describedby': 'mobile-nav-description',
       }}
     >
-      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box 
-          component="h2" 
-          id="mobile-nav-title"
-          sx={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}
-        >
-          Navigation
-        </Box>
-        <IconButton 
-          onClick={() => setMobileMenuOpen(false)} 
-          aria-label="Close navigation menu"
-          sx={{
-            minWidth: '44px',
-            minHeight: '44px',
-            borderRadius: '12px',
-            '&:focus-visible': {
-              outline: `3px solid ${theme.palette.primary.main}`,
-              outlineOffset: '2px',
-            },
-          }}
-        >
-          <CloseIcon aria-hidden="true" />
-        </IconButton>
-      </Box>
-      
-      {/* Hidden description for screen readers */}
-      <Box
-        id="mobile-nav-description"
-        sx={{
-          position: 'absolute',
-          left: '-10000px',
-          width: '1px',
-          height: '1px',
-          overflow: 'hidden',
-        }}
-        aria-hidden="true"
-      >
-        Use arrow keys to navigate between menu items, Enter or Space to select, Escape to close
-      </Box>
-      
-      <List 
-        sx={{ px: 2 }}
-        role="menu"
-        aria-labelledby="mobile-nav-title"
-      >
-        {modernNavigationItems.map((item) => {
-          const IconComponent = item.icon;
-          const isActive = currentSection === item.id;
-          
-          return (
-            <ListItem key={item.id} disablePadding sx={{ mb: 1 }}>
-              <ListItemButton
-                onClick={() => handleSectionClick(item.id)}
-                onKeyDown={(e) => handleKeyDown(e, item.id)}
-                selected={isActive}
-                role="menuitem"
-                tabIndex={0}
-                aria-current={isActive ? 'page' : undefined}
-                aria-label={`Navigate to ${item.label} section${item.description ? `. ${item.description}` : ''}`}
+      {/* Use GlassmorphismBar for mobile menu background */}
+      <GlassmorphismBar isScrolled={true}>
+        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box 
+              component="h2" 
+              id="mobile-nav-title"
+              sx={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}
+            >
+              Navigation
+            </Box>
+            <OptimizedClickAnimation
+              onClick={() => setMobileMenuOpen(false)}
+              rippleColor={theme.palette.primary.main}
+            >
+              <IconButton 
+                aria-label="Close navigation menu"
                 sx={{
-                  minHeight: '56px',
+                  minWidth: '44px',
+                  minHeight: '44px',
                   borderRadius: '12px',
-                  gap: 2,
-                  
-                  '&.Mui-selected': {
-                    backgroundColor: 'rgba(0, 255, 255, 0.12)',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0, 255, 255, 0.16)',
-                    },
-                  },
-                  
-                  '&:hover': {
-                    backgroundColor: 'rgba(0, 255, 255, 0.08)',
-                  },
-                  
                   '&:focus-visible': {
                     outline: `3px solid ${theme.palette.primary.main}`,
-                    outlineOffset: '-2px',
+                    outlineOffset: '2px',
                   },
                 }}
               >
-                <IconComponent 
-                  size={20} 
-                  color={isActive ? theme.palette.primary.main : theme.palette.text.primary}
-                  aria-hidden="true"
-                />
-                <ListItemText 
-                  primary={item.label}
-                  secondary={item.description}
-                  sx={{
-                    '& .MuiListItemText-primary': {
-                      fontSize: '1.1rem',
-                      fontWeight: isActive ? 600 : 500,
-                      color: isActive ? 'primary.main' : 'text.primary',
-                    },
-                    '& .MuiListItemText-secondary': {
-                      fontSize: '0.85rem',
-                      opacity: 0.7,
-                    },
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-      </List>
+                <CloseIcon aria-hidden="true" />
+              </IconButton>
+            </OptimizedClickAnimation>
+          </Box>
+          
+          {/* Hidden description for screen readers */}
+          <Box
+            id="mobile-nav-description"
+            sx={{
+              position: 'absolute',
+              left: '-10000px',
+              width: '1px',
+              height: '1px',
+              overflow: 'hidden',
+            }}
+            aria-hidden="true"
+          >
+            Use arrow keys to navigate between menu items, Enter or Space to select, Escape to close
+          </Box>
+          
+          <List 
+            sx={{ px: 2, flex: 1 }}
+            role="menu"
+            aria-labelledby="mobile-nav-title"
+          >
+            {modernNavigationItems.map((item) => {
+              const IconComponent = item.icon;
+              const isActive = currentSection === item.id;
+              
+              return (
+                <ListItem key={item.id} disablePadding sx={{ mb: 1 }}>
+                  <OptimizedHoverInteraction
+                    hoverScale={1.02}
+                    glowColor={theme.palette.primary.main}
+                    enableParticles={false}
+                  >
+                    <OptimizedClickAnimation
+                      onClick={() => handleSectionClick(item.id)}
+                      rippleColor={theme.palette.primary.main}
+                      springIntensity="enhanced"
+                    >
+                      <ListItemButton
+                        onKeyDown={(e) => handleKeyDown(e, item.id)}
+                        selected={isActive}
+                        role="menuitem"
+                        tabIndex={0}
+                        aria-current={isActive ? 'page' : undefined}
+                        aria-label={`Navigate to ${item.label} section${item.description ? `. ${item.description}` : ''}`}
+                        sx={{
+                          minHeight: '56px',
+                          borderRadius: '12px',
+                          gap: 2,
+                          width: '100%',
+                          
+                          '&.Mui-selected': {
+                            backgroundColor: 'rgba(0, 255, 255, 0.12)',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0, 255, 255, 0.16)',
+                            },
+                          },
+                          
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 255, 255, 0.08)',
+                          },
+                          
+                          '&:focus-visible': {
+                            outline: `3px solid ${theme.palette.primary.main}`,
+                            outlineOffset: '-2px',
+                          },
+                        }}
+                      >
+                        <IconComponent 
+                          size={20} 
+                          color={isActive ? theme.palette.primary.main : theme.palette.text.primary}
+                          aria-hidden="true"
+                        />
+                        <ListItemText 
+                          primary={item.label}
+                          secondary={item.description}
+                          sx={{
+                            '& .MuiListItemText-primary': {
+                              fontSize: '1.1rem',
+                              fontWeight: isActive ? 600 : 500,
+                              color: isActive ? 'primary.main' : 'text.primary',
+                            },
+                            '& .MuiListItemText-secondary': {
+                              fontSize: '0.85rem',
+                              opacity: 0.7,
+                            },
+                          }}
+                        />
+                      </ListItemButton>
+                    </OptimizedClickAnimation>
+                  </OptimizedHoverInteraction>
+                </ListItem>
+              );
+            })}
+          </List>
+        </Box>
+      </GlassmorphismBar>
     </Drawer>
   );
 
@@ -392,18 +447,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, onSectionChange
             boxShadow: 'none',
           }}
         >
-          <Box
-            sx={{
-              background: isScrolled 
-                ? theme.palette.mode === 'dark'
-                  ? 'rgba(0, 0, 0, 0.8)'
-                  : 'rgba(255, 255, 255, 0.8)'
-                : 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(20px)',
-              borderBottom: isScrolled ? `1px solid ${theme.palette.divider}` : 'none',
-              transition: 'all 0.3s ease',
-            }}
-          >
+          {/* Use GlassmorphismBar for the main navigation */}
+          <GlassmorphismBar isScrolled={isScrolled}>
             <Box
               sx={{
                 maxWidth: 'lg',
@@ -413,45 +458,57 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, onSectionChange
             >
               <Toolbar
                 sx={{
-                  minHeight: { xs: '64px', sm: '70px' },
+                  minHeight: { xs: '64px', sm: '80px' }, // Increased height for desktop
                   padding: 0,
                   display: 'flex',
-                  justifyContent: 'space-between',
+                  justifyContent: 'space-between', // Back to space-between for left alignment
                   alignItems: 'center',
+                  width: '100%',
                 }}
               >
-                {/* Desktop Navigation */}
+                {/* Desktop Navigation - Centered */}
                 {!isMobile && <DesktopNavigation />}
                 
                 {/* Mobile Menu Button */}
                 {isMobile && (
                   <Box sx={{ ml: 'auto' }}>
-                    <IconButton
-                      onClick={() => setMobileMenuOpen(true)}
-                      aria-label="Open navigation menu"
-                      aria-expanded={mobileMenuOpen}
-                      aria-haspopup="true"
-                      aria-controls={mobileMenuOpen ? 'mobile-navigation' : undefined}
-                      sx={{
-                        minWidth: '44px',
-                        minHeight: '44px',
-                        borderRadius: '12px',
-                        '&:hover': {
-                          backgroundColor: 'rgba(0, 255, 255, 0.08)',
-                        },
-                        '&:focus-visible': {
-                          outline: `3px solid ${theme.palette.primary.main}`,
-                          outlineOffset: '2px',
-                        },
-                      }}
+                    <OptimizedHoverInteraction
+                      hoverScale={1.1}
+                      glowColor={theme.palette.primary.main}
+                      enableParticles={false}
                     >
-                      <MenuIcon aria-hidden="true" />
-                    </IconButton>
+                      <OptimizedClickAnimation
+                        onClick={() => setMobileMenuOpen(true)}
+                        rippleColor={theme.palette.primary.main}
+                        springIntensity="enhanced"
+                      >
+                        <IconButton
+                          aria-label="Open navigation menu"
+                          aria-expanded={mobileMenuOpen}
+                          aria-haspopup="true"
+                          aria-controls={mobileMenuOpen ? 'mobile-navigation' : undefined}
+                        sx={{
+                          minWidth: '44px',
+                          minHeight: '44px',
+                          borderRadius: '12px',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 255, 255, 0.08)',
+                          },
+                          '&:focus-visible': {
+                            outline: `3px solid ${theme.palette.primary.main}`,
+                            outlineOffset: '2px',
+                          },
+                        }}
+                      >
+                        <MenuIcon aria-hidden="true" />
+                      </IconButton>
+                    </OptimizedClickAnimation>
+                  </OptimizedHoverInteraction>
                   </Box>
                 )}
               </Toolbar>
             </Box>
-          </Box>
+          </GlassmorphismBar>
         </AppBar>
       </HideOnScroll>
 
