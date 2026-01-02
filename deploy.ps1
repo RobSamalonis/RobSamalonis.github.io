@@ -29,6 +29,4 @@ Write-Host "🔄 Pushing to main branch..." -ForegroundColor Yellow
 git push origin main
 
 Write-Host "🎉 Deployment complete! Your site will be available shortly at:" -ForegroundColor Green
-Write-Host "https://yourusername.github.io/your-repo-name/" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "Note: Replace 'yourusername' and 'your-repo-name' with your actual GitHub username and repository name." -ForegroundColor Yellow
+Write-Host "https://robsamalonis.github.io/resume/" -ForegroundColor Cyan
