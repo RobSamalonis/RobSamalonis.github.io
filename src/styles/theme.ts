@@ -1,5 +1,133 @@
 import { createTheme, ThemeOptions } from '@mui/material/styles';
 
+// CSS Custom Properties System
+// These values match the CSS variables defined in index.css
+export const cssVariables = {
+  colors: {
+    primary: {
+      black: 'var(--color-primary-black)',
+      darkGray: 'var(--color-primary-dark-gray)',
+      charcoal: 'var(--color-primary-charcoal)',
+    },
+    accent: {
+      electricBlue: 'var(--color-accent-electric-blue)',
+      hotPink: 'var(--color-accent-hot-pink)',
+      neonGreen: 'var(--color-accent-neon-green)',
+      vibrantPurple: 'var(--color-accent-vibrant-purple)',
+    },
+    neutral: {
+      white: 'var(--color-neutral-white)',
+      gray100: 'var(--color-neutral-gray-100)',
+      gray200: 'var(--color-neutral-gray-200)',
+      gray300: 'var(--color-neutral-gray-300)',
+      gray400: 'var(--color-neutral-gray-400)',
+      gray500: 'var(--color-neutral-gray-500)',
+      gray600: 'var(--color-neutral-gray-600)',
+      gray700: 'var(--color-neutral-gray-700)',
+      gray800: 'var(--color-neutral-gray-800)',
+      gray900: 'var(--color-neutral-gray-900)',
+    },
+    semantic: {
+      success: 'var(--color-success)',
+      warning: 'var(--color-warning)',
+      error: 'var(--color-error)',
+      info: 'var(--color-info)',
+    },
+  },
+  spacing: {
+    base: 'var(--spacing-base)',
+    xs: 'var(--spacing-xs)',
+    sm: 'var(--spacing-sm)',
+    md: 'var(--spacing-md)',
+    lg: 'var(--spacing-lg)',
+    xl: 'var(--spacing-xl)',
+    '2xl': 'var(--spacing-2xl)',
+    '3xl': 'var(--spacing-3xl)',
+    '4xl': 'var(--spacing-4xl)',
+  },
+  typography: {
+    fontFamily: {
+      primary: 'var(--font-family-primary)',
+      heading: 'var(--font-family-heading)',
+      mono: 'var(--font-family-mono)',
+    },
+    fontSize: {
+      xs: 'var(--font-size-xs)',
+      sm: 'var(--font-size-sm)',
+      base: 'var(--font-size-base)',
+      lg: 'var(--font-size-lg)',
+      xl: 'var(--font-size-xl)',
+      '2xl': 'var(--font-size-2xl)',
+      '3xl': 'var(--font-size-3xl)',
+      '4xl': 'var(--font-size-4xl)',
+    },
+    lineHeight: {
+      xs: 'var(--line-height-xs)',
+      sm: 'var(--line-height-sm)',
+      base: 'var(--line-height-base)',
+      lg: 'var(--line-height-lg)',
+      xl: 'var(--line-height-xl)',
+      '2xl': 'var(--line-height-2xl)',
+      '3xl': 'var(--line-height-3xl)',
+      '4xl': 'var(--line-height-4xl)',
+    },
+    letterSpacing: {
+      xs: 'var(--letter-spacing-xs)',
+      sm: 'var(--letter-spacing-sm)',
+      base: 'var(--letter-spacing-base)',
+      lg: 'var(--letter-spacing-lg)',
+      xl: 'var(--letter-spacing-xl)',
+      '2xl': 'var(--letter-spacing-2xl)',
+      '3xl': 'var(--letter-spacing-3xl)',
+      '4xl': 'var(--letter-spacing-4xl)',
+    },
+    fontWeight: {
+      light: 'var(--font-weight-light)',
+      regular: 'var(--font-weight-regular)',
+      medium: 'var(--font-weight-medium)',
+      semibold: 'var(--font-weight-semibold)',
+      bold: 'var(--font-weight-bold)',
+      extrabold: 'var(--font-weight-extrabold)',
+    },
+  },
+  shadows: {
+    sm: 'var(--shadow-sm)',
+    md: 'var(--shadow-md)',
+    lg: 'var(--shadow-lg)',
+    xl: 'var(--shadow-xl)',
+    '2xl': 'var(--shadow-2xl)',
+    inner: 'var(--shadow-inner)',
+    glow: {
+      blue: 'var(--glow-blue)',
+      pink: 'var(--glow-pink)',
+      green: 'var(--glow-green)',
+      purple: 'var(--glow-purple)',
+    },
+  },
+  animations: {
+    duration: {
+      fast: 'var(--duration-fast)',
+      normal: 'var(--duration-normal)',
+      slow: 'var(--duration-slow)',
+      slower: 'var(--duration-slower)',
+    },
+    easing: {
+      easeIn: 'var(--easing-ease-in)',
+      easeOut: 'var(--easing-ease-out)',
+      easeInOut: 'var(--easing-ease-in-out)',
+      spring: 'var(--easing-spring)',
+    },
+  },
+  breakpoints: {
+    xs: 'var(--breakpoint-xs)',
+    sm: 'var(--breakpoint-sm)',
+    md: 'var(--breakpoint-md)',
+    lg: 'var(--breakpoint-lg)',
+    xl: 'var(--breakpoint-xl)',
+    '2xl': 'var(--breakpoint-2xl)',
+  },
+};
+
 // Color palette based on emo/scene aesthetic from design document
 const colorPalette = {
   primary: {

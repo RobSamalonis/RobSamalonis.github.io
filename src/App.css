@@ -1,13 +1,15 @@
 .App {
   text-align: center;
-  padding: 2rem;
+  padding: 0;
+  margin: 0;
 }
 
 .App h1 {
-  color: #00ffff;
-  margin-bottom: 1rem;
+  color: var(--color-accent-electric-blue);
+  margin-bottom: var(--spacing-md);
 }
 
 .App p {
-  color: #cccccc;
+  color: var(--color-neutral-gray-300);
 }
+

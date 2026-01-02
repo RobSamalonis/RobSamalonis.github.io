@@ -30,6 +30,7 @@ export { default as ProfileImage } from './ProfileImage';
 export { default as ScrollProgressIndicator } from './ScrollProgressIndicator';
 export { default as ContextualNavigation } from './ContextualNavigation';
 export { default as NavigationBreadcrumbs } from './NavigationBreadcrumbs';
+export { default as BackToTop } from './BackToTop';
 
 // Re-export animation types and utilities
 export type { 

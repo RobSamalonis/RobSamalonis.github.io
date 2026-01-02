@@ -14,8 +14,8 @@ export const resumeData: ResumeData = {
       id: 'emoney-2022',
       company: 'eMoney Advisor',
       position: 'Senior Software Engineer',
-      startDate: '2022',
-      endDate: 'present',
+      startDate: 'April 2022',
+      endDate: 'Present',
       responsibilities: [
         'Lead frontend development initiatives using React and TypeScript',
         'Implement accessibility best practices and WCAG compliance across applications',
@@ -29,8 +29,8 @@ export const resumeData: ResumeData = {
       id: 'elsevier-prev',
       company: 'Elsevier',
       position: 'Software Engineer',
-      startDate: '2017',
-      endDate: '2022',
+      startDate: 'June 2017',
+      endDate: 'April 2022',
       responsibilities: [
         'Developed and maintained web applications for scientific publishing platform',
         'Implemented responsive designs and cross-browser compatibility',
@@ -45,7 +45,7 @@ export const resumeData: ResumeData = {
     {
       id: 'temple-university',
       institution: 'Temple University',
-      degree: 'Bachelor',
+      degree: `Bachelor's Degree`,
       field: 'Computer Science',
       graduationDate: '2017'
     }

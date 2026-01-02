@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Breadcrumbs, Link, Typography, useTheme } from '@mui/material';
+import { Box, Typography, useTheme, useMediaQuery, Chip } from '@mui/material';
 import { motion } from 'framer-motion';
-import { ChevronRight, Home } from 'lucide-react';
 import { modernNavigationItems } from '../../config/navigation';
 
 interface BreadcrumbItem {
@@ -24,52 +23,28 @@ interface NavigationBreadcrumbsProps {
 
 const NavigationBreadcrumbs: React.FC<NavigationBreadcrumbsProps> = ({
   currentSection,
-  onSectionChange,
   additionalItems = [],
   showHomeIcon = true,
   sx = {}
 }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  // Build breadcrumb trail
-  const buildBreadcrumbTrail = (): BreadcrumbItem[] => {
-    const trail: BreadcrumbItem[] = [];
+  // For desktop, show a subtle section indicator instead of breadcrumbs
+  // For mobile, show simplified breadcrumbs only when needed
+  
+  const currentItem = modernNavigationItems.find(item => item.id === currentSection);
+  
+  // Don't show anything on desktop - the main navigation is sufficient
+  if (!isMobile) {
+    return null;
+  }
 
-    // Add home if requested
-    if (showHomeIcon) {
-      trail.push({
-        id: 'hero',
-        label: 'Home',
-        href: '#hero',
-        isActive: currentSection === 'hero'
-      });
-    }
-
-    // Add current section if not home
-    if (currentSection !== 'hero') {
-      const currentItem = modernNavigationItems.find(item => item.id === currentSection);
-      if (currentItem) {
-        trail.push({
-          id: currentItem.id,
-          label: currentItem.label,
-          href: `#${currentItem.id}`,
-          isActive: true
-        });
-      }
-    }
-
-    // Add additional items (for subsections)
-    trail.push(...additionalItems);
-
-    return trail;
-  };
-
-  const breadcrumbTrail = buildBreadcrumbTrail();
-
-  const handleBreadcrumbClick = (event: React.MouseEvent, sectionId: string) => {
-    event.preventDefault();
-    onSectionChange(sectionId);
-  };
+  // For mobile, only show if we have additional items (subsections)
+  // or if explicitly requested for complex mobile navigation
+  if (additionalItems.length === 0 && !showHomeIcon) {
+    return null;
+  }
 
   const containerVariants = {
     hidden: { opacity: 0, y: -10 },
@@ -83,15 +58,6 @@ const NavigationBreadcrumbs: React.FC<NavigationBreadcrumbsProps> = ({
     }
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, x: -10 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.2 }
-    }
-  };
-
   return (
     <motion.div
       variants={containerVariants}
@@ -100,84 +66,57 @@ const NavigationBreadcrumbs: React.FC<NavigationBreadcrumbsProps> = ({
     >
       <Box
         sx={{
-          padding: '12px 0',
-          borderBottom: `1px solid ${theme.palette.divider}`,
+          padding: '8px 16px',
           backgroundColor: 'rgba(255, 255, 255, 0.02)',
           backdropFilter: 'blur(10px)',
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
           ...sx
         }}
       >
-        <Breadcrumbs
-          separator={<ChevronRight size={14} color={theme.palette.text.secondary} />}
-          aria-label="Navigation breadcrumbs"
-          sx={{
-            '& .MuiBreadcrumbs-ol': {
-              alignItems: 'center',
-            }
-          }}
-        >
-          {breadcrumbTrail.map((item, index) => {
-            const isLast = index === breadcrumbTrail.length - 1;
-            const isHome = item.id === 'hero' && showHomeIcon;
-
-            return (
-              <motion.div key={item.id} variants={itemVariants}>
-                {isLast ? (
-                  // Active/current item (not clickable)
-                  <Typography
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      fontSize: '0.875rem',
-                      fontWeight: 600,
-                      color: theme.palette.primary.main,
-                    }}
-                  >
-                    {isHome && <Home size={16} />}
-                    {item.label}
-                  </Typography>
-                ) : (
-                  // Clickable breadcrumb item
-                  <Link
-                    component="button"
-                    onClick={(e) => handleBreadcrumbClick(e, item.id)}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      fontSize: '0.875rem',
-                      fontWeight: 500,
-                      color: theme.palette.text.secondary,
-                      textDecoration: 'none',
-                      cursor: 'pointer',
-                      border: 'none',
-                      background: 'none',
-                      padding: '4px 8px',
-                      borderRadius: '6px',
-                      transition: 'all 0.2s ease',
-                      
-                      '&:hover': {
-                        color: theme.palette.primary.main,
-                        backgroundColor: 'rgba(0, 255, 255, 0.08)',
-                        textDecoration: 'none',
-                      },
-                      
-                      '&:focus-visible': {
-                        outline: `2px solid ${theme.palette.primary.main}`,
-                        outlineOffset: '2px',
-                      }
-                    }}
-                    aria-label={`Navigate to ${item.label}`}
-                  >
-                    {isHome && <Home size={16} />}
-                    {item.label}
-                  </Link>
-                )}
-              </motion.div>
-            );
-          })}
-        </Breadcrumbs>
+        {/* Simple mobile section indicator */}
+        {currentItem && (
+          <Chip
+            label={currentItem.label}
+            size="small"
+            sx={{
+              backgroundColor: 'rgba(0, 255, 255, 0.15)',
+              color: theme.palette.primary.main,
+              fontWeight: 600,
+              fontSize: '0.75rem',
+              height: '24px',
+              '& .MuiChip-label': {
+                px: 1.5
+              }
+            }}
+          />
+        )}
+        
+        {/* Show additional items if any */}
+        {additionalItems.map((item) => (
+          <React.Fragment key={item.id}>
+            <Typography
+              sx={{
+                fontSize: '0.75rem',
+                color: theme.palette.text.secondary,
+                mx: 0.5
+              }}
+            >
+              /
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: '0.75rem',
+                color: item.isActive ? theme.palette.primary.main : theme.palette.text.secondary,
+                fontWeight: item.isActive ? 600 : 400
+              }}
+            >
+              {item.label}
+            </Typography>
+          </React.Fragment>
+        ))}
       </Box>
     </motion.div>
   );

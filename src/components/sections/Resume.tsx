@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -12,8 +12,12 @@ import {
   List,
   ListItem,
   ListItemText,
+  IconButton,
+  Collapse,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Download as DownloadIcon,
   Work as WorkIcon,
@@ -22,6 +26,8 @@ import {
   Email as EmailIcon,
   Phone as PhoneIcon,
   LinkedIn as LinkedInIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
 import AnimatedSection from '../common/AnimatedSection';
 import { colorPalette } from '../../styles/theme';
@@ -32,13 +38,24 @@ import { animationConfigs } from '../../utils/animationPresets';
 /**
  * Resume section component displaying professional experience, education, and skills
  * Includes PDF download functionality and responsive Material-UI layout
+ * Mobile-optimized with collapsible cards for better readability
  */
 const Resume: React.FC = () => {
   const { personalInfo, experience, education, skills } = resumeData;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
 
   const handlePDFDownload = () => {
     // TODO: Implement PDF generation/download functionality
     console.log('PDF download functionality to be implemented');
+  };
+
+  const toggleCardExpansion = (id: string) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
   };
 
   const getSkillColor = (proficiency: Skill['proficiency']) => {
@@ -56,164 +73,373 @@ const Resume: React.FC = () => {
     }
   };
 
-  const renderExperienceCard = (exp: Experience, index: number) => (
-    <motion.div
-      key={exp.id}
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.2 }}
-    >
-      <Card
-        sx={{
-          mb: 3,
-          background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
-          border: `1px solid ${colorPalette.accent.electricBlue}30`,
-          borderRadius: 2,
-          boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
-          '&:hover': {
-            boxShadow: `0 12px 35px ${colorPalette.accent.electricBlue}20`,
-            transform: 'translateY(-4px)',
-          },
-          transition: 'all 0.3s ease-in-out',
-        }}
+  const renderExperienceCard = (exp: Experience, index: number) => {
+    const isExpanded = expandedCards[exp.id] ?? false;
+    
+    return (
+      <motion.div
+        key={exp.id}
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: index * 0.2 }}
       >
-        <CardContent sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <WorkIcon sx={{ color: colorPalette.accent.electricBlue, mr: 2 }} />
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography
-                variant="h5"
-                component="h3"
-                sx={{
-                  color: colorPalette.neutral.white,
-                  fontWeight: 600,
-                  mb: 0.5,
-                }}
-              >
-                {exp.position}
-              </Typography>
-              <Typography
-                variant="h6"
-                component="h4"
-                sx={{
-                  color: colorPalette.accent.hotPink,
-                  fontWeight: 500,
-                }}
-              >
-                {exp.company}
-              </Typography>
-            </Box>
-            <Typography
-              variant="body2"
-              sx={{
-                color: colorPalette.neutral.lightGray,
-                fontWeight: 500,
-                textAlign: 'right',
+        <Card
+          sx={{
+            mb: 3,
+            mx: isMobile ? 2 : 0, // Add horizontal margin on mobile
+            background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
+            border: `1px solid ${colorPalette.accent.electricBlue}30`,
+            borderRadius: 2,
+            boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
+            '&:hover': {
+              boxShadow: `0 12px 35px ${colorPalette.accent.electricBlue}20`,
+              transform: 'translateY(-4px)',
+            },
+            transition: 'all 0.3s ease-in-out',
+          }}
+        >
+          <CardContent 
+            sx={{ 
+              p: isMobile ? '24px' : 3,
+              '&:last-child': {
+                pb: isMobile ? '24px' : 3,
+              }
+            }}
+          >
+            {/* Header Section - Always Visible */}
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'flex-start',
+                mb: isMobile ? 1.5 : 2,
               }}
             >
-              {exp.startDate} - {exp.endDate}
-            </Typography>
-          </Box>
-
-          <List sx={{ mb: 2 }}>
-            {exp.responsibilities.map((responsibility, idx) => (
-              <ListItem key={idx} sx={{ py: 0.5, px: 0 }}>
-                <ListItemText
-                  primary={responsibility}
-                  sx={{
-                    '& .MuiListItemText-primary': {
-                      color: colorPalette.neutral.lightGray,
-                      fontSize: '0.95rem',
-                      lineHeight: 1.5,
-                    },
-                  }}
-                />
-              </ListItem>
-            ))}
-          </List>
-
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {exp.technologies.map((tech) => (
-              <Chip
-                key={tech}
-                label={tech}
-                size="small"
-                sx={{
-                  backgroundColor: `${colorPalette.accent.neonGreen}20`,
-                  color: colorPalette.accent.neonGreen,
-                  border: `1px solid ${colorPalette.accent.neonGreen}50`,
-                  fontWeight: 500,
-                }}
+              <WorkIcon 
+                sx={{ 
+                  color: colorPalette.accent.electricBlue, 
+                  mr: 2,
+                  mt: 0.5,
+                  fontSize: isMobile ? '1.5rem' : '1.75rem',
+                  flexShrink: 0,
+                }} 
               />
-            ))}
-          </Box>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-
-  const renderEducationCard = (edu: Education, index: number) => (
-    <motion.div
-      key={edu.id}
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.2 }}
-    >
-      <Card
-        sx={{
-          mb: 3,
-          background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
-          border: `1px solid ${colorPalette.accent.hotPink}30`,
-          borderRadius: 2,
-          boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
-          '&:hover': {
-            boxShadow: `0 12px 35px ${colorPalette.accent.hotPink}20`,
-            transform: 'translateY(-4px)',
-          },
-          transition: 'all 0.3s ease-in-out',
-        }}
-      >
-        <CardContent sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <SchoolIcon sx={{ color: colorPalette.accent.hotPink, mr: 2 }} />
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography
-                variant="h5"
-                component="h3"
-                sx={{
-                  color: colorPalette.neutral.white,
-                  fontWeight: 600,
-                  mb: 0.5,
-                }}
-              >
-                {edu.degree} in {edu.field}
-              </Typography>
-              <Typography
-                variant="h6"
-                component="h4"
-                sx={{
-                  color: colorPalette.accent.hotPink,
-                  fontWeight: 500,
-                }}
-              >
-                {edu.institution}
-              </Typography>
+              <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                <Typography
+                  variant="h5"
+                  component="h3"
+                  sx={{
+                    color: colorPalette.neutral.white,
+                    fontWeight: 600,
+                    mb: 0.5,
+                    fontSize: isMobile ? '1.125rem' : '1.5rem',
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {exp.position}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  component="h4"
+                  sx={{
+                    color: colorPalette.accent.hotPink,
+                    fontWeight: 500,
+                    fontSize: isMobile ? '0.9375rem' : '1.25rem',
+                    mb: isMobile ? 1 : 0,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {exp.company}
+                </Typography>
+                {isMobile && (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: colorPalette.neutral.lightGray,
+                      fontWeight: 400,
+                      fontSize: '0.8125rem',
+                      mt: 0.5,
+                    }}
+                  >
+                    {exp.startDate} - {exp.endDate}
+                  </Typography>
+                )}
+              </Box>
+              
+              {!isMobile && (
+                <Box
+                  sx={{
+                    ml: 3,
+                    px: 2,
+                    py: 1,
+                    borderRadius: 1,
+                    backgroundColor: `${colorPalette.accent.electricBlue}15`,
+                    border: `1px solid ${colorPalette.accent.electricBlue}40`,
+                    flexShrink: 0,
+                  }}
+                >
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: colorPalette.accent.electricBlue,
+                      fontWeight: 600,
+                      fontSize: '0.9375rem',
+                      letterSpacing: '0.02em',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {exp.startDate} - {exp.endDate}
+                  </Typography>
+                </Box>
+              )}
+              
+              {isMobile && (
+                <IconButton
+                  onClick={() => toggleCardExpansion(exp.id)}
+                  aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
+                  aria-expanded={isExpanded}
+                  sx={{
+                    color: colorPalette.accent.electricBlue,
+                    padding: '8px',
+                    minWidth: '44px',
+                    minHeight: '44px',
+                    ml: 1,
+                    flexShrink: 0,
+                  }}
+                >
+                  {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+              )}
             </Box>
-            <Typography
-              variant="body2"
-              sx={{
-                color: colorPalette.neutral.lightGray,
-                fontWeight: 500,
-                textAlign: 'right',
+
+            {/* Collapsible Content - Mobile Only */}
+            {isMobile ? (
+              <Collapse 
+                in={isExpanded} 
+                timeout={300}
+              >
+                <Box sx={{ mt: 2 }}>
+                  <List sx={{ mb: 2, p: 0 }}>
+                    {exp.responsibilities.map((responsibility, idx) => (
+                      <ListItem 
+                        key={idx} 
+                        sx={{ 
+                          py: 0.75, 
+                          px: 0,
+                          alignItems: 'flex-start',
+                        }}
+                      >
+                        <Box
+                          component="span"
+                          sx={{
+                            color: colorPalette.accent.electricBlue,
+                            mr: 1.5,
+                            mt: 0.5,
+                            fontSize: '0.5rem',
+                            flexShrink: 0,
+                          }}
+                        >
+                          ●
+                        </Box>
+                        <ListItemText
+                          primary={responsibility}
+                          sx={{
+                            m: 0,
+                            '& .MuiListItemText-primary': {
+                              color: colorPalette.neutral.lightGray,
+                              fontSize: '0.875rem',
+                              lineHeight: 1.6,
+                            },
+                          }}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {exp.technologies.map((tech) => (
+                      <Chip
+                        key={tech}
+                        label={tech}
+                        size="small"
+                        sx={{
+                          backgroundColor: `${colorPalette.accent.neonGreen}20`,
+                          color: colorPalette.accent.neonGreen,
+                          border: `1px solid ${colorPalette.accent.neonGreen}50`,
+                          fontWeight: 500,
+                          fontSize: '0.75rem',
+                          height: '24px',
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              </Collapse>
+            ) : (
+              // Desktop - Always Expanded
+              <>
+                <List sx={{ mb: 2 }}>
+                  {exp.responsibilities.map((responsibility, idx) => (
+                    <ListItem key={idx} sx={{ py: 0.5, px: 0 }}>
+                      <ListItemText
+                        primary={responsibility}
+                        sx={{
+                          '& .MuiListItemText-primary': {
+                            color: colorPalette.neutral.lightGray,
+                            fontSize: '0.95rem',
+                            lineHeight: 1.5,
+                          },
+                        }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {exp.technologies.map((tech) => (
+                    <Chip
+                      key={tech}
+                      label={tech}
+                      size="small"
+                      sx={{
+                        backgroundColor: `${colorPalette.accent.neonGreen}20`,
+                        color: colorPalette.accent.neonGreen,
+                        border: `1px solid ${colorPalette.accent.neonGreen}50`,
+                        fontWeight: 500,
+                      }}
+                    />
+                  ))}
+                </Box>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  };
+
+  const renderEducationCard = (edu: Education, index: number) => {
+    const isExpanded = expandedCards[edu.id] ?? false;
+    
+    return (
+      <motion.div
+        key={edu.id}
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: index * 0.2 }}
+      >
+        <Card
+          sx={{
+            mb: 3,
+            mx: isMobile ? 2 : 0, // Add horizontal margin on mobile
+            background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
+            border: `1px solid ${colorPalette.accent.hotPink}30`,
+            borderRadius: 2,
+            boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
+            '&:hover': {
+              boxShadow: `0 12px 35px ${colorPalette.accent.hotPink}20`,
+              transform: 'translateY(-4px)',
+            },
+            transition: 'all 0.3s ease-in-out',
+          }}
+        >
+          <CardContent 
+            sx={{ 
+              p: isMobile ? '24px' : 3,
+              '&:last-child': {
+                pb: isMobile ? '24px' : 3,
+              }
+            }}
+          >
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'flex-start',
+                mb: isMobile ? 0 : 2,
               }}
             >
-              {edu.graduationDate}
-            </Typography>
-          </Box>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
+              <SchoolIcon 
+                sx={{ 
+                  color: colorPalette.accent.hotPink, 
+                  mr: 2,
+                  mt: 0.5,
+                  fontSize: isMobile ? '1.5rem' : '1.75rem',
+                  flexShrink: 0,
+                }} 
+              />
+              <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                <Typography
+                  variant="h5"
+                  component="h3"
+                  sx={{
+                    color: colorPalette.neutral.white,
+                    fontWeight: 600,
+                    mb: 0.5,
+                    fontSize: isMobile ? '1.125rem' : '1.5rem',
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {edu.degree} in {edu.field}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  component="h4"
+                  sx={{
+                    color: colorPalette.accent.hotPink,
+                    fontWeight: 500,
+                    fontSize: isMobile ? '0.9375rem' : '1.25rem',
+                    mb: isMobile ? 1 : 0,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {edu.institution}
+                </Typography>
+                {isMobile && (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: colorPalette.neutral.lightGray,
+                      fontWeight: 400,
+                      fontSize: '0.8125rem',
+                      mt: 0.5,
+                    }}
+                  >
+                    {edu.graduationDate}
+                  </Typography>
+                )}
+              </Box>
+              
+              {!isMobile && (
+                <Box
+                  sx={{
+                    ml: 3,
+                    px: 2,
+                    py: 1,
+                    borderRadius: 1,
+                    backgroundColor: `${colorPalette.accent.hotPink}15`,
+                    border: `1px solid ${colorPalette.accent.hotPink}40`,
+                    flexShrink: 0,
+                  }}
+                >
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: colorPalette.accent.hotPink,
+                      fontWeight: 600,
+                      fontSize: '0.9375rem',
+                      letterSpacing: '0.02em',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {edu.graduationDate}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  };
 
   const skillsByCategory = skills.reduce((acc, skill) => {
     if (!acc[skill.category]) {
@@ -245,10 +471,17 @@ const Resume: React.FC = () => {
         },
       }}
     >
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          position: 'relative', 
+          zIndex: 1,
+          px: { xs: 0, sm: 2, md: 3 }, // Remove horizontal padding on mobile
+        }}
+      >
         {/* Section Header */}
         <AnimatedSection animation={animationConfigs.scrollReveal}>
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Box sx={{ textAlign: 'center', mb: 6, px: { xs: 2, sm: 0 } }}>
             <Typography
               id="resume-heading"
               variant="h2"
@@ -337,7 +570,7 @@ const Resume: React.FC = () => {
             </Stack>
 
             <motion.div
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
             >
               <Button
@@ -348,26 +581,38 @@ const Resume: React.FC = () => {
                 aria-label="Download PDF version of resume"
                 sx={{
                   px: { xs: 3, sm: 4 },
-                  py: { xs: 1.5, sm: 2 },
-                  fontSize: { xs: '1rem', sm: '1.1rem' },
-                  fontWeight: 600,
-                  minHeight: { xs: '48px', sm: '56px' }, // Touch-friendly minimum size
+                  py: { xs: 1.25, sm: 1.5 },
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  fontWeight: 700,
+                  fontFamily: '"Orbitron", "Roboto", sans-serif',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  minHeight: { xs: '48px', sm: '56px' },
                   background: `linear-gradient(45deg, ${colorPalette.accent.neonGreen}, ${colorPalette.accent.electricBlue})`,
-                  border: 'none',
-                  borderRadius: 2,
+                  border: `2px solid ${colorPalette.accent.neonGreen}`,
+                  borderRadius: 0,
                   color: colorPalette.primary.black,
-                  textTransform: 'none',
-                  boxShadow: `0 8px 25px ${colorPalette.accent.neonGreen}40`,
+                  boxShadow: `0 0 20px ${colorPalette.accent.neonGreen}60, inset 0 0 20px ${colorPalette.accent.electricBlue}40`,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: '-100%',
+                    width: '100%',
+                    height: '100%',
+                    background: `linear-gradient(90deg, transparent, ${colorPalette.neutral.white}40, transparent)`,
+                    transition: 'left 0.5s',
+                  },
+                  '&:hover::before': {
+                    left: '100%',
+                  },
                   '&:hover': {
                     background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.neonGreen})`,
-                    boxShadow: `0 12px 35px ${colorPalette.accent.electricBlue}50`,
-                    transform: 'translateY(-2px)',
+                    boxShadow: `0 0 30px ${colorPalette.accent.electricBlue}80, inset 0 0 30px ${colorPalette.accent.neonGreen}60`,
                   },
-                  '&:focus': {
-                    outline: `3px solid ${colorPalette.neutral.white}`,
-                    outlineOffset: '2px',
-                  },
-                  transition: 'all 0.3s ease-in-out',
+                  transition: 'all 0.3s ease',
                 }}
               >
                 Download PDF Resume
@@ -391,6 +636,7 @@ const Resume: React.FC = () => {
                   alignItems: 'center',
                   gap: 2,
                   fontSize: { xs: '1.5rem', sm: '1.75rem' },
+                  px: { xs: 2, sm: 0 },
                 }}
                 id="experience-heading"
               >
@@ -413,6 +659,7 @@ const Resume: React.FC = () => {
                   alignItems: 'center',
                   gap: 2,
                   fontSize: { xs: '1.5rem', sm: '1.75rem' },
+                  px: { xs: 2, sm: 0 },
                 }}
                 id="education-heading"
               >
@@ -436,6 +683,7 @@ const Resume: React.FC = () => {
                   alignItems: 'center',
                   gap: 2,
                   fontSize: { xs: '1.5rem', sm: '1.75rem' },
+                  px: { xs: 2, sm: 0 },
                 }}
                 id="skills-heading"
               >
@@ -448,6 +696,7 @@ const Resume: React.FC = () => {
                   key={category}
                   sx={{
                     mb: 3,
+                    mx: isMobile ? 2 : 0, // Add horizontal margin on mobile
                     background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
                     border: `1px solid ${colorPalette.accent.neonGreen}30`,
                     borderRadius: 2,

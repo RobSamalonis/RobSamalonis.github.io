@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Chip, Tooltip, useTheme, Fade, useMediaQuery } from '@mui/material';
+import { Box, useTheme, useMediaQuery } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import { modernNavigationItems } from '../../config/navigation';
 import { useSmartScrolling } from '../../utils/smartScrolling';
 import { useNavigationState } from '../../utils/navigationState';
@@ -37,25 +37,25 @@ const ContextualNavigation: React.FC<ContextualNavigationProps> = ({
   const navigationState = useNavigationState();
   const [hoveredSuggestion, setHoveredSuggestion] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(false);
   
   // Detect if we're on desktop (md and up) for responsive breadcrumb positioning
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   // Determine effective position based on responsive setting
   const effectivePosition = position === 'responsive-breadcrumbs' 
     ? (isDesktop ? 'overlay-top-left' : 'overlay-bottom-right')
     : position;
 
-  // Show contextual navigation after user starts scrolling
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrolled = window.pageYOffset > (effectivePosition === 'overlay-top-left' || effectivePosition === 'overlay-bottom-right' ? 50 : 200);
-      setIsVisible(scrolled);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [effectivePosition]);
+  // Hide breadcrumbs and navigation suggestions completely on desktop when using responsive-breadcrumbs position
+  const shouldShowBreadcrumbs = position === 'responsive-breadcrumbs' 
+    ? (isMobile && showBreadcrumbs) 
+    : showBreadcrumbs;
+    
+  const shouldShowSuggestions = position === 'responsive-breadcrumbs' 
+    ? (isMobile && showSuggestions) 
+    : showSuggestions;
 
   // Get current section index and navigation suggestions
   const currentIndex = modernNavigationItems.findIndex(item => item.id === currentSection);
@@ -87,11 +87,38 @@ const ContextualNavigation: React.FC<ContextualNavigationProps> = ({
     });
   }
 
+  // Show contextual navigation after user starts scrolling
+  // For responsive-breadcrumbs on desktop, hide completely since main nav is sufficient
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.pageYOffset > (effectivePosition === 'overlay-top-left' || effectivePosition === 'overlay-bottom-right' ? 50 : 200);
+      
+      // Check if we're at the bottom of the page
+      const scrollHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.pageYOffset;
+      const clientHeight = window.innerHeight;
+      const atBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+      
+      setIsAtBottom(atBottom);
+      
+      // For responsive-breadcrumbs on desktop, don't show anything - main navigation is sufficient
+      if (position === 'responsive-breadcrumbs' && isDesktop) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(scrolled);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Call once to set initial state
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [effectivePosition, position, isDesktop]);
+
   // Handle suggestion click with state persistence
   const handleSuggestionClick = useCallback(async (suggestionId: string) => {
     await scrollToSection(suggestionId, {
       offset: 80,
-      duration: 600,
+      duration: 900, // Smooth scroll animation (800-1000ms range)
       easing: 'easeInOut',
       onComplete: () => {
         // Navigation completed
@@ -102,6 +129,78 @@ const ContextualNavigation: React.FC<ContextualNavigationProps> = ({
     navigationState.updateCurrentSection(suggestionId);
     onSectionChange(suggestionId);
   }, [scrollToSection, onSectionChange, navigationState]);
+
+  // Handle keyboard navigation (arrow keys)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only handle arrow keys when not typing in an input/textarea
+      const target = event.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        
+        // Check if we're at the last section
+        if (currentIndex >= modernNavigationItems.length - 1) {
+          // If at the last section, try to scroll down within the section
+          const currentSectionElement = document.getElementById(currentSection);
+          if (currentSectionElement) {
+            const currentScrollTop = window.pageYOffset;
+            const sectionBottom = currentSectionElement.offsetTop + currentSectionElement.offsetHeight;
+            const viewportBottom = currentScrollTop + window.innerHeight;
+            
+            // If there's more content below in the current section, scroll down smoothly
+            if (viewportBottom < sectionBottom - 100) {
+              window.scrollBy({
+                top: window.innerHeight * 0.7, // Scroll down by 70% of viewport height
+                behavior: 'smooth'
+              });
+            }
+          }
+        } else {
+          // Navigate to next section
+          const nextItem = modernNavigationItems[currentIndex + 1];
+          handleSuggestionClick(nextItem.id);
+        }
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        
+        // Check if we're at the first section
+        if (currentIndex <= 0) {
+          // If at first section, scroll to top
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          // Check if we need to scroll up within the current section first
+          const currentSectionElement = document.getElementById(currentSection);
+          if (currentSectionElement) {
+            const currentScrollTop = window.pageYOffset;
+            const sectionTop = currentSectionElement.offsetTop;
+            
+            // If we're not at the top of the current section, scroll up within it
+            if (currentScrollTop > sectionTop + 100) {
+              window.scrollBy({
+                top: -(window.innerHeight * 0.7), // Scroll up by 70% of viewport height
+                behavior: 'smooth'
+              });
+            } else {
+              // Navigate to previous section
+              const prevItem = modernNavigationItems[currentIndex - 1];
+              handleSuggestionClick(prevItem.id);
+            }
+          } else {
+            // Navigate to previous section
+            const prevItem = modernNavigationItems[currentIndex - 1];
+            handleSuggestionClick(prevItem.id);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentIndex, currentSection, handleSuggestionClick]);
 
   // Predictive hover behavior
   const handleSuggestionHover = useCallback((suggestionId: string | null) => {
@@ -133,11 +232,24 @@ const ContextualNavigation: React.FC<ContextualNavigationProps> = ({
       pointerEvents: 'auto' as const,
     };
 
+    // Calculate thumb-reach zone (bottom 20% of screen)
+    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+    const thumbReachZone = viewportHeight * 0.2; // Bottom 20% of screen
+    const bottomPosition = Math.min(thumbReachZone, 120); // Cap at 120px for very tall screens
+
     switch (effectivePosition) {
       case 'bottom-right':
-        return { ...baseStyles, bottom: '20px', right: '20px' };
+        return { 
+          ...baseStyles, 
+          bottom: isMobile ? `${bottomPosition}px` : '20px', 
+          right: '20px' 
+        };
       case 'bottom-left':
-        return { ...baseStyles, bottom: '20px', left: '20px' };
+        return { 
+          ...baseStyles, 
+          bottom: isMobile ? `${bottomPosition}px` : '20px', 
+          left: '20px' 
+        };
       case 'top-right':
         return { ...baseStyles, top: '100px', right: '20px' };
       case 'top-left':
@@ -153,12 +265,17 @@ const ContextualNavigation: React.FC<ContextualNavigationProps> = ({
       case 'overlay-bottom-right':
         return { 
           ...baseStyles, 
-          bottom: '40px', // Above the bottom of viewport
-          right: '40px',
+          bottom: isMobile ? `${bottomPosition}px` : '30px', // Thumb-reach zone for mobile
+          right: '20px',
+          left: 'auto',
           zIndex: 10 // Lower z-index to be below navigation but above content
         };
       default:
-        return { ...baseStyles, bottom: '20px', right: '20px' };
+        return { 
+          ...baseStyles, 
+          bottom: isMobile ? `${bottomPosition}px` : '20px', 
+          right: '20px' 
+        };
     }
   };
 
@@ -212,134 +329,219 @@ const ContextualNavigation: React.FC<ContextualNavigationProps> = ({
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              gap: 1,
-              maxWidth: '280px',
+              gap: 1.5, // Increased gap for better spacing
+              maxWidth: '320px', // Slightly wider to accommodate inline layout
+              alignItems: 'center', // Center align for mobile
             }}
           >
-            {/* Breadcrumb-style current section indicator */}
-            {showBreadcrumbs && currentItem && (
+            {/* Inline Navigation Bar - Breadcrumb with navigation arrows */}
+            {(shouldShowBreadcrumbs || shouldShowSuggestions) && currentItem && (
               <motion.div variants={itemVariants}>
                 <Box
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
+                    justifyContent: 'space-between',
                     gap: 1,
-                    padding: isDesktop && effectivePosition === 'overlay-top-left' ? '8px 20px' : '6px 16px',
-                    backgroundColor: effectivePosition === 'overlay-top-left' || effectivePosition === 'overlay-bottom-right'
-                      ? 'rgba(0, 0, 0, 0.7)' 
-                      : 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(15px)',
-                    borderRadius: isDesktop && effectivePosition === 'overlay-top-left' ? '12px' : '20px',
-                    border: `1px solid ${theme.palette.primary.main}30`,
-                    fontSize: isDesktop && effectivePosition === 'overlay-top-left' ? '0.9rem' : '0.8rem',
-                    fontWeight: 500,
-                    color: theme.palette.text.primary,
-                    boxShadow: effectivePosition === 'overlay-top-left' || effectivePosition === 'overlay-bottom-right'
-                      ? `0 4px 20px rgba(0, 0, 0, 0.3)` 
-                      : 'none',
-                    minWidth: isDesktop && effectivePosition === 'overlay-top-left' ? '200px' : 'auto',
+                    padding: '8px 12px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                    backdropFilter: 'blur(20px)',
+                    borderRadius: '24px',
+                    border: `1px solid ${theme.palette.primary.main}40`,
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                    minWidth: '240px',
+                    maxWidth: '300px',
                   }}
                 >
+                  {/* Previous Section Button */}
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.85 }} // Scale down on press for tactile feedback
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <Box
+                      onClick={() => {
+                        if (currentIndex > 0) {
+                          const prevItem = modernNavigationItems[currentIndex - 1];
+                          handleSuggestionClick(prevItem.id);
+                        } else {
+                          // If at first section, scroll to top
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                      }}
+                      onTouchStart={() => {
+                        if (currentIndex > 0) {
+                          const prevItem = modernNavigationItems[currentIndex - 1];
+                          handleSuggestionHover(prevItem.id);
+                        }
+                      }}
+                      onTouchEnd={() => handleSuggestionHover(null)}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        backgroundColor: currentIndex > 0 && hoveredSuggestion === modernNavigationItems[currentIndex - 1]?.id
+                          ? `${theme.palette.primary.main}30`
+                          : 'rgba(255, 255, 255, 0.1)',
+                        border: `1px solid ${
+                          currentIndex > 0 && hoveredSuggestion === modernNavigationItems[currentIndex - 1]?.id
+                            ? theme.palette.primary.main
+                            : 'rgba(255, 255, 255, 0.2)'
+                        }`,
+                        color: hoveredSuggestion === modernNavigationItems[currentIndex - 1]?.id
+                          ? theme.palette.primary.main
+                          : theme.palette.text.secondary,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        // Subtle glow effect on hover/press
+                        boxShadow: currentIndex > 0 && hoveredSuggestion === modernNavigationItems[currentIndex - 1]?.id
+                          ? `0 0 12px ${theme.palette.primary.main}60, 0 0 24px ${theme.palette.primary.main}30`
+                          : 'none',
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={
+                        currentIndex > 0 
+                          ? `Navigate to ${modernNavigationItems[currentIndex - 1].label} section` 
+                          : 'Scroll to top'
+                      }
+                    >
+                      <ArrowUp size={16} />
+                    </Box>
+                  </motion.div>
+
+                  {/* Current Section Indicator */}
                   <Box
-                    component="span"
                     sx={{
-                      fontSize: isDesktop && effectivePosition === 'overlay-top-left' ? '0.75rem' : '0.7rem',
-                      opacity: 0.7,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 1,
+                      flex: 1,
+                      textAlign: 'center',
                     }}
                   >
-                    {isDesktop && effectivePosition === 'overlay-top-left' ? 'Section' : 'Current'}
-                  </Box>
-                  <ChevronRight size={isDesktop && effectivePosition === 'overlay-top-left' ? 12 : 10} />
-                  <Box component="span" sx={{ color: theme.palette.primary.main }}>
-                    {currentItem.label}
-                  </Box>
-                </Box>
-              </motion.div>
-            )}
-
-            {/* Navigation suggestions */}
-            {showSuggestions && suggestions.length > 0 && (
-              <motion.div variants={itemVariants}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                  {suggestions.map((suggestion) => (
-                    <Tooltip
-                      key={suggestion.id}
-                      title={suggestion.description || `Navigate to ${suggestion.label}`}
-                      placement={effectivePosition.includes('right') ? 'left' : 'right'}
-                      TransitionComponent={Fade}
-                      TransitionProps={{ timeout: 200 }}
+                    <Box
+                      component="span"
+                      sx={{
+                        fontSize: '0.7rem',
+                        opacity: 0.6,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.8px',
+                        fontWeight: 500,
+                        color: theme.palette.text.secondary,
+                      }}
                     >
-                      <motion.div
-                        whileHover={{ scale: 1.02, x: effectivePosition.includes('right') ? -2 : 2 }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                      >
-                        <Chip
-                          icon={suggestion.icon as React.ReactElement}
-                          label={suggestion.label}
-                          onClick={() => handleSuggestionClick(suggestion.id)}
-                          onMouseEnter={() => handleSuggestionHover(suggestion.id)}
-                          onMouseLeave={() => handleSuggestionHover(null)}
-                          sx={{
-                            backgroundColor: hoveredSuggestion === suggestion.id
-                              ? `${theme.palette.primary.main}20`
-                              : 'rgba(255, 255, 255, 0.08)',
-                            backdropFilter: 'blur(10px)',
-                            border: `1px solid ${
-                              hoveredSuggestion === suggestion.id
-                                ? theme.palette.primary.main
-                                : 'rgba(255, 255, 255, 0.2)'
-                            }`,
-                            color: hoveredSuggestion === suggestion.id
+                      Current
+                    </Box>
+                    <Box 
+                      sx={{ 
+                        width: '3px', 
+                        height: '3px', 
+                        borderRadius: '50%', 
+                        backgroundColor: theme.palette.primary.main,
+                        opacity: 0.8
+                      }} 
+                    />
+                    <Box 
+                      component="span" 
+                      sx={{ 
+                        color: theme.palette.primary.main,
+                        fontWeight: 700,
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      {currentItem.label}
+                    </Box>
+                  </Box>
+
+                  {/* Next Section Button */}
+                  <motion.div
+                    whileHover={{ scale: !isAtBottom ? 1.1 : 1 }}
+                    whileTap={{ scale: !isAtBottom ? 0.85 : 1 }} // Scale down on press for tactile feedback
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <Box
+                      onClick={() => {
+                        if (!isAtBottom && currentIndex < modernNavigationItems.length - 1) {
+                          const nextItem = modernNavigationItems[currentIndex + 1];
+                          handleSuggestionClick(nextItem.id);
+                        }
+                      }}
+                      onTouchStart={() => {
+                        if (!isAtBottom && currentIndex < modernNavigationItems.length - 1) {
+                          const nextItem = modernNavigationItems[currentIndex + 1];
+                          handleSuggestionHover(nextItem.id);
+                        }
+                      }}
+                      onTouchEnd={() => handleSuggestionHover(null)}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        backgroundColor: !isAtBottom && currentIndex < modernNavigationItems.length - 1 && hoveredSuggestion === modernNavigationItems[currentIndex + 1]?.id
+                          ? `${theme.palette.primary.main}30`
+                          : 'rgba(255, 255, 255, 0.1)',
+                        border: `1px solid ${
+                          !isAtBottom && currentIndex < modernNavigationItems.length - 1 && hoveredSuggestion === modernNavigationItems[currentIndex + 1]?.id
+                            ? theme.palette.primary.main
+                            : 'rgba(255, 255, 255, 0.2)'
+                        }`,
+                        color: !isAtBottom && currentIndex < modernNavigationItems.length - 1
+                          ? (hoveredSuggestion === modernNavigationItems[currentIndex + 1]?.id
                               ? theme.palette.primary.main
-                              : theme.palette.text.primary,
-                            fontSize: '0.8rem',
-                            height: '32px',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s ease',
-                            
-                            '&:hover': {
-                              backgroundColor: `${theme.palette.primary.main}20`,
-                              borderColor: theme.palette.primary.main,
-                              color: theme.palette.primary.main,
-                              boxShadow: `0 4px 12px ${theme.palette.primary.main}30`,
-                            },
-
-                            '& .MuiChip-icon': {
-                              color: 'inherit',
-                              fontSize: '16px',
-                            },
-
-                            '& .MuiChip-label': {
-                              fontWeight: 500,
-                              paddingLeft: '4px',
-                            }
-                          }}
-                        />
-                      </motion.div>
-                    </Tooltip>
-                  ))}
+                              : theme.palette.text.secondary)
+                          : 'rgba(255, 255, 255, 0.3)',
+                        cursor: !isAtBottom && currentIndex < modernNavigationItems.length - 1 ? 'pointer' : 'not-allowed',
+                        opacity: !isAtBottom && currentIndex < modernNavigationItems.length - 1 ? 1 : 0.4,
+                        transition: 'all 0.2s ease',
+                        // Subtle glow effect on hover/press
+                        boxShadow: !isAtBottom && currentIndex < modernNavigationItems.length - 1 && hoveredSuggestion === modernNavigationItems[currentIndex + 1]?.id
+                          ? `0 0 12px ${theme.palette.primary.main}60, 0 0 24px ${theme.palette.primary.main}30`
+                          : 'none',
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={
+                        !isAtBottom && currentIndex < modernNavigationItems.length - 1
+                          ? `Navigate to ${modernNavigationItems[currentIndex + 1].label} section`
+                          : isAtBottom 
+                            ? 'At bottom of page' 
+                            : 'No next section'
+                      }
+                      aria-disabled={isAtBottom || currentIndex >= modernNavigationItems.length - 1}
+                    >
+                      <ArrowDown size={16} />
+                    </Box>
+                  </motion.div>
                 </Box>
               </motion.div>
             )}
 
             {/* Quick navigation hint */}
-            <motion.div variants={itemVariants}>
-              <Box
-                sx={{
-                  fontSize: '0.7rem',
-                  opacity: 0.6,
-                  textAlign: 'center',
-                  color: theme.palette.text.secondary,
-                  fontStyle: 'italic',
-                  marginTop: 0.5,
-                }}
-              >
-                Hover to preview • Click to navigate
-              </Box>
-            </motion.div>
+            {(shouldShowBreadcrumbs || shouldShowSuggestions) && (
+              <motion.div variants={itemVariants}>
+                <Box
+                  sx={{
+                    fontSize: '0.65rem',
+                    opacity: 0.5,
+                    textAlign: 'center',
+                    color: theme.palette.text.secondary,
+                    fontStyle: 'italic',
+                    marginTop: 0.5,
+                    fontWeight: 400,
+                  }}
+                >
+                  {isMobile ? 'Tap arrows to navigate' : 'Use arrow keys or click to navigate'}
+                </Box>
+              </motion.div>
+            )}
           </Box>
         </motion.div>
       )}

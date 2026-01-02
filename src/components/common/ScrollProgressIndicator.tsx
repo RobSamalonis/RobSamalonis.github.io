@@ -37,6 +37,7 @@ const ScrollProgressIndicator: React.FC<ScrollProgressIndicatorProps> = ({
     let ticking = false;
 
     const calculateProgress = () => {
+      // Use requestAnimationFrame for throttling (natural 60fps throttle)
       if (!ticking) {
         requestAnimationFrame(() => {
           let progress = 0;

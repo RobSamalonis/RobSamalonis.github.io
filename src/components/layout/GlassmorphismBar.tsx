@@ -6,12 +6,11 @@ import { GlassmorphismBarProps } from '../../types/navigation';
 const GlassContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isScrolled',
 })<{ isScrolled: boolean }>(({ theme, isScrolled }) => ({
-  // CSS Custom Properties for dynamic theming
+  // CSS Custom Properties for dynamic theming and shadow alignment
   '--glass-background': 'rgba(255, 255, 255, 0.1)',
   '--glass-backdrop-filter': 'blur(20px) saturate(180%)',
   '--glass-border': '1px solid rgba(255, 255, 255, 0.2)',
   '--glass-border-radius': '16px',
-  '--glass-box-shadow': '0 8px 32px rgba(0, 0, 0, 0.1)',
   '--glass-transition': 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
 
   // Dark mode adjustments
@@ -22,9 +21,6 @@ const GlassContainer = styled(Box, {
     '--glass-border': theme.palette.mode === 'dark'
       ? '1px solid rgba(255, 255, 255, 0.1)'
       : '1px solid rgba(255, 255, 255, 0.2)',
-    '--glass-box-shadow': theme.palette.mode === 'dark'
-      ? '0 8px 32px rgba(0, 0, 0, 0.3)'
-      : '0 8px 32px rgba(0, 0, 0, 0.1)',
   },
 
   // Glassmorphism styling
@@ -33,7 +29,6 @@ const GlassContainer = styled(Box, {
   WebkitBackdropFilter: 'var(--glass-backdrop-filter)', // Safari support
   border: 'var(--glass-border)',
   borderRadius: 'var(--glass-border-radius)',
-  boxShadow: 'var(--glass-box-shadow)',
   transition: 'var(--glass-transition)',
 
   // Enhanced glassmorphism when scrolled
@@ -42,21 +37,15 @@ const GlassContainer = styled(Box, {
       ? 'rgba(0, 0, 0, 0.3)' 
       : 'rgba(255, 255, 255, 0.15)',
     '--glass-backdrop-filter': 'blur(25px) saturate(200%)',
-    '--glass-box-shadow': theme.palette.mode === 'dark'
-      ? '0 12px 40px rgba(0, 0, 0, 0.4)'
-      : '0 12px 40px rgba(0, 0, 0, 0.15)',
   }),
-
-  // Responsive adjustments
-  [theme.breakpoints.down('md')]: {
-    '--glass-border-radius': '12px',
-    '--glass-backdrop-filter': 'blur(15px) saturate(150%)',
-  },
 
   // Ensure proper stacking and positioning
   position: 'relative',
-  zIndex: theme.zIndex.appBar,
+  zIndex: 1,
   overflow: 'hidden',
+  
+  // Remove default box shadow
+  boxShadow: 'none',
 
   // Subtle inner glow effect
   '&::before': {
@@ -74,7 +63,7 @@ const GlassContainer = styled(Box, {
   },
 
   // Performance optimizations
-  willChange: 'backdrop-filter, background, box-shadow',
+  willChange: 'backdrop-filter, background',
   transform: 'translateZ(0)', // Force hardware acceleration
 }));
 

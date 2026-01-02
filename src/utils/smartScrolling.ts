@@ -163,22 +163,65 @@ export class SmartScrolling {
   }
 
   /**
-   * Get the currently visible section based on scroll position
+   * Get the currently visible section based on scroll position with hysteresis
+   * to prevent rapid section switching at boundaries
    */
-  static getCurrentSection(sectionIds: string[]): string | null {
+  static getCurrentSection(
+    sectionIds: string[], 
+    currentSection?: string,
+    hysteresisThreshold: number = 50
+  ): string | null {
     const scrollPosition = window.pageYOffset + 100; // Offset for navbar
+    const viewportHeight = window.innerHeight;
+    const viewportCenter = scrollPosition + (viewportHeight / 2);
+
+    // Find the section that contains the viewport center
+    let bestMatch: { id: string; distance: number } | null = null;
 
     for (const sectionId of sectionIds) {
       const element = document.getElementById(sectionId);
       if (element) {
         const { offsetTop, offsetHeight } = element;
-        if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-          return sectionId;
+        const sectionCenter = offsetTop + (offsetHeight / 2);
+        const distance = Math.abs(viewportCenter - sectionCenter);
+
+        // Check if viewport center is within this section
+        if (viewportCenter >= offsetTop && viewportCenter < offsetTop + offsetHeight) {
+          if (!bestMatch || distance < bestMatch.distance) {
+            bestMatch = { id: sectionId, distance };
+          }
         }
       }
     }
 
-    return sectionIds[0] || null; // Default to first section
+    // If we found a section containing the viewport center, use it
+    if (bestMatch) {
+      // Apply hysteresis: only switch if we're far enough into the new section
+      if (currentSection && currentSection !== bestMatch.id) {
+        const newElement = document.getElementById(bestMatch.id);
+        
+        if (newElement) {
+          const newSectionTop = newElement.offsetTop;
+          const newSectionHeight = newElement.offsetHeight;
+          
+          // Calculate how far into the new section we are
+          const distanceIntoNewSection = Math.min(
+            viewportCenter - newSectionTop,
+            (newSectionTop + newSectionHeight) - viewportCenter
+          );
+          
+          // Only switch if we're beyond the hysteresis threshold into the new section
+          if (distanceIntoNewSection < hysteresisThreshold) {
+            return currentSection; // Stay in current section
+          }
+        }
+      }
+      
+      return bestMatch.id;
+    }
+
+    // Fallback: return current section if set, otherwise first section
+    return currentSection || sectionIds[0] || null;
   }
 
   /**
@@ -292,8 +335,8 @@ export const useSmartScrolling = () => {
     );
   };
 
-  const getCurrentSection = (sectionIds: string[]) => {
-    return SmartScrolling.getCurrentSection(sectionIds);
+  const getCurrentSection = (sectionIds: string[], currentSection?: string, hysteresisThreshold?: number) => {
+    return SmartScrolling.getCurrentSection(sectionIds, currentSection, hysteresisThreshold);
   };
 
   const getSectionProgress = (sectionId: string) => {

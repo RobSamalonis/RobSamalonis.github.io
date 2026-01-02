@@ -439,33 +439,61 @@ const Contact: React.FC = () => {
                         />
                       </Grid>
                       <Grid item xs={12}>
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          size="large"
-                          disabled={isSubmitting}
-                          startIcon={<SendIcon />}
-                          aria-describedby={Object.keys(formErrors).length > 0 ? "form-errors" : undefined}
-                          sx={{
-                            py: { xs: 1.5, sm: 1.5 },
-                            px: { xs: 3, sm: 4 },
-                            minHeight: { xs: '48px', sm: '56px' }, // Touch-friendly minimum size
-                            fontSize: { xs: '1rem', sm: '1.1rem' },
-                            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                            '&:hover': {
-                              background: `linear-gradient(45deg, ${theme.palette.primary.dark}, ${theme.palette.secondary.dark})`,
-                              transform: 'translateY(-2px)',
-                              boxShadow: `0 8px 25px ${theme.palette.primary.main}40`,
-                            },
-                            '&:focus': {
-                              outline: `3px solid ${theme.palette.background.paper}`,
-                              outlineOffset: '2px',
-                            },
-                            transition: 'all 0.3s ease',
-                          }}
+                        <motion.div
+                          whileHover={{ scale: 1.05, y: -5 }}
+                          whileTap={{ scale: 0.95 }}
                         >
-                          {isSubmitting ? 'Sending...' : 'Send Message'}
-                        </Button>
+                          <Button
+                            type="submit"
+                            variant="contained"
+                            size="large"
+                            disabled={isSubmitting}
+                            startIcon={<SendIcon />}
+                            aria-describedby={Object.keys(formErrors).length > 0 ? "form-errors" : undefined}
+                            sx={{
+                              py: { xs: 1.25, sm: 1.5 },
+                              px: { xs: 3, sm: 4 },
+                              minHeight: { xs: '48px', sm: '56px' },
+                              fontSize: { xs: '0.875rem', sm: '1rem' },
+                              fontWeight: 700,
+                              fontFamily: '"Orbitron", "Roboto", sans-serif',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.1em',
+                              width: { xs: '100%', sm: 'auto' },
+                              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                              border: `2px solid ${theme.palette.primary.main}`,
+                              borderRadius: 0,
+                              color: theme.palette.primary.contrastText,
+                              boxShadow: `0 0 20px ${theme.palette.primary.main}60, inset 0 0 20px ${theme.palette.secondary.main}40`,
+                              position: 'relative',
+                              overflow: 'hidden',
+                              '&::before': {
+                                content: '""',
+                                position: 'absolute',
+                                top: 0,
+                                left: '-100%',
+                                width: '100%',
+                                height: '100%',
+                                background: `linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)`,
+                                transition: 'left 0.5s',
+                              },
+                              '&:hover::before': {
+                                left: '100%',
+                              },
+                              '&:hover': {
+                                background: `linear-gradient(45deg, ${theme.palette.secondary.main}, ${theme.palette.primary.main})`,
+                                boxShadow: `0 0 30px ${theme.palette.secondary.main}80, inset 0 0 30px ${theme.palette.primary.main}60`,
+                              },
+                              '&:disabled': {
+                                opacity: 0.6,
+                                cursor: 'not-allowed',
+                              },
+                              transition: 'all 0.3s ease',
+                            }}
+                          >
+                            {isSubmitting ? 'Sending...' : 'Send Message'}
+                          </Button>
+                        </motion.div>
                       </Grid>
                     </Grid>
                   </Box>
