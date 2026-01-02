@@ -30,4 +30,4 @@ echo "🔄 Pushing to main branch..."
 git push origin main
 
 echo "🎉 Deployment complete! Your site will be available shortly at:"
-echo "https://robsamalonis.github.io/resume/"
+echo "https://robsamalonis.github.io/"
