@@ -30,7 +30,7 @@ export interface Education {
 export interface Skill {
   id: string;
   name: string;
-  category: 'frontend' | 'backend' | 'tools' | 'other';
+  category: 'frontend' | 'backend' | 'tools' | 'methodologies' | 'other';
   proficiency: 'beginner' | 'intermediate' | 'advanced' | 'expert';
 }
 
@@ -39,13 +39,6 @@ export interface ResumeData {
   experience: Experience[];
   education: Education[];
   skills: Skill[];
-}
-
-export interface ContactForm {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
 }
 
 export interface ContactMethod {

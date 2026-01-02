@@ -17,12 +17,11 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Download as DownloadIcon,
   Work as WorkIcon,
   School as SchoolIcon,
-  Code as CodeIcon,
   Email as EmailIcon,
   Phone as PhoneIcon,
   LinkedIn as LinkedInIcon,
@@ -34,6 +33,7 @@ import { colorPalette } from '../../styles/theme';
 import { resumeData } from '../../data';
 import { Experience, Education, Skill } from '../../types';
 import { animationConfigs } from '../../utils/animationPresets';
+import { generateResumePDF } from '../../utils/pdfGenerator';
 
 /**
  * Resume section component displaying professional experience, education, and skills
@@ -46,9 +46,26 @@ const Resume: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
 
-  const handlePDFDownload = () => {
-    // TODO: Implement PDF generation/download functionality
-    console.log('PDF download functionality to be implemented');
+  const handlePDFDownload = async () => {
+    try {
+      await generateResumePDF();
+    } catch (error) {
+      console.error('Failed to generate PDF:', error);
+      
+      // Fallback: Try to download a static PDF if available
+      try {
+        const link = document.createElement('a');
+        link.href = '/Robert_Samalonis_Resume.pdf';
+        link.download = 'Robert_Samalonis_Resume.pdf';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (fallbackError) {
+        console.error('Fallback PDF download failed:', fallbackError);
+        alert('Sorry, there was an error generating the PDF. Please try again or contact me directly.');
+      }
+    }
   };
 
   const toggleCardExpansion = (id: string) => {
@@ -84,6 +101,17 @@ const Resume: React.FC = () => {
         transition={{ duration: 0.6, delay: index * 0.2 }}
       >
         <Card
+          onClick={isMobile ? () => toggleCardExpansion(exp.id) : undefined}
+          role={isMobile ? 'button' : undefined}
+          tabIndex={isMobile ? 0 : undefined}
+          aria-expanded={isMobile ? isExpanded : undefined}
+          aria-label={isMobile ? `${isExpanded ? 'Collapse' : 'Expand'} details for ${exp.position} at ${exp.company}` : undefined}
+          onKeyDown={isMobile ? (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleCardExpansion(exp.id);
+            }
+          } : undefined}
           sx={{
             mb: 3,
             mx: isMobile ? 2 : 0, // Add horizontal margin on mobile
@@ -91,10 +119,15 @@ const Resume: React.FC = () => {
             border: `1px solid ${colorPalette.accent.electricBlue}30`,
             borderRadius: 2,
             boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
+            cursor: isMobile ? 'pointer' : 'default',
             '&:hover': {
               boxShadow: `0 12px 35px ${colorPalette.accent.electricBlue}20`,
               transform: 'translateY(-4px)',
             },
+            '&:focus-visible': isMobile ? {
+              outline: `3px solid ${colorPalette.accent.electricBlue}`,
+              outlineOffset: '2px',
+            } : {},
             transition: 'all 0.3s ease-in-out',
           }}
         >
@@ -194,7 +227,6 @@ const Resume: React.FC = () => {
               
               {isMobile && (
                 <IconButton
-                  onClick={() => toggleCardExpansion(exp.id)}
                   aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
                   aria-expanded={isExpanded}
                   sx={{
@@ -204,6 +236,12 @@ const Resume: React.FC = () => {
                     minHeight: '44px',
                     ml: 1,
                     flexShrink: 0,
+                    borderRadius: 0,
+                    clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))',
+                    pointerEvents: 'none', // Prevent the icon from intercepting clicks
+                    '&:hover': {
+                      backgroundColor: `${colorPalette.accent.electricBlue}20`,
+                    },
                   }}
                 >
                   {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -318,8 +356,6 @@ const Resume: React.FC = () => {
   };
 
   const renderEducationCard = (edu: Education, index: number) => {
-    const isExpanded = expandedCards[edu.id] ?? false;
-    
     return (
       <motion.div
         key={edu.id}
@@ -591,6 +627,7 @@ const Resume: React.FC = () => {
                   background: `linear-gradient(45deg, ${colorPalette.accent.neonGreen}, ${colorPalette.accent.electricBlue})`,
                   border: `2px solid ${colorPalette.accent.neonGreen}`,
                   borderRadius: 0,
+                  clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
                   color: colorPalette.primary.black,
                   boxShadow: `0 0 20px ${colorPalette.accent.neonGreen}60, inset 0 0 20px ${colorPalette.accent.electricBlue}40`,
                   position: 'relative',
@@ -687,7 +724,6 @@ const Resume: React.FC = () => {
                 }}
                 id="skills-heading"
               >
-                <CodeIcon sx={{ color: colorPalette.accent.neonGreen }} aria-hidden="true" />
                 Technical Skills
               </Typography>
 

@@ -1,0 +1,156 @@
+%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 612 792]
+/Contents 4 0 R
+/Resources <<
+/Font <<
+/F1 5 0 R
+/F2 6 0 R
+>>
+>>
+>>
+endobj
+
+4 0 obj
+<<
+/Length 1200
+>>
+stream
+BT
+/F1 18 Tf
+50 750 Td
+(ROBERT SAMALONIS) Tj
+0 -25 Td
+/F2 12 Tf
+(Senior Software Engineer) Tj
+0 -30 Td
+/F2 9 Tf
+(robsamalonis@gmail.com • 267-772-1647 • linkedin.com/in/robert-samalonis-4a092a137) Tj
+0 -25 Td
+/F1 12 Tf
+(PROFESSIONAL SUMMARY) Tj
+0 -15 Td
+/F2 9 Tf
+(Innovative Senior Software Engineer specializing in React, TypeScript, and accessibility-first) Tj
+0 -10 Td
+(development. Expert in leveraging AI-assisted development workflows and rapid prototyping) Tj
+0 -10 Td
+(methodologies to deliver exceptional, inclusive web applications with cutting-edge user experiences.) Tj
+0 -25 Td
+/F1 12 Tf
+(PROFESSIONAL EXPERIENCE) Tj
+0 -15 Td
+/F1 10 Tf
+(Senior Software Engineer) Tj
+300 0 Td
+/F2 8 Tf
+(April 2022 - Present) Tj
+-300 -12 Td
+/F2 9 Tf
+(eMoney Advisor) Tj
+0 -12 Td
+/F2 8 Tf
+(• Lead frontend development initiatives using React, TypeScript, and modern development workflows) Tj
+0 -10 Td
+(• Pioneer AI-assisted development practices to accelerate feature delivery and code quality) Tj
+0 -10 Td
+(• Implement comprehensive accessibility standards \(WCAG 2.1 AA\) across enterprise applications) Tj
+0 -10 Td
+(• Mentor development teams on best practices, code architecture, and emerging technologies) Tj
+0 -10 Td
+(• Drive performance optimization initiatives resulting in measurable UX improvements) Tj
+0 -15 Td
+/F1 10 Tf
+(Software Engineer) Tj
+300 0 Td
+/F2 8 Tf
+(June 2017 - April 2022) Tj
+-300 -12 Td
+/F2 9 Tf
+(Elsevier) Tj
+0 -12 Td
+/F2 8 Tf
+(• Architected and maintained scalable web applications for global scientific publishing platform) Tj
+0 -10 Td
+(• Implemented responsive, cross-browser compatible interfaces serving millions of users) Tj
+0 -10 Td
+(• Collaborated with distributed international teams on complex, multi-year projects) Tj
+0 -25 Td
+/F1 12 Tf
+(EDUCATION) Tj
+0 -15 Td
+/F1 10 Tf
+(Bachelor's Degree in Computer Science) Tj
+300 0 Td
+/F2 8 Tf
+(2017) Tj
+-300 -12 Td
+/F2 9 Tf
+(Temple University) Tj
+0 -25 Td
+/F1 12 Tf
+(TECHNICAL SKILLS) Tj
+0 -15 Td
+/F2 8 Tf
+(Frontend: React, TypeScript, JavaScript, HTML5, CSS3, Web Accessibility \(WCAG\), Material-UI) Tj
+0 -10 Td
+(Methodologies: AI-Assisted Development, Rapid Prototyping, Agile Development, Code Review) Tj
+0 -10 Td
+(Tools: Git, Jest, React Testing Library, Vite, Performance Optimization, Figma) Tj
+0 -10 Td
+(Backend: Node.js, CI/CD Pipelines) Tj
+ET
+endstream
+endobj
+
+5 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica-Bold
+>>
+endobj
+
+6 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+>>
+endobj
+
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000274 00000 n 
+0000001526 00000 n 
+0000001603 00000 n 
+trailer
+<<
+/Size 7
+/Root 1 0 R
+>>
+startxref
+1675
+%%EOF

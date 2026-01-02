@@ -7,7 +7,7 @@ export const resumeData: ResumeData = {
     email: 'robsamalonis@gmail.com',
     phone: '267-772-1647',
     linkedin: 'linkedin.com/in/robert-samalonis-4a092a137',
-    summary: 'Experienced Senior Software Engineer with expertise in React, TypeScript, accessibility, and modern frontend development. Passionate about creating inclusive, performant web applications with exceptional user experiences.'
+    summary: 'Innovative Senior Software Engineer specializing in React, TypeScript, and accessibility-first development. Expert in leveraging AI-assisted development workflows and rapid prototyping methodologies to deliver exceptional, inclusive web applications with cutting-edge user experiences.'
   },
   experience: [
     {
@@ -17,13 +17,14 @@ export const resumeData: ResumeData = {
       startDate: 'April 2022',
       endDate: 'Present',
       responsibilities: [
-        'Lead frontend development initiatives using React and TypeScript',
-        'Implement accessibility best practices and WCAG compliance across applications',
-        'Mentor junior developers and conduct code reviews',
-        'Collaborate with UX/UI teams to deliver exceptional user experiences',
-        'Optimize application performance and implement modern testing strategies'
+        'Lead frontend development initiatives using React, TypeScript, and modern development workflows',
+        'Pioneer AI-assisted development practices to accelerate feature delivery and code quality',
+        'Implement comprehensive accessibility standards (WCAG 2.1 AA) across enterprise applications',
+        'Mentor development teams on best practices, code architecture, and emerging technologies',
+        'Drive performance optimization initiatives resulting in measurable UX improvements',
+        'Collaborate cross-functionally with design and product teams to deliver user-centered solutions'
       ],
-      technologies: ['React', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3', 'Accessibility', 'Jest', 'Testing Library']
+      technologies: ['React', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3', 'Web Accessibility', 'AI-Assisted Development', 'Jest', 'Testing Library', 'Performance Optimization']
     },
     {
       id: 'elsevier-prev',
@@ -32,13 +33,13 @@ export const resumeData: ResumeData = {
       startDate: 'June 2017',
       endDate: 'April 2022',
       responsibilities: [
-        'Developed and maintained web applications for scientific publishing platform',
-        'Implemented responsive designs and cross-browser compatibility',
-        'Collaborated with international teams on large-scale projects',
-        'Contributed to frontend architecture decisions and best practices',
-        'Participated in agile development processes and sprint planning'
+        'Architected and maintained scalable web applications for global scientific publishing platform',
+        'Implemented responsive, cross-browser compatible interfaces serving millions of users',
+        'Collaborated with distributed international teams on complex, multi-year projects',
+        'Contributed to frontend architecture decisions and established development standards',
+        'Delivered features through agile methodologies with continuous integration practices'
       ],
-      technologies: ['React', 'JavaScript', 'HTML5', 'CSS3', 'Node.js', 'Git', 'Agile']
+      technologies: ['React', 'JavaScript', 'HTML5', 'CSS3', 'Node.js', 'Git', 'Agile Methodologies', 'CI/CD']
     }
   ],
   education: [
@@ -47,10 +48,11 @@ export const resumeData: ResumeData = {
       institution: 'Temple University',
       degree: `Bachelor's Degree`,
       field: 'Computer Science',
-      graduationDate: '2017'
+      graduationDate: '2013 - 2017'
     }
   ],
   skills: [
+    // Frontend Technologies
     {
       id: 'react',
       name: 'React',
@@ -85,7 +87,7 @@ export const resumeData: ResumeData = {
       id: 'accessibility',
       name: 'Web Accessibility (WCAG)',
       category: 'frontend',
-      proficiency: 'advanced'
+      proficiency: 'expert'
     },
     {
       id: 'material-ui',
@@ -100,6 +102,40 @@ export const resumeData: ResumeData = {
       proficiency: 'advanced'
     },
     {
+      id: 'responsive-design',
+      name: 'Responsive Design',
+      category: 'frontend',
+      proficiency: 'expert'
+    },
+    
+    // Development Methodologies
+    {
+      id: 'ai-assisted-development',
+      name: 'AI-Assisted Development',
+      category: 'methodologies',
+      proficiency: 'advanced'
+    },
+    {
+      id: 'rapid-prototyping',
+      name: 'Rapid Prototyping',
+      category: 'methodologies',
+      proficiency: 'advanced'
+    },
+    {
+      id: 'agile-development',
+      name: 'Agile Development',
+      category: 'methodologies',
+      proficiency: 'advanced'
+    },
+    {
+      id: 'code-review',
+      name: 'Code Review & Mentoring',
+      category: 'methodologies',
+      proficiency: 'expert'
+    },
+    
+    // Tools & Testing
+    {
       id: 'jest',
       name: 'Jest',
       category: 'tools',
@@ -113,10 +149,30 @@ export const resumeData: ResumeData = {
     },
     {
       id: 'git',
-      name: 'Git',
+      name: 'Git & Version Control',
+      category: 'tools',
+      proficiency: 'expert'
+    },
+    {
+      id: 'vite',
+      name: 'Vite',
       category: 'tools',
       proficiency: 'advanced'
     },
+    {
+      id: 'figma',
+      name: 'Figma',
+      category: 'tools',
+      proficiency: 'intermediate'
+    },
+    {
+      id: 'performance-optimization',
+      name: 'Performance Optimization',
+      category: 'tools',
+      proficiency: 'advanced'
+    },
+    
+    // Backend & Infrastructure
     {
       id: 'nodejs',
       name: 'Node.js',
@@ -124,15 +180,9 @@ export const resumeData: ResumeData = {
       proficiency: 'intermediate'
     },
     {
-      id: 'vite',
-      name: 'Vite',
-      category: 'tools',
-      proficiency: 'intermediate'
-    },
-    {
-      id: 'figma',
-      name: 'Figma',
-      category: 'tools',
+      id: 'ci-cd',
+      name: 'CI/CD Pipelines',
+      category: 'backend',
       proficiency: 'intermediate'
     }
   ]

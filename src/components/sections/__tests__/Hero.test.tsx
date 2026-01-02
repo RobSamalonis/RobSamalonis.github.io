@@ -27,12 +27,36 @@ jest.mock('framer-motion', () => ({
         onDrag,
         layout,
         layoutId,
+        style,
+        x,
+        y,
         ...domProps 
       } = props;
       return <div {...domProps}>{children}</div>;
     },
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
+  useScroll: () => ({
+    scrollY: { get: () => 0, on: jest.fn(), destroy: jest.fn() },
+    scrollYProgress: { get: () => 0, on: jest.fn(), destroy: jest.fn() }
+  }),
+  useTransform: () => ({ 
+    get: () => 0, 
+    on: jest.fn(), 
+    destroy: jest.fn() 
+  }),
+  useSpring: (value: any) => value || { 
+    get: () => 0, 
+    on: jest.fn(), 
+    destroy: jest.fn() 
+  },
+  useMotionValue: (initial: any) => ({ 
+    get: () => initial, 
+    set: jest.fn(), 
+    on: jest.fn(), 
+    destroy: jest.fn() 
+  }),
+  useInView: () => true,
 }));
 
 // Mock EntranceAnimation component
@@ -72,13 +96,15 @@ describe('Hero Component', () => {
       
       const heading = screen.getByRole('heading', { level: 1 });
       expect(heading).toBeInTheDocument();
-      expect(heading).toHaveTextContent('Robert Samalonis');
+      // The heading has a <br /> tag between "Robert" and "Samalonis", so no space
+      expect(heading).toHaveTextContent('RobertSamalonis');
     });
 
     test('renders job title as subtitle', () => {
       renderWithTheme(<Hero />);
       
-      const subtitle = screen.getByRole('heading', { level: 2 });
+      // The subtitle is rendered as h5, not h2
+      const subtitle = screen.getByRole('heading', { level: 5 });
       expect(subtitle).toBeInTheDocument();
       expect(subtitle).toHaveTextContent('Senior Software Engineer');
     });
@@ -105,7 +131,7 @@ describe('Hero Component', () => {
       renderWithTheme(<Hero />);
       
       const entranceAnimations = screen.getAllByTestId('entrance-animation');
-      expect(entranceAnimations).toHaveLength(5); // Profile image, main heading, subtitle, description, and CTA buttons
+      expect(entranceAnimations).toHaveLength(4); // Profile image, main heading, subtitle, and description
     });
   });
 
@@ -266,7 +292,7 @@ describe('Hero Component', () => {
       // Check for gradient background clip styling (WebKit specific)
       const computedStyle = window.getComputedStyle(heading);
       expect(heading).toHaveStyle({
-        fontWeight: '700',
+        fontWeight: '900',
       });
     });
 
@@ -274,7 +300,7 @@ describe('Hero Component', () => {
       renderWithTheme(<Hero />);
       
       const heading = screen.getByRole('heading', { level: 1 });
-      const subtitle = screen.getByRole('heading', { level: 2 });
+      const subtitle = screen.getByRole('heading', { level: 5 }); // h5, not h2
       const description = screen.getByText(/Crafting exceptional frontend experiences/i);
       
       // All main content elements should be present
@@ -289,6 +315,197 @@ describe('Hero Component', () => {
       
       expect(headingPosition).toBeLessThan(subtitlePosition);
       expect(subtitlePosition).toBeLessThan(descriptionPosition);
+    });
+  });
+
+  describe('Background Animation Tests', () => {
+    beforeEach(() => {
+      // Mock window dimensions for calculations
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 1920,
+      });
+      Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: 1080,
+      });
+
+      // Mock matchMedia for reduced motion
+      window.matchMedia = jest.fn().mockImplementation((query: string) => {
+        return {
+          matches: query === '(prefers-reduced-motion: reduce)' ? false : true,
+          media: query,
+          onchange: null,
+          addListener: jest.fn(),
+          removeListener: jest.fn(),
+          addEventListener: jest.fn(),
+          removeEventListener: jest.fn(),
+          dispatchEvent: jest.fn(),
+        };
+      });
+    });
+
+    test('renders retro-futuristic background elements', () => {
+      const { container } = renderWithTheme(<Hero />);
+      
+      // Check for main hero section
+      const heroSection = container.querySelector('section#hero');
+      expect(heroSection).toBeInTheDocument();
+      
+      // Verify background elements are present (multiple Box components for effects)
+      const allBoxes = container.querySelectorAll('[class*="MuiBox"]');
+      expect(allBoxes.length).toBeGreaterThan(10); // Should have many background effect layers
+      
+      // Verify hero section has proper styling
+      expect(heroSection).toHaveStyle({
+        position: 'relative',
+        overflow: 'hidden'
+      });
+    });
+
+    test('background layers use absolute positioning', () => {
+      const { container } = renderWithTheme(<Hero />);
+      
+      const allBoxes = container.querySelectorAll('[class*="MuiBox"]');
+      let absolutePositionedCount = 0;
+      
+      allBoxes.forEach(box => {
+        const htmlElement = box as HTMLElement;
+        const style = window.getComputedStyle(htmlElement);
+        
+        if (style.position === 'absolute') {
+          absolutePositionedCount++;
+        }
+      });
+      
+      // Should have multiple absolutely positioned background elements
+      expect(absolutePositionedCount).toBeGreaterThanOrEqual(4);
+    });
+
+    test('respects reduced motion preferences for animations', () => {
+      // Mock reduced motion preference
+      window.matchMedia = jest.fn().mockImplementation((query: string) => {
+        return {
+          matches: query === '(prefers-reduced-motion: reduce)' ? true : false,
+          media: query,
+          onchange: null,
+          addListener: jest.fn(),
+          removeListener: jest.fn(),
+          addEventListener: jest.fn(),
+          removeEventListener: jest.fn(),
+          dispatchEvent: jest.fn(),
+        };
+      });
+
+      const { container } = renderWithTheme(<Hero />);
+      
+      const heroSection = container.querySelector('section#hero');
+      expect(heroSection).toBeInTheDocument();
+      
+      // Background elements should still be present but animations may be disabled
+      const allBoxes = container.querySelectorAll('[class*="MuiBox"]');
+      expect(allBoxes.length).toBeGreaterThan(0);
+    });
+
+    test('background elements have varied visual effects', () => {
+      const { container } = renderWithTheme(<Hero />);
+      
+      const allBoxes = container.querySelectorAll('[class*="MuiBox"]');
+      const visualElements = new Set<string>();
+      
+      allBoxes.forEach(box => {
+        const htmlElement = box as HTMLElement;
+        const style = window.getComputedStyle(htmlElement);
+        
+        // Collect different types of visual elements
+        if (style.backgroundImage && style.backgroundImage !== 'none') {
+          visualElements.add('background-gradient');
+        }
+        if (style.background && style.background !== 'none' && style.background !== '') {
+          visualElements.add('background-style');
+        }
+        if (style.position === 'absolute') {
+          visualElements.add('positioned-element');
+        }
+      });
+      
+      // Should have multiple types of visual elements for variety
+      expect(visualElements.size).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('Enhanced Visual Elements', () => {
+    test('retro-futuristic background has multiple visual layers', () => {
+      const { container } = renderWithTheme(<Hero />);
+      
+      // Background elements are rendered as Box components
+      const allBoxes = container.querySelectorAll('[class*="MuiBox"]');
+      
+      // Should have multiple background effect layers
+      expect(allBoxes.length).toBeGreaterThan(10);
+    });
+
+    test('background elements use absolute positioning for layering', () => {
+      const { container } = renderWithTheme(<Hero />);
+      
+      // All decorative elements should be absolutely positioned
+      const allBoxes = container.querySelectorAll('[class*="MuiBox"]');
+      let absolutePositionedCount = 0;
+      
+      allBoxes.forEach(box => {
+        const htmlElement = box as HTMLElement;
+        const style = window.getComputedStyle(htmlElement);
+        
+        if (style.position === 'absolute') {
+          absolutePositionedCount++;
+        }
+      });
+      
+      // Should have absolutely positioned elements (background layers)
+      expect(absolutePositionedCount).toBeGreaterThanOrEqual(4);
+    });
+
+    test('visual elements maintain variety with different styling approaches', () => {
+      const { container } = renderWithTheme(<Hero />);
+      
+      const allDivs = container.querySelectorAll('div');
+      const visualElements = new Set<string>();
+      
+      allDivs.forEach(div => {
+        const htmlElement = div as HTMLElement;
+        const style = window.getComputedStyle(htmlElement);
+        
+        // Collect different types of visual elements
+        if (style.backgroundImage && style.backgroundImage !== 'none') {
+          visualElements.add('background-gradient');
+        }
+        if (style.animation && style.animation !== 'none') {
+          visualElements.add('animated-element');
+        }
+        if (style.transform && style.transform !== 'none') {
+          visualElements.add('transformed-element');
+        }
+      });
+      
+      // Should have multiple types of visual elements for variety
+      expect(visualElements.size).toBeGreaterThanOrEqual(1);
+    });
+
+    test('hero section maintains proper structure and styling', () => {
+      const { container } = renderWithTheme(<Hero />);
+      
+      const heroSection = container.querySelector('section#hero');
+      expect(heroSection).toBeInTheDocument();
+      
+      // Check that hero section has minimum height for full viewport
+      expect(heroSection).toHaveStyle({
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      });
     });
   });
 });

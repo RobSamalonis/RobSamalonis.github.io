@@ -4,6 +4,9 @@ export default {
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/src/__mocks__/fileMock.js',
+    '^framer-motion$': '<rootDir>/src/__mocks__/framer-motion.ts',
+    '^../utils/pdfGenerator$': '<rootDir>/src/__mocks__/pdfGenerator.ts',
+    '^../../utils/pdfGenerator$': '<rootDir>/src/__mocks__/pdfGenerator.ts',
   },
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {

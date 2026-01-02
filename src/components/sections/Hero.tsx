@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Typography, Button, Container, Stack } from '@mui/material';
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue } from 'framer-motion';
 import {
   Download as DownloadIcon,
   Email as EmailIcon,
@@ -14,20 +14,34 @@ import { colorPalette } from '../../styles/theme';
  * Features parallax scrolling, mouse tracking, and dynamic animations
  */
 const Hero: React.FC = () => {
-  const { scrollY } = useScroll();
-  
-  // Parallax effects
-  const y1 = useTransform(scrollY, [0, 500], [0, 150]);
-  const y2 = useTransform(scrollY, [0, 500], [0, -100]);
-  
-  // Smooth mouse tracking
+  // Mouse tracking for interactive effects (not used with shooting stars but kept for other elements)
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const smoothMouseX = useSpring(mouseX, { damping: 50, stiffness: 400 });
-  const smoothMouseY = useSpring(mouseY, { damping: 50, stiffness: 400 });
+
+  // Reduced motion preference check
+  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
+
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    const handleChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches);
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      // Only apply mouse tracking on desktop (md breakpoint and above)
+      if (window.innerWidth < 960) {
+        mouseX.set(0);
+        mouseY.set(0);
+        return;
+      }
+      
       const { clientX, clientY } = e;
       const { innerWidth, innerHeight } = window;
       const x = (clientX / innerWidth - 0.5) * 2;
@@ -36,8 +50,24 @@ const Hero: React.FC = () => {
       mouseY.set(y * 20);
     };
 
+    // Reset mouse tracking on mobile
+    const handleResize = () => {
+      if (window.innerWidth < 960) {
+        mouseX.set(0);
+        mouseY.set(0);
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('resize', handleResize);
+    
+    // Initial check
+    handleResize();
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', handleResize);
+    };
   }, [mouseX, mouseY]);
 
   const handleContactClick = () => {
@@ -73,211 +103,292 @@ const Hero: React.FC = () => {
         position: 'relative',
         background: `linear-gradient(135deg, ${colorPalette.primary.black} 0%, #0a0a1a 50%, ${colorPalette.primary.black} 100%)`,
         overflow: 'hidden',
-        mx: -4,
-        px: 4,
+        width: '100vw',
+        marginLeft: 'calc(-50vw + 50%)',
+        contain: 'layout style paint',
       }}
     >
-      {/* Animated starfield */}
+      {/* Retro-Futuristic Neon Grid Tunnel Background */}
+      
+      {/* Deep Space Gradient Base */}
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
           background: `
-            radial-gradient(2px 2px at 20% 30%, ${colorPalette.neutral.white}, transparent),
-            radial-gradient(2px 2px at 60% 70%, ${colorPalette.accent.electricBlue}, transparent),
-            radial-gradient(1px 1px at 50% 50%, ${colorPalette.neutral.white}, transparent),
-            radial-gradient(1px 1px at 80% 10%, ${colorPalette.accent.hotPink}, transparent),
-            radial-gradient(2px 2px at 90% 60%, ${colorPalette.accent.neonGreen}, transparent),
-            radial-gradient(1px 1px at 33% 80%, ${colorPalette.neutral.white}, transparent),
-            radial-gradient(1px 1px at 15% 90%, ${colorPalette.accent.vibrantPurple}, transparent)
+            radial-gradient(ellipse at center, #1a0033 0%, #0a0015 40%, ${colorPalette.primary.black} 100%),
+            linear-gradient(45deg, #330066 0%, transparent 50%, #660033 100%)
           `,
-          backgroundSize: '200% 200%',
-          animation: 'stars 60s linear infinite',
-          opacity: 0.6,
-          '@keyframes stars': {
-            '0%': { transform: 'translate(0, 0)' },
-            '100%': { transform: 'translate(-50%, -50%)' },
+          opacity: 0.9,
+        }}
+      />
+
+      {/* Animated Neon Grid Tunnel - Main Layer */}
+      <Box
+        sx={{
+          position: 'absolute',
+          left: '-100vw',
+          right: '-100vw',
+          top: '-50vh',
+          bottom: '-50vh',
+          width: '300vw',
+          height: '200vh',
+          marginLeft: '-100vw',
+          marginTop: '-50vh',
+          backgroundImage: `
+            linear-gradient(${colorPalette.accent.hotPink}80 2px, transparent 2px),
+            linear-gradient(90deg, ${colorPalette.accent.hotPink}80 2px, transparent 2px),
+            linear-gradient(${colorPalette.accent.electricBlue}60 1px, transparent 1px),
+            linear-gradient(90deg, ${colorPalette.accent.electricBlue}60 1px, transparent 1px)
+          `,
+          backgroundSize: '100px 100px, 100px 100px, 50px 50px, 50px 50px',
+          transform: 'perspective(800px) rotateX(60deg) translateZ(-400px)',
+          transformOrigin: 'center center',
+          opacity: 0.8,
+          animation: !prefersReducedMotion ? 'tunnelFlow 20s linear infinite' : 'none',
+          maskImage: `
+            radial-gradient(ellipse 120% 60% at center 80%, 
+              rgba(0,0,0,1) 0%, 
+              rgba(0,0,0,0.8) 30%, 
+              rgba(0,0,0,0.4) 60%, 
+              transparent 100%
+            )
+          `,
+          WebkitMaskImage: `
+            radial-gradient(ellipse 120% 60% at center 80%, 
+              rgba(0,0,0,1) 0%, 
+              rgba(0,0,0,0.8) 30%, 
+              rgba(0,0,0,0.4) 60%, 
+              transparent 100%
+            )
+          `,
+          '@keyframes tunnelFlow': {
+            '0%': { 
+              backgroundPosition: '0 0, 0 0, 0 0, 0 0',
+              transform: 'perspective(800px) rotateX(60deg) translateZ(-400px) scale(1)',
+            },
+            '100%': { 
+              backgroundPosition: '100px 100px, 100px 100px, 50px 50px, 50px 50px',
+              transform: 'perspective(800px) rotateX(60deg) translateZ(-400px) scale(1.1)',
+            },
           },
         }}
       />
 
-      {/* Moving color waves */}
+      {/* Secondary Grid Layer for Depth */}
+      {/* <Box
+        sx={{
+          position: 'absolute',
+          left: '-100vw',
+          right: '-100vw',
+          top: '-50vh',
+          bottom: '-50vh',
+          width: '300vw',
+          height: '200vh',
+          marginLeft: '-100vw',
+          marginTop: '-50vh',
+          backgroundImage: `
+            linear-gradient(${colorPalette.accent.neonGreen}40 1px, transparent 1px),
+            linear-gradient(90deg, ${colorPalette.accent.neonGreen}40 1px, transparent 1px)
+          `,
+          backgroundSize: '150px 150px',
+          transform: 'perspective(1000px) rotateX(65deg) translateZ(-600px)',
+          transformOrigin: 'center center',
+          opacity: 0.5,
+          animation: !prefersReducedMotion ? 'tunnelFlowSlow 30s linear infinite' : 'none',
+          maskImage: `
+            radial-gradient(ellipse 100% 50% at center 85%, 
+              rgba(0,0,0,0.8) 0%, 
+              rgba(0,0,0,0.4) 50%, 
+              transparent 80%
+            )
+          `,
+          WebkitMaskImage: `
+            radial-gradient(ellipse 100% 50% at center 85%, 
+              rgba(0,0,0,0.8) 0%, 
+              rgba(0,0,0,0.4) 50%, 
+              transparent 80%
+            )
+          `,
+          '@keyframes tunnelFlowSlow': {
+            '0%': { 
+              backgroundPosition: '0 0',
+              transform: 'perspective(1000px) rotateX(65deg) translateZ(-600px) scale(0.9)',
+            },
+            '100%': { 
+              backgroundPosition: '150px 150px',
+              transform: 'perspective(1000px) rotateX(65deg) translateZ(-600px) scale(1.2)',
+            },
+          },
+        }}
+      /> */}
+
+      {/* Neon Horizon Glow */}
+      {/* <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          background: `
+            radial-gradient(ellipse 150% 40% at center 75%, 
+              ${colorPalette.accent.hotPink}25 0%, 
+              ${colorPalette.accent.electricBlue}15 30%, 
+              transparent 60%
+            ),
+            radial-gradient(ellipse 100% 20% at center 85%, 
+              ${colorPalette.accent.vibrantPurple}20 0%, 
+              transparent 50%
+            )
+          `,
+          animation: !prefersReducedMotion ? 'horizonPulse 8s ease-in-out infinite' : 'none',
+          '@keyframes horizonPulse': {
+            '0%, 100%': { 
+              opacity: 0.6,
+              transform: 'scaleY(1)',
+            },
+            '50%': { 
+              opacity: 0.9,
+              transform: 'scaleY(1.1)',
+            },
+          },
+        }}
+      /> */}
+
+      {/* Floating Neon Orbs */}
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
           background: `
-            radial-gradient(ellipse at 0% 0%, ${colorPalette.accent.electricBlue}15 0%, transparent 50%),
-            radial-gradient(ellipse at 100% 100%, ${colorPalette.accent.hotPink}15 0%, transparent 50%),
-            radial-gradient(ellipse at 50% 50%, ${colorPalette.accent.neonGreen}10 0%, transparent 50%)
+            radial-gradient(circle at 15% 20%, ${colorPalette.accent.electricBlue}60 2px, transparent 3px),
+            radial-gradient(circle at 85% 30%, ${colorPalette.accent.hotPink}50 3px, transparent 4px),
+            radial-gradient(circle at 25% 70%, ${colorPalette.accent.neonGreen}40 2px, transparent 3px),
+            radial-gradient(circle at 75% 80%, ${colorPalette.accent.vibrantPurple}45 2px, transparent 3px),
+            radial-gradient(circle at 50% 40%, ${colorPalette.accent.electricBlue}35 1px, transparent 2px),
+            radial-gradient(circle at 90% 60%, ${colorPalette.accent.hotPink}30 1px, transparent 2px)
           `,
-          backgroundSize: '200% 200%',
-          animation: 'waves 15s ease-in-out infinite',
-          '@keyframes waves': {
-            '0%, 100%': { backgroundPosition: '0% 0%, 100% 100%, 50% 50%' },
-            '50%': { backgroundPosition: '100% 100%, 0% 0%, 25% 75%' },
+          backgroundSize: '200px 200px, 250px 250px, 180px 180px, 220px 220px, 160px 160px, 190px 190px',
+          animation: !prefersReducedMotion ? 'orbFloat 25s ease-in-out infinite' : 'none',
+          opacity: 0.8,
+          '@keyframes orbFloat': {
+            '0%, 100%': { 
+              transform: 'translate(0, 0) scale(1)',
+              backgroundPosition: '0 0, 0 0, 0 0, 0 0, 0 0, 0 0',
+            },
+            '33%': { 
+              transform: 'translate(20px, -15px) scale(1.1)',
+              backgroundPosition: '50px 30px, -30px 20px, 40px -25px, -20px 35px, 25px -10px, -35px 15px',
+            },
+            '66%': { 
+              transform: 'translate(-15px, 20px) scale(0.9)',
+              backgroundPosition: '-40px 50px, 60px -40px, -30px 45px, 50px -30px, -20px 40px, 45px -25px',
+            },
           },
         }}
       />
 
-      {/* Animated grid background - perspective effect */}
+      {/* Retro Scan Lines */}
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
           backgroundImage: `
-            linear-gradient(${colorPalette.accent.electricBlue}30 1.5px, transparent 1.5px),
-            linear-gradient(90deg, ${colorPalette.accent.electricBlue}30 1.5px, transparent 1.5px)
+            repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              ${colorPalette.accent.hotPink}15 2px,
+              ${colorPalette.accent.hotPink}15 4px
+            )
           `,
-          backgroundSize: '60px 60px',
-          transform: 'perspective(600px) rotateX(60deg) translateZ(-100px)',
-          transformOrigin: 'center bottom',
+          animation: !prefersReducedMotion ? 'scanlineMove 12s linear infinite' : 'none',
           opacity: 0.4,
-          animation: 'gridScroll 20s linear infinite',
-          '@keyframes gridScroll': {
-            '0%': { backgroundPosition: '0 0' },
-            '100%': { backgroundPosition: '0 60px' },
-          },
-        }}
-      />
-
-      {/* Horizontal scan lines */}
-      <Box
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: `linear-gradient(${colorPalette.accent.hotPink}15 1px, transparent 1px)`,
-          backgroundSize: '100% 40px',
-          animation: 'scanMove 10s linear infinite',
-          opacity: 0.3,
-          '@keyframes scanMove': {
+          '@keyframes scanlineMove': {
             '0%': { transform: 'translateY(0)' },
-            '100%': { transform: 'translateY(40px)' },
+            '100%': { transform: 'translateY(100px)' },
           },
         }}
       />
-
-      {/* Diagonal grid overlay */}
+      
+      {/* Retro Starfield Enhancement */}
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: `
-            linear-gradient(45deg, ${colorPalette.accent.neonGreen}10 1px, transparent 1px),
-            linear-gradient(-45deg, ${colorPalette.accent.vibrantPurple}10 1px, transparent 1px)
+          background: `
+            radial-gradient(2px 2px at 20% 30%, ${colorPalette.neutral.white}80, transparent),
+            radial-gradient(1px 1px at 60% 70%, ${colorPalette.accent.electricBlue}60, transparent),
+            radial-gradient(1px 1px at 50% 50%, ${colorPalette.neutral.white}70, transparent),
+            radial-gradient(2px 2px at 80% 10%, ${colorPalette.accent.hotPink}50, transparent),
+            radial-gradient(1px 1px at 90% 60%, ${colorPalette.accent.neonGreen}60, transparent),
+            radial-gradient(1px 1px at 33% 80%, ${colorPalette.neutral.white}50, transparent),
+            radial-gradient(2px 2px at 15% 90%, ${colorPalette.accent.vibrantPurple}40, transparent),
+            radial-gradient(1px 1px at 70% 20%, ${colorPalette.accent.electricBlue}70, transparent)
           `,
-          backgroundSize: '80px 80px',
-          animation: 'diagonalMove 25s linear infinite',
-          opacity: 0.2,
-          '@keyframes diagonalMove': {
-            '0%': { backgroundPosition: '0 0, 0 0' },
-            '100%': { backgroundPosition: '80px 80px, -80px 80px' },
+          backgroundSize: '300% 300%',
+          animation: !prefersReducedMotion ? 'starsRetro 60s linear infinite' : 'none',
+          opacity: 0.6,
+          '@keyframes starsRetro': {
+            '0%': { 
+              transform: 'translate(0, 0) rotate(0deg) scale(1)',
+              backgroundPosition: '0% 0%',
+            },
+            '25%': { 
+              transform: 'translate(-50px, -30px) rotate(90deg) scale(1.1)',
+              backgroundPosition: '25% 25%',
+            },
+            '50%': { 
+              transform: 'translate(-100px, -60px) rotate(180deg) scale(0.9)',
+              backgroundPosition: '50% 50%',
+            },
+            '75%': { 
+              transform: 'translate(-150px, -90px) rotate(270deg) scale(1.05)',
+              backgroundPosition: '75% 75%',
+            },
+            '100%': { 
+              transform: 'translate(-200px, -120px) rotate(360deg) scale(1)',
+              backgroundPosition: '100% 100%',
+            },
           },
         }}
       />
 
-      {/* Floating geometric shapes with parallax */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          top: '15%',
-          left: '8%',
-          width: '120px',
-          height: '120px',
-          y: y1,
-        }}
-      >
-        <Box
-          sx={{
-            width: '100%',
-            height: '100%',
-            background: `linear-gradient(45deg, ${colorPalette.accent.hotPink}30, ${colorPalette.accent.vibrantPurple}30)`,
-            clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
-            animation: 'float 8s ease-in-out infinite, rotate 20s linear infinite',
-            border: `2px solid ${colorPalette.accent.hotPink}60`,
-            boxShadow: `0 0 30px ${colorPalette.accent.hotPink}40`,
-            '@keyframes float': {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-30px)' },
-            },
-            '@keyframes rotate': {
-              '0%': { transform: 'rotate(0deg)' },
-              '100%': { transform: 'rotate(360deg)' },
-            },
-          }}
-        />
-      </motion.div>
-
-      <motion.div
-        style={{
-          position: 'absolute',
-          top: '65%',
-          right: '10%',
-          width: '100px',
-          height: '100px',
-          y: y2,
-        }}
-      >
-        <Box
-          sx={{
-            width: '100%',
-            height: '100%',
-            background: `linear-gradient(135deg, ${colorPalette.accent.neonGreen}30, ${colorPalette.accent.electricBlue}30)`,
-            clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
-            animation: 'float 10s ease-in-out infinite 2s, rotateReverse 15s linear infinite',
-            border: `2px solid ${colorPalette.accent.neonGreen}60`,
-            boxShadow: `0 0 30px ${colorPalette.accent.neonGreen}40`,
-            '@keyframes rotateReverse': {
-              '0%': { transform: 'rotate(0deg)' },
-              '100%': { transform: 'rotate(-360deg)' },
-            },
-          }}
-        />
-      </motion.div>
-
-      <motion.div
-        style={{
-          position: 'absolute',
-          top: '40%',
-          right: '5%',
-          width: '60px',
-          height: '60px',
-          y: y1,
-        }}
-      >
-        <Box
-          sx={{
-            width: '100%',
-            height: '100%',
-            background: `linear-gradient(90deg, ${colorPalette.accent.electricBlue}40, ${colorPalette.accent.vibrantPurple}40)`,
-            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-            animation: 'float 7s ease-in-out infinite 1s, pulse 3s ease-in-out infinite',
-            border: `2px solid ${colorPalette.accent.electricBlue}60`,
-            boxShadow: `0 0 20px ${colorPalette.accent.electricBlue}40`,
-            '@keyframes pulse': {
-              '0%, 100%': { opacity: 0.6, transform: 'scale(1)' },
-              '50%': { opacity: 1, transform: 'scale(1.1)' },
-            },
-          }}
-        />
-      </motion.div>
-
-      {/* Scanline effect */}
+      {/* Neon Glow Overlay */}
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
-          background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 255, 0.03) 2px, rgba(0, 255, 255, 0.03) 4px)',
-          pointerEvents: 'none',
-          animation: 'scanline 8s linear infinite',
-          '@keyframes scanline': {
-            '0%': { transform: 'translateY(0)' },
-            '100%': { transform: 'translateY(100%)' },
+          background: `
+            radial-gradient(circle at 30% 40%, ${colorPalette.accent.hotPink}08 0%, transparent 50%),
+            radial-gradient(circle at 70% 60%, ${colorPalette.accent.electricBlue}06 0%, transparent 40%),
+            radial-gradient(circle at 50% 80%, ${colorPalette.accent.neonGreen}05 0%, transparent 35%)
+          `,
+          animation: !prefersReducedMotion ? 'neonGlow 15s ease-in-out infinite' : 'none',
+          '@keyframes neonGlow': {
+            '0%, 100%': { 
+              opacity: 0.5,
+              transform: 'scale(1)',
+            },
+            '33%': { 
+              opacity: 0.8,
+              transform: 'scale(1.05)',
+            },
+            '66%': { 
+              opacity: 0.3,
+              transform: 'scale(0.95)',
+            },
           },
         }}
       />
 
-      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          py: { xs: 2, md: 4 },
+          px: { xs: 2, md: 4 },
+          position: 'relative',
+          zIndex: 10,
+        }}
+      >
         <Box
           sx={{
             display: 'flex',
@@ -289,21 +400,19 @@ const Hero: React.FC = () => {
           }}
         >
             {/* Profile Image with 3D effect */}
-            <motion.div
-              style={{
-                x: smoothMouseX,
-                y: smoothMouseY,
+            <Box
+              sx={{
+                position: 'relative',
+                perspective: '1000px',
+                display: 'flex',
+                justifyContent: { xs: 'center', md: 'flex-start' },
+                alignItems: 'center',
+                width: { xs: '100%', md: 'auto' },
+                '&:hover .profile-container': {
+                  transform: 'rotateY(5deg) rotateX(-5deg)',
+                },
               }}
             >
-              <Box
-                sx={{
-                  position: 'relative',
-                  perspective: '1000px',
-                  '&:hover .profile-container': {
-                    transform: 'rotateY(5deg) rotateX(-5deg)',
-                  },
-                }}
-              >
                 <Box
                   className="profile-container"
                   sx={{
@@ -346,7 +455,6 @@ const Hero: React.FC = () => {
                   </EntranceAnimation>
                 </Box>
               </Box>
-            </motion.div>
 
             {/* Content */}
             <Box
@@ -466,54 +574,7 @@ const Hero: React.FC = () => {
                   px: { xs: 1, sm: 0 },
                 }}
               >
-                <motion.div
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    variant="contained"
-                    size="large"
-                    startIcon={<EmailIcon />}
-                    onClick={handleContactClick}
-                    sx={{
-                      px: { xs: 3, sm: 4 },
-                      py: { xs: 1.25, sm: 1.5 },
-                      fontSize: { xs: '0.875rem', sm: '1rem' },
-                      fontWeight: 700,
-                      fontFamily: '"Orbitron", "Roboto", sans-serif',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      width: { xs: '100%', sm: 'auto' },
-                      minWidth: { xs: 'auto', sm: '200px' },
-                      background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
-                      border: `2px solid ${colorPalette.accent.electricBlue}`,
-                      borderRadius: 0,
-                      color: colorPalette.primary.black,
-                      boxShadow: `0 0 20px ${colorPalette.accent.electricBlue}60, inset 0 0 20px ${colorPalette.accent.hotPink}40`,
-                      position: 'relative',
-                      overflow: 'hidden',
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: '-100%',
-                        width: '100%',
-                        height: '100%',
-                        background: `linear-gradient(90deg, transparent, ${colorPalette.neutral.white}40, transparent)`,
-                        transition: 'left 0.5s',
-                      },
-                      '&:hover::before': {
-                        left: '100%',
-                      },
-                      '&:hover': {
-                        boxShadow: `0 0 30px ${colorPalette.accent.hotPink}80, inset 0 0 30px ${colorPalette.accent.electricBlue}60`,
-                      },
-                    }}
-                  >
-                    Get In Touch
-                  </Button>
-                </motion.div>
-
+             
                 <motion.div
                   whileHover={{ scale: 1.05, y: -5 }}
                   whileTap={{ scale: 0.95 }}
@@ -536,20 +597,11 @@ const Hero: React.FC = () => {
                       borderColor: colorPalette.accent.neonGreen,
                       border: `2px solid ${colorPalette.accent.neonGreen}`,
                       borderRadius: 0,
+                      clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
                       color: colorPalette.accent.neonGreen,
                       boxShadow: `0 0 20px ${colorPalette.accent.neonGreen}40`,
                       position: 'relative',
                       overflow: 'hidden',
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: '-100%',
-                        width: '100%',
-                        height: '100%',
-                        background: `${colorPalette.accent.neonGreen}20`,
-                        transition: 'left 0.5s',
-                      },
                       '&:hover::before': {
                         left: '100%',
                       },
@@ -563,6 +615,46 @@ const Hero: React.FC = () => {
                     View Resume
                   </Button>
                 </motion.div>
+
+                   <motion.div
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    variant="contained"
+                    size="large"
+                    startIcon={<EmailIcon />}
+                    onClick={handleContactClick}
+                    sx={{
+                      px: { xs: 3, sm: 4 },
+                      py: { xs: 1.25, sm: 1.5 },
+                      fontSize: { xs: '0.875rem', sm: '1rem' },
+                      fontWeight: 700,
+                      fontFamily: '"Orbitron", "Roboto", sans-serif',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      width: { xs: '100%', sm: 'auto' },
+                      minWidth: { xs: 'auto', sm: '200px' },
+                      background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
+                      border: `2px solid ${colorPalette.accent.electricBlue}`,
+                      borderRadius: 0,
+                      clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+                      color: colorPalette.primary.black,
+                      boxShadow: `0 0 20px ${colorPalette.accent.electricBlue}60, inset 0 0 20px ${colorPalette.accent.hotPink}40`,
+                      position: 'relative',
+                      overflow: 'hidden',
+                      '&:hover::before': {
+                        left: '100%',
+                      },
+                      '&:hover': {
+                        boxShadow: `0 0 30px ${colorPalette.accent.hotPink}80, inset 0 0 30px ${colorPalette.accent.electricBlue}60`,
+                      },
+                    }}
+                  >
+                    Get In Touch
+                  </Button>
+                </motion.div>
+
               </Stack>
             </Box>
           </Box>

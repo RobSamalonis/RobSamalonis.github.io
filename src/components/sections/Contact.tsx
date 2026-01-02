@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Container,
@@ -8,48 +8,20 @@ import {
   CardContent,
   IconButton,
   Link,
-  TextField,
-  Button,
-  Alert,
-  Snackbar,
-  useTheme,
 } from '@mui/material';
 import {
   Email as EmailIcon,
   Phone as PhoneIcon,
   LinkedIn as LinkedInIcon,
-  Send as SendIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import AnimatedSection from '../common/AnimatedSection';
+import { colorPalette } from '../../styles/theme';
 import { resumeData } from '../../data/resumeData';
-import { ContactForm, ContactMethod } from '../../types';
-
-const MotionBox = motion(Box);
-const MotionCard = motion(Card);
+import { ContactMethod } from '../../types';
+import { animationConfigs } from '../../utils/animationPresets';
 
 const Contact: React.FC = () => {
-  const theme = useTheme();
-  
-  // Contact form state
-  const [formData, setFormData] = useState<ContactForm>({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-  
-  const [formErrors, setFormErrors] = useState<Partial<ContactForm>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'error';
-  }>({
-    open: false,
-    message: '',
-    severity: 'success',
-  });
-
   // Contact methods data
   const contactMethods: ContactMethod[] = [
     {
@@ -86,90 +58,26 @@ const Contact: React.FC = () => {
     }
   };
 
-  // Form validation
-  const validateForm = (): boolean => {
-    const errors: Partial<ContactForm> = {};
-    
-    if (!formData.name.trim()) {
-      errors.name = 'Name is required';
-    }
-    
-    if (!formData.email.trim()) {
-      errors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-    
-    if (!formData.subject.trim()) {
-      errors.subject = 'Subject is required';
-    }
-    
-    if (!formData.message.trim()) {
-      errors.message = 'Message is required';
-    }
-    
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  // Handle form input changes
-  const handleInputChange = (field: keyof ContactForm) => (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: event.target.value,
-    }));
-    
-    // Clear error for this field when user starts typing
-    if (formErrors[field]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [field]: undefined,
-      }));
+  // Get display text for contact methods
+  const getDisplayText = (method: ContactMethod): string => {
+    switch (method.type) {
+      case 'linkedin':
+        return 'View Profile';
+      default:
+        return method.value;
     }
   };
-
-  // Handle form submission
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    
-    if (!validateForm()) {
-      return;
+  const getAccentColor = (type: string): string => {
+    switch (type) {
+      case 'email':
+        return colorPalette.accent.electricBlue;
+      case 'phone':
+        return colorPalette.accent.hotPink;
+      case 'linkedin':
+        return colorPalette.accent.neonGreen;
+      default:
+        return colorPalette.accent.electricBlue;
     }
-    
-    setIsSubmitting(true);
-    
-    try {
-      // Simulate form submission (in a real app, this would be an API call)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSubmitStatus({
-        open: true,
-        message: 'Thank you for your message! I\'ll get back to you soon.',
-        severity: 'success',
-      });
-      
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-      });
-    } catch (error) {
-      setSubmitStatus({
-        open: true,
-        message: 'Sorry, there was an error sending your message. Please try again.',
-        severity: 'error',
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleCloseSnackbar = () => {
-    setSubmitStatus(prev => ({ ...prev, open: false }));
   };
 
   return (
@@ -178,91 +86,107 @@ const Contact: React.FC = () => {
       id="contact"
       aria-labelledby="contact-heading"
       sx={{
-        py: { xs: 8, md: 12 },
-        backgroundColor: 'background.default',
+        py: 8,
+        background: `linear-gradient(180deg, ${colorPalette.primary.black} 0%, ${colorPalette.primary.darkGray} 50%, ${colorPalette.primary.black} 100%)`,
         position: 'relative',
-        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: `radial-gradient(circle at 30% 20%, ${colorPalette.accent.electricBlue}10 0%, transparent 50%),
+                       radial-gradient(circle at 70% 80%, ${colorPalette.accent.hotPink}10 0%, transparent 50%),
+                       radial-gradient(circle at 50% 50%, ${colorPalette.accent.neonGreen}08 0%, transparent 40%)`,
+          pointerEvents: 'none',
+        },
       }}
     >
-      <Container maxWidth="lg">
-        <MotionBox
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          sx={{ textAlign: 'center', mb: 8 }}
-        >
-          <Typography
-            id="contact-heading"
-            variant="h2"
-            component="h2"
-            sx={{
-              mb: 2,
-              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              fontWeight: 'bold',
-            }}
-          >
-            Get In Touch
-          </Typography>
-          <Typography
-            variant="h5"
-            sx={{
-              color: 'text.secondary',
-              maxWidth: 600,
-              mx: 'auto',
-            }}
-          >
-            Ready to collaborate? Let's create something amazing together.
-          </Typography>
-        </MotionBox>
-
-        <Grid container spacing={{ xs: 3, md: 4 }}>
-          {/* Contact Information */}
-          <Grid item xs={12} md={6}>
-            <MotionBox
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          position: 'relative', 
+          zIndex: 1,
+        }}
+      >
+        {/* Section Header */}
+        <AnimatedSection animation={animationConfigs.scrollReveal}>
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Typography
+              id="contact-heading"
+              variant="h2"
+              component="h2"
+              sx={{
+                fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+                fontWeight: 700,
+                background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                mb: 2,
+                textShadow: `0 0 30px ${colorPalette.accent.electricBlue}50`,
+              }}
             >
-              <Typography
-                variant="h4"
-                component="h3"
-                sx={{ 
-                  mb: 4, 
-                  color: 'text.primary',
-                  fontSize: { xs: '1.5rem', sm: '2rem' }
-                }}
-                id="contact-info-heading"
-              >
-                Contact Information
-              </Typography>
-              
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 } }}>
-                {contactMethods.map((method, index) => {
-                  const IconComponent = method.icon;
-                  return (
-                    <MotionCard
-                      key={method.type}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.1 * index }}
-                      viewport={{ once: true }}
-                      whileHover={{ scale: 1.02 }}
+              Get In Touch
+            </Typography>
+            <Typography
+              variant="h5"
+              component="p"
+              sx={{
+                color: colorPalette.neutral.lightGray,
+                maxWidth: '600px',
+                mx: 'auto',
+                fontSize: { xs: '1.1rem', sm: '1.25rem' },
+              }}
+            >
+              Ready to collaborate? Let's create something amazing together.
+            </Typography>
+          </Box>
+        </AnimatedSection>
+
+        <Grid container spacing={{ xs: 3, md: 4 }} justifyContent="center">
+          {/* Contact Information */}
+          <Grid item xs={12} md={8} lg={6}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 } }}>
+              {contactMethods.map((method, index) => {
+                const IconComponent = method.icon;
+                const accentColor = getAccentColor(method.type);
+                
+                return (
+                  <motion.div
+                    key={method.type}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.2 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.02, y: -4 }}
+                  >
+                    <Card
                       sx={{
-                        background: `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.action.hover})`,
-                        border: `1px solid ${theme.palette.divider}`,
-                        transition: 'all 0.3s ease',
+                        background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
+                        border: `1px solid ${accentColor}30`,
+                        borderRadius: 2,
+                        boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
                         '&:hover': {
-                          borderColor: theme.palette.primary.main,
-                          boxShadow: `0 8px 25px ${theme.palette.primary.main}20`,
+                          boxShadow: `0 12px 35px ${accentColor}20`,
+                          borderColor: `${accentColor}60`,
+                        },
+                        transition: 'all 0.3s ease-in-out',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: '3px',
+                          background: `linear-gradient(90deg, ${accentColor}, ${accentColor}80)`,
                         },
                       }}
                     >
-                      <CardContent sx={{ display: 'flex', alignItems: 'center', p: { xs: 2, sm: 3 } }}>
+                      <CardContent sx={{ display: 'flex', alignItems: 'center', p: { xs: 3, sm: 4 } }}>
                         <IconButton
                           component={Link}
                           href={getContactHref(method)}
@@ -270,27 +194,34 @@ const Contact: React.FC = () => {
                           rel={method.type === 'linkedin' ? 'noopener noreferrer' : undefined}
                           sx={{
                             mr: { xs: 2, sm: 3 },
-                            minWidth: { xs: '48px', sm: '56px' }, // Touch-friendly minimum size
-                            minHeight: { xs: '48px', sm: '56px' },
-                            backgroundColor: theme.palette.primary.main,
-                            color: 'white',
+                            minWidth: { xs: '56px', sm: '64px' },
+                            minHeight: { xs: '56px', sm: '64px' },
+                            background: `linear-gradient(135deg, ${accentColor}, ${accentColor}CC)`,
+                            color: colorPalette.primary.black,
+                            borderRadius: 0,
+                            clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))',
+                            boxShadow: `0 0 20px ${accentColor}40, inset 0 0 20px ${colorPalette.neutral.white}20`,
                             '&:hover': {
-                              backgroundColor: theme.palette.primary.dark,
+                              background: `linear-gradient(135deg, ${accentColor}DD, ${accentColor})`,
                               transform: 'scale(1.1)',
+                              boxShadow: `0 0 30px ${accentColor}60, inset 0 0 30px ${colorPalette.neutral.white}30`,
                             },
                             transition: 'all 0.3s ease',
                           }}
                           aria-label={`Contact via ${method.label}`}
                         >
-                          <IconComponent />
+                          <IconComponent sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }} />
                         </IconButton>
                         <Box sx={{ flex: 1, minWidth: 0 }}>
                           <Typography
-                            variant="h6"
+                            variant="h5"
+                            component="h3"
                             sx={{ 
-                              color: 'text.primary', 
+                              color: colorPalette.neutral.white,
+                              fontWeight: 600,
                               mb: 0.5,
-                              fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                              fontSize: { xs: '1.125rem', sm: '1.5rem' },
+                              lineHeight: 1.3,
                             }}
                           >
                             {method.label}
@@ -300,225 +231,31 @@ const Contact: React.FC = () => {
                             target={method.type === 'linkedin' ? '_blank' : undefined}
                             rel={method.type === 'linkedin' ? 'noopener noreferrer' : undefined}
                             sx={{
-                              color: 'text.secondary',
+                              color: accentColor,
                               textDecoration: 'none',
                               fontSize: { xs: '0.9rem', sm: '1rem' },
+                              fontWeight: 500,
                               wordBreak: 'break-word',
                               '&:hover': {
-                                color: 'primary.main',
+                                color: colorPalette.neutral.white,
                                 textDecoration: 'underline',
-                              },
-                              transition: 'color 0.3s ease',
-                            }}
-                          >
-                            {method.value}
-                          </Link>
-                        </Box>
-                      </CardContent>
-                    </MotionCard>
-                  );
-                })}
-              </Box>
-            </MotionBox>
-          </Grid>
-
-          {/* Contact Form */}
-          <Grid item xs={12} md={6}>
-            <MotionBox
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <Typography
-                variant="h4"
-                component="h3"
-                sx={{ 
-                  mb: 4, 
-                  color: 'text.primary',
-                  fontSize: { xs: '1.5rem', sm: '2rem' }
-                }}
-                id="contact-form-heading"
-              >
-                Send a Message
-              </Typography>
-              
-              <MotionCard
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                viewport={{ once: true }}
-                sx={{
-                  background: `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.action.hover})`,
-                  border: `1px solid ${theme.palette.divider}`,
-                }}
-              >
-                <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-                  <Box component="form" onSubmit={handleSubmit} noValidate role="form" aria-labelledby="contact-form-heading">
-                    <Grid container spacing={{ xs: 2, sm: 3 }}>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Name"
-                          value={formData.name}
-                          onChange={handleInputChange('name')}
-                          error={!!formErrors.name}
-                          helperText={formErrors.name}
-                          required
-                          variant="outlined"
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              minHeight: { xs: '48px', sm: '56px' }, // Touch-friendly minimum size
-                              '&:hover fieldset': {
-                                borderColor: theme.palette.primary.main,
-                              },
-                            },
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleInputChange('email')}
-                          error={!!formErrors.email}
-                          helperText={formErrors.email}
-                          required
-                          variant="outlined"
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              minHeight: { xs: '48px', sm: '56px' }, // Touch-friendly minimum size
-                              '&:hover fieldset': {
-                                borderColor: theme.palette.primary.main,
-                              },
-                            },
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Subject"
-                          value={formData.subject}
-                          onChange={handleInputChange('subject')}
-                          error={!!formErrors.subject}
-                          helperText={formErrors.subject}
-                          required
-                          variant="outlined"
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              minHeight: { xs: '48px', sm: '56px' }, // Touch-friendly minimum size
-                              '&:hover fieldset': {
-                                borderColor: theme.palette.primary.main,
-                              },
-                            },
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Message"
-                          multiline
-                          rows={4}
-                          value={formData.message}
-                          onChange={handleInputChange('message')}
-                          error={!!formErrors.message}
-                          helperText={formErrors.message}
-                          required
-                          variant="outlined"
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              '&:hover fieldset': {
-                                borderColor: theme.palette.primary.main,
-                              },
-                            },
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <motion.div
-                          whileHover={{ scale: 1.05, y: -5 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <Button
-                            type="submit"
-                            variant="contained"
-                            size="large"
-                            disabled={isSubmitting}
-                            startIcon={<SendIcon />}
-                            aria-describedby={Object.keys(formErrors).length > 0 ? "form-errors" : undefined}
-                            sx={{
-                              py: { xs: 1.25, sm: 1.5 },
-                              px: { xs: 3, sm: 4 },
-                              minHeight: { xs: '48px', sm: '56px' },
-                              fontSize: { xs: '0.875rem', sm: '1rem' },
-                              fontWeight: 700,
-                              fontFamily: '"Orbitron", "Roboto", sans-serif',
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.1em',
-                              width: { xs: '100%', sm: 'auto' },
-                              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                              border: `2px solid ${theme.palette.primary.main}`,
-                              borderRadius: 0,
-                              color: theme.palette.primary.contrastText,
-                              boxShadow: `0 0 20px ${theme.palette.primary.main}60, inset 0 0 20px ${theme.palette.secondary.main}40`,
-                              position: 'relative',
-                              overflow: 'hidden',
-                              '&::before': {
-                                content: '""',
-                                position: 'absolute',
-                                top: 0,
-                                left: '-100%',
-                                width: '100%',
-                                height: '100%',
-                                background: `linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)`,
-                                transition: 'left 0.5s',
-                              },
-                              '&:hover::before': {
-                                left: '100%',
-                              },
-                              '&:hover': {
-                                background: `linear-gradient(45deg, ${theme.palette.secondary.main}, ${theme.palette.primary.main})`,
-                                boxShadow: `0 0 30px ${theme.palette.secondary.main}80, inset 0 0 30px ${theme.palette.primary.main}60`,
-                              },
-                              '&:disabled': {
-                                opacity: 0.6,
-                                cursor: 'not-allowed',
+                                textShadow: `0 0 10px ${accentColor}80`,
                               },
                               transition: 'all 0.3s ease',
                             }}
                           >
-                            {isSubmitting ? 'Sending...' : 'Send Message'}
-                          </Button>
-                        </motion.div>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </CardContent>
-              </MotionCard>
-            </MotionBox>
+                            {getDisplayText(method)}
+                          </Link>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </Box>
           </Grid>
         </Grid>
       </Container>
-
-      {/* Success/Error Snackbar */}
-      <Snackbar
-        open={submitStatus.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={submitStatus.severity}
-          sx={{ width: '100%' }}
-        >
-          {submitStatus.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

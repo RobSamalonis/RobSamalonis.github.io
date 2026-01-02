@@ -25,6 +25,18 @@ jest.mock('framer-motion', () => ({
     }
   ),
   AnimatePresence: ({ children }: any) => <>{children}</>,
+  useScroll: () => ({
+    scrollY: { get: () => 0, on: jest.fn(), destroy: jest.fn() },
+    scrollYProgress: { get: () => 0, on: jest.fn(), destroy: jest.fn() }
+  }),
+  useTransform: () => ({ get: () => 0, on: jest.fn(), destroy: jest.fn() }),
+  useSpring: (value: any) => value || { get: () => 0, on: jest.fn(), destroy: jest.fn() },
+  useMotionValue: (initial: any) => ({ get: () => initial, set: jest.fn(), on: jest.fn(), destroy: jest.fn() }),
+  useAnimationControls: () => ({
+    start: jest.fn(),
+    stop: jest.fn(),
+    set: jest.fn()
+  }),
 }));
 
 // Mock animation components
@@ -96,31 +108,19 @@ describe('App Integration Tests', () => {
     });
   });
 
-  test('contact form basic functionality works', async () => {
-    const user = userEvent.setup();
-    
+  test('contact section displays contact information', async () => {
     renderWithTheme(<Contact />);
 
-    // Check form elements exist
-    const nameInput = screen.getByRole('textbox', { name: /name/i });
-    const emailInput = screen.getByRole('textbox', { name: /email/i });
-    const submitButton = screen.getByRole('button', { name: /send message/i });
-
-    // Test form input
-    await user.type(nameInput, 'Test User');
-    await user.type(emailInput, 'test@example.com');
-
-    expect(nameInput).toHaveValue('Test User');
-    expect(emailInput).toHaveValue('test@example.com');
-
     // Test contact links exist
-    expect(screen.getByRole('link', { name: /robsamalonis@gmail.com/i })).toHaveAttribute('href', 'mailto:robsamalonis@gmail.com');
-    expect(screen.getByRole('link', { name: /267-772-1647/i })).toHaveAttribute('href', 'tel:267-772-1647');
+    expect(screen.getByRole('link', { name: /contact via email/i })).toHaveAttribute('href', 'mailto:robsamalonis@gmail.com');
+    expect(screen.getByRole('link', { name: /contact via phone/i })).toHaveAttribute('href', 'tel:267-772-1647');
+    expect(screen.getByText('robsamalonis@gmail.com')).toBeInTheDocument();
+    expect(screen.getByText('267-772-1647')).toBeInTheDocument();
   });
 
   test('resume section displays content and download works', async () => {
     const user = userEvent.setup();
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const { generateResumePDF } = await import('../utils/pdfGenerator');
     
     renderWithTheme(<Resume />);
 
@@ -133,22 +133,10 @@ describe('App Integration Tests', () => {
     const downloadButton = screen.getByRole('button', { name: /download pdf version of resume/i });
     await user.click(downloadButton);
 
-    expect(consoleSpy).toHaveBeenCalledWith('PDF download functionality to be implemented');
-    
-    consoleSpy.mockRestore();
-  });
+    // Wait for async operation
+    await new Promise(resolve => setTimeout(resolve, 0));
 
-  test('form validation shows errors on empty submission', async () => {
-    const user = userEvent.setup();
-    
-    renderWithTheme(<Contact />);
-
-    const submitButton = screen.getByRole('button', { name: /send message/i });
-    await user.click(submitButton);
-
-    // Wait for validation errors
-    await waitFor(() => {
-      expect(screen.getByText('Email is required')).toBeInTheDocument();
-    });
+    // Verify that the PDF generator was called
+    expect(generateResumePDF).toHaveBeenCalled();
   });
 });
