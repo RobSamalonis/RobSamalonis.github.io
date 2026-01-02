@@ -7,7 +7,7 @@ export default defineConfig({
   // Set base to your repository name for GitHub Pages
   // For example: if your repo is 'my-portfolio', set base: '/my-portfolio/'
   // For custom domain or username.github.io, use base: '/'
-  base: process.env.NODE_ENV === 'production' ? '/your-repo-name/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/resume/' : '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
