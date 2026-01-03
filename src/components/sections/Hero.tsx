@@ -96,7 +96,7 @@ const Hero: React.FC = () => {
       id="hero"
       aria-labelledby="hero-heading"
       sx={{
-        minHeight: '100vh',
+        minHeight: { xs: '100svh', md: '100vh' }, // Use svh for better mobile support
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -383,7 +383,7 @@ const Hero: React.FC = () => {
         maxWidth="lg"
         sx={{
           py: { xs: 2, md: 4 },
-          px: { xs: 2, md: 4 },
+          px: { xs: 1, md: 4 },
           position: 'relative',
           zIndex: 10,
         }}
@@ -418,7 +418,7 @@ const Hero: React.FC = () => {
                 position: 'relative',
                 transition: 'transform 0.3s ease',
                 transformStyle: 'preserve-3d',
-                transform: { xs: 'scale(0.85)', sm: 'scale(1)' },
+                transform: { xs: 'scale(0.7)', sm: 'scale(1)' },
                 '&::before': {
                   content: '""',
                   position: 'absolute',
@@ -466,14 +466,14 @@ const Hero: React.FC = () => {
             }}
           >
             {/* Glitch text effect for name */}
-            <Box sx={{ position: 'relative', mb: { xs: 1.5, md: 2 } }}>
+            <Box sx={{ position: 'relative', mb: { xs: 2, md: 2 } }}>
               <EntranceAnimation preset="glitchEffect" delay={0.4}>
                 <Typography
                   id="hero-heading"
                   variant="h1"
                   component="h1"
                   sx={{
-                    fontSize: { xs: '2rem', sm: '3rem', md: '4.5rem' },
+                    fontSize: { xs: '1.75rem', sm: '3rem', md: '4.5rem' },
                     fontWeight: 900,
                     fontFamily: '"Orbitron", "Roboto", sans-serif',
                     textTransform: 'uppercase',
@@ -495,9 +495,38 @@ const Hero: React.FC = () => {
                     },
                   }}
                 >
-                  Robert
-                  <br />
-                  Samalonis
+                  <Box
+                    component="span"
+                    sx={{
+                      display: { xs: 'inline', md: 'block' },
+                    }}
+                  >
+                    <Box
+                      component="span"
+                      sx={{
+                        display: { xs: 'inline', md: 'none' },
+                      }}
+                    >
+                      Rob
+                    </Box>
+                    <Box
+                      component="span"
+                      sx={{
+                        display: { xs: 'none', md: 'inline' },
+                      }}
+                    >
+                      Robert
+                    </Box>
+                  </Box>
+                  <Box
+                    component="span"
+                    sx={{
+                      display: { xs: 'inline', md: 'block' },
+                      ml: { xs: 1, md: 0 },
+                    }}
+                  >
+                    Samalonis
+                  </Box>
                 </Typography>
               </EntranceAnimation>
             </Box>
@@ -509,7 +538,7 @@ const Hero: React.FC = () => {
                   display: 'inline-block',
                   mb: { xs: 2, md: 3 },
                   px: { xs: 2, sm: 3 },
-                  py: { xs: 1, sm: 1.5 },
+                  py: { xs: 0.75, sm: 1.5 },
                   background: `linear-gradient(90deg, ${colorPalette.accent.electricBlue}20, ${colorPalette.accent.hotPink}20)`,
                   border: `2px solid ${colorPalette.accent.electricBlue}`,
                   borderRadius: '0',
@@ -551,24 +580,33 @@ const Hero: React.FC = () => {
             <EntranceAnimation preset="fadeInUp" delay={0.8}>
               <Typography
                 sx={{
-                  fontSize: { xs: '0.875rem', sm: '1rem', md: '1.1rem' },
-                  color: colorPalette.neutral.lightGray,
+                  fontSize: { xs: '1rem', sm: '1.125rem', md: '1.1rem' },
+                  color: colorPalette.neutral.white,
                   mb: { xs: 3, md: 4 },
-                  lineHeight: 1.7,
+                  lineHeight: { xs: 1.6, sm: 1.7 },
                   fontFamily: '"Courier New", monospace',
-                  px: { xs: 1, sm: 0 },
+                  px: { xs: 2.5, sm: 2.5 },
+                  py: { xs: 2, sm: 2 },
+                  position: 'relative',
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  borderRadius: '12px',
+                  border: `1px solid ${colorPalette.accent.electricBlue}40`,
+                  backdropFilter: 'blur(10px)',
+                  textShadow: `0 0 10px rgba(0, 0, 0, 0.8)`,
+                  maxWidth: { xs: '100%', sm: '500px' },
                   '&::before': {
                     content: '">"',
                     color: colorPalette.accent.neonGreen,
-                    marginRight: 1,
+                    marginRight: { xs: 0.75, sm: 1 },
                     fontWeight: 'bold',
+                    fontSize: { xs: '1.1rem', sm: '1rem' },
+                    textShadow: `0 0 10px ${colorPalette.accent.neonGreen}80`,
                   },
                 }}
               >
-                I am a Developer specializing in React, TypeScript, and modern
-                frontend architecture. I ship polished, high-performance web
-                experiences utilizing AI-assisted workflows, and strong
-                attention to detail.
+                Developer specializing in React, TypeScript, and modern frontend
+                architecture. I ship polished, high-performance web experiences
+                utilizing AI-assisted workflows, and strong attention to detail.
               </Typography>
             </EntranceAnimation>
 

@@ -534,12 +534,12 @@ const Resume: React.FC = () => {
         <Box
           sx={{
             display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
+            flexDirection: { xs: 'row', sm: 'row' },
             justifyContent: 'space-between',
             alignItems: { xs: 'center', sm: 'flex-start' },
             mb: 4,
             px: { xs: 2, sm: 0 },
-            gap: { xs: 3, sm: 2 },
+            gap: { xs: 2, sm: 2 },
           }}
         >
           <Typography
@@ -549,14 +549,15 @@ const Resume: React.FC = () => {
             sx={{
               color: colorPalette.neutral.white,
               fontWeight: 700,
-              fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+              fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' },
               fontFamily: '"Orbitron", "Roboto", sans-serif',
-              textAlign: { xs: 'center', sm: 'left' },
+              textAlign: { xs: 'left', sm: 'left' },
               background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.neonGreen})`,
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               textShadow: `0 0 30px ${colorPalette.accent.electricBlue}60`,
+              flex: { xs: 1, sm: 'none' },
             }}
           >
             Resume
@@ -573,14 +574,15 @@ const Resume: React.FC = () => {
               onClick={handlePDFDownload}
               aria-label="Download PDF version of resume"
               sx={{
-                px: { xs: 3, sm: 4 },
-                py: { xs: 1.25, sm: 1.5 },
-                fontSize: { xs: '0.875rem', sm: '1rem' },
+                px: { xs: 2, sm: 4 },
+                py: { xs: 1, sm: 1.5 },
+                fontSize: { xs: '0.75rem', sm: '1rem' },
                 fontWeight: 700,
                 fontFamily: '"Orbitron", "Roboto", sans-serif',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                minHeight: { xs: '48px', sm: '56px' },
+                width: { xs: 'auto', sm: 'auto' },
+                minHeight: { xs: '40px', sm: '56px' },
                 background: `linear-gradient(45deg, ${colorPalette.accent.neonGreen}, ${colorPalette.accent.electricBlue})`,
                 border: `2px solid ${colorPalette.accent.neonGreen}`,
                 borderRadius: 0,
@@ -610,7 +612,22 @@ const Resume: React.FC = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              Download PDF
+              <Box
+                component="span"
+                sx={{
+                  display: { xs: 'inline', sm: 'none' },
+                }}
+              >
+                Download
+              </Box>
+              <Box
+                component="span"
+                sx={{
+                  display: { xs: 'none', sm: 'inline' },
+                }}
+              >
+                Download PDF
+              </Box>
             </Button>
           </motion.div>
         </Box>
