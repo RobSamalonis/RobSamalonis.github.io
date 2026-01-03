@@ -24,7 +24,7 @@ export const resumeData: ResumeData = {
         'Drive performance optimization initiatives resulting in measurable UX improvements',
         'Collaborate cross-functionally with design and product teams to deliver user-centered solutions'
       ],
-      technologies: ['React', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3', 'Web Accessibility', 'AI-Assisted Development', 'Jest', 'Testing Library', 'Performance Optimization']
+      technologies: ['React', 'RTK Query', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3', 'Bootstrap 5', 'Web Accessibility', 'AI-Assisted Development', 'Jest', 'Testing Library', 'Performance Optimization']
     },
     {
       id: 'elsevier-prev',
@@ -39,7 +39,7 @@ export const resumeData: ResumeData = {
         'Contributed to frontend architecture decisions and established development standards',
         'Delivered features through agile methodologies with continuous integration practices'
       ],
-      technologies: ['React', 'JavaScript', 'HTML5', 'CSS3', 'Node.js', 'Git', 'Agile Methodologies', 'CI/CD']
+      technologies: ['React', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3', 'Node.js', 'Git', 'Agile Methodologies', 'CI/CD']
     }
   ],
   education: [
@@ -58,6 +58,12 @@ export const resumeData: ResumeData = {
       name: 'React',
       category: 'frontend',
       proficiency: 'expert'
+    },
+    {
+      id: 'rtk-query',
+      name: 'RTK Query',
+      category: 'frontend',
+      proficiency: 'advanced'
     },
     {
       id: 'typescript',
@@ -92,6 +98,12 @@ export const resumeData: ResumeData = {
     {
       id: 'material-ui',
       name: 'Material-UI',
+      category: 'frontend',
+      proficiency: 'advanced'
+    },
+    {
+      id: 'bootstrap',
+      name: 'Bootstrap 5',
       category: 'frontend',
       proficiency: 'advanced'
     },

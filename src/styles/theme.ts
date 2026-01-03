@@ -140,7 +140,10 @@ const colorPalette = {
     hotPink: '#ff1493',
     neonGreen: '#39ff14',
     vibrantPurple: '#b347d9',  // Improved from #8a2be2 for better contrast
-    brightOrange: '#ff4500',
+    brightOrange: '#ff6600',  // Brighter orange for better contrast
+    brightYellow: '#ffff00',  // High contrast yellow for tools
+    lightOrange: '#ff9933',   // Even lighter orange for tools
+    lightPink: '#ff69b4',     // Lighter pink for methodologies
   },
   neutral: {
     white: '#ffffff',
@@ -372,6 +375,9 @@ declare module '@mui/material/styles' {
       neonGreen: string;
       vibrantPurple: string;
       brightOrange: string;
+      brightYellow: string;
+      lightOrange: string;
+      lightPink: string;
     };
   }
 
@@ -382,6 +388,9 @@ declare module '@mui/material/styles' {
       neonGreen?: string;
       vibrantPurple?: string;
       brightOrange?: string;
+      brightYellow?: string;
+      lightOrange?: string;
+      lightPink?: string;
     };
   }
 }

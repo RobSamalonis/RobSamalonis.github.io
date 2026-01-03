@@ -24,11 +24,11 @@ const Hero: React.FC = () => {
   React.useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(mediaQuery.matches);
-    
+
     const handleChange = (e: MediaQueryListEvent) => {
       setPrefersReducedMotion(e.matches);
     };
-    
+
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
@@ -41,7 +41,7 @@ const Hero: React.FC = () => {
         mouseY.set(0);
         return;
       }
-      
+
       const { clientX, clientY } = e;
       const { innerWidth, innerHeight } = window;
       const x = (clientX / innerWidth - 0.5) * 2;
@@ -60,10 +60,10 @@ const Hero: React.FC = () => {
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('resize', handleResize);
-    
+
     // Initial check
     handleResize();
-    
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
@@ -109,7 +109,7 @@ const Hero: React.FC = () => {
       }}
     >
       {/* Retro-Futuristic Neon Grid Tunnel Background */}
-      
+
       {/* Deep Space Gradient Base */}
       <Box
         sx={{
@@ -145,7 +145,9 @@ const Hero: React.FC = () => {
           transform: 'perspective(800px) rotateX(60deg) translateZ(-400px)',
           transformOrigin: 'center center',
           opacity: 0.8,
-          animation: !prefersReducedMotion ? 'tunnelFlow 60s linear infinite' : 'none',
+          animation: !prefersReducedMotion
+            ? 'tunnelFlow 60s linear infinite'
+            : 'none',
           maskImage: `
             radial-gradient(ellipse 120% 60% at center 80%, 
               rgba(0,0,0,1) 0%, 
@@ -163,17 +165,21 @@ const Hero: React.FC = () => {
             )
           `,
           '@keyframes tunnelFlow': {
-            '0%': { 
+            '0%': {
               backgroundPosition: '0 0, 0 0, 0 0, 0 0',
-              transform: 'perspective(800px) rotateX(60deg) translateZ(-400px) scale3d(1, 1, 1)',
+              transform:
+                'perspective(800px) rotateX(60deg) translateZ(-400px) scale3d(1, 1, 1)',
             },
-            '50%': { 
+            '50%': {
               backgroundPosition: '50px 50px, 50px 50px, 25px 25px, 25px 25px',
-              transform: 'perspective(800px) rotateX(60deg) translateZ(-400px) scale3d(1.05, 1.05, 1)',
+              transform:
+                'perspective(800px) rotateX(60deg) translateZ(-400px) scale3d(1.05, 1.05, 1)',
             },
-            '100%': { 
-              backgroundPosition: '100px 100px, 100px 100px, 50px 50px, 50px 50px',
-              transform: 'perspective(800px) rotateX(60deg) translateZ(-400px) scale3d(1, 1, 1)',
+            '100%': {
+              backgroundPosition:
+                '100px 100px, 100px 100px, 50px 50px, 50px 50px',
+              transform:
+                'perspective(800px) rotateX(60deg) translateZ(-400px) scale3d(1, 1, 1)',
             },
           },
         }}
@@ -271,7 +277,9 @@ const Hero: React.FC = () => {
               ${colorPalette.accent.hotPink}15 4px
             )
           `,
-          animation: !prefersReducedMotion ? 'scanlineMove 60s linear infinite' : 'none',
+          animation: !prefersReducedMotion
+            ? 'scanlineMove 60s linear infinite'
+            : 'none',
           opacity: 0.4,
           '@keyframes scanlineMove': {
             '0%': { transform: 'translate3d(0, 0, 0)' },
@@ -279,7 +287,7 @@ const Hero: React.FC = () => {
           },
         }}
       />
-      
+
       {/* Retro Starfield Enhancement */}
       <Box
         sx={{
@@ -296,27 +304,33 @@ const Hero: React.FC = () => {
             radial-gradient(1px 1px at 70% 20%, ${colorPalette.accent.electricBlue}70, transparent)
           `,
           backgroundSize: '300% 300%',
-          animation: !prefersReducedMotion ? 'starsRetro 60s linear infinite' : 'none',
+          animation: !prefersReducedMotion
+            ? 'starsRetro 60s linear infinite'
+            : 'none',
           opacity: 0.6,
           '@keyframes starsRetro': {
-            '0%': { 
+            '0%': {
               transform: 'translate3d(0, 0, 0) rotate(0deg) scale3d(1, 1, 1)',
               backgroundPosition: '0% 0%',
             },
-            '25%': { 
-              transform: 'translate3d(-50px, -30px, 0) rotate(90deg) scale3d(1.05, 1.05, 1)',
+            '25%': {
+              transform:
+                'translate3d(-50px, -30px, 0) rotate(90deg) scale3d(1.05, 1.05, 1)',
               backgroundPosition: '25% 25%',
             },
-            '50%': { 
-              transform: 'translate3d(-100px, -60px, 0) rotate(180deg) scale3d(0.95, 0.95, 1)',
+            '50%': {
+              transform:
+                'translate3d(-100px, -60px, 0) rotate(180deg) scale3d(0.95, 0.95, 1)',
               backgroundPosition: '50% 50%',
             },
-            '75%': { 
-              transform: 'translate3d(-150px, -90px, 0) rotate(270deg) scale3d(1.02, 1.02, 1)',
+            '75%': {
+              transform:
+                'translate3d(-150px, -90px, 0) rotate(270deg) scale3d(1.02, 1.02, 1)',
               backgroundPosition: '75% 75%',
             },
-            '100%': { 
-              transform: 'translate3d(-200px, -120px, 0) rotate(360deg) scale3d(1, 1, 1)',
+            '100%': {
+              transform:
+                'translate3d(-200px, -120px, 0) rotate(360deg) scale3d(1, 1, 1)',
               backgroundPosition: '100% 100%',
             },
           },
@@ -333,29 +347,31 @@ const Hero: React.FC = () => {
             radial-gradient(circle at 70% 60%, ${colorPalette.accent.electricBlue}06 0%, transparent 40%),
             radial-gradient(circle at 50% 80%, ${colorPalette.accent.neonGreen}05 0%, transparent 35%)
           `,
-          animation: !prefersReducedMotion ? 'neonGlow 60s linear infinite' : 'none',
+          animation: !prefersReducedMotion
+            ? 'neonGlow 60s linear infinite'
+            : 'none',
           '@keyframes neonGlow': {
-            '0%': { 
+            '0%': {
               opacity: 0.5,
               transform: 'scale3d(1, 1, 1)',
             },
-            '20%': { 
+            '20%': {
               opacity: 0.8,
               transform: 'scale3d(1.02, 1.02, 1)',
             },
-            '40%': { 
+            '40%': {
               opacity: 0.3,
               transform: 'scale3d(0.98, 0.98, 1)',
             },
-            '60%': { 
+            '60%': {
               opacity: 0.7,
               transform: 'scale3d(1.01, 1.01, 1)',
             },
-            '80%': { 
+            '80%': {
               opacity: 0.4,
               transform: 'scale3d(0.99, 0.99, 1)',
             },
-            '100%': { 
+            '100%': {
               opacity: 0.5,
               transform: 'scale3d(1, 1, 1)',
             },
@@ -363,9 +379,9 @@ const Hero: React.FC = () => {
         }}
       />
 
-      <Container 
-        maxWidth="lg" 
-        sx={{ 
+      <Container
+        maxWidth="lg"
+        sx={{
           py: { xs: 2, md: 4 },
           px: { xs: 2, md: 4 },
           position: 'relative',
@@ -382,270 +398,274 @@ const Hero: React.FC = () => {
             position: 'relative',
           }}
         >
-            {/* Profile Image with 3D effect */}
+          {/* Profile Image with 3D effect */}
+          <Box
+            sx={{
+              position: 'relative',
+              perspective: '1000px',
+              display: 'flex',
+              justifyContent: { xs: 'center', md: 'flex-start' },
+              alignItems: 'center',
+              width: { xs: '100%', md: 'auto' },
+              '&:hover .profile-container': {
+                transform: 'rotateY(5deg) rotateX(-5deg)',
+              },
+            }}
+          >
             <Box
+              className="profile-container"
               sx={{
                 position: 'relative',
-                perspective: '1000px',
-                display: 'flex',
-                justifyContent: { xs: 'center', md: 'flex-start' },
-                alignItems: 'center',
-                width: { xs: '100%', md: 'auto' },
-                '&:hover .profile-container': {
-                  transform: 'rotateY(5deg) rotateX(-5deg)',
+                transition: 'transform 0.3s ease',
+                transformStyle: 'preserve-3d',
+                transform: { xs: 'scale(0.85)', sm: 'scale(1)' },
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: -20,
+                  background: `conic-gradient(from 0deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink}, ${colorPalette.accent.neonGreen}, ${colorPalette.accent.vibrantPurple}, ${colorPalette.accent.electricBlue})`,
+                  borderRadius: '50%',
+                  animation: 'rotate 60s linear infinite',
+                  filter: 'blur(15px)',
+                  opacity: 0.6,
+                  zIndex: -1,
+                },
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: -10,
+                  background: 'transparent',
+                  border: `2px solid ${colorPalette.accent.electricBlue}`,
+                  borderRadius: '50%',
+                  animation: 'pulse 60s linear infinite',
+                },
+                '@keyframes rotate': {
+                  '0%': { transform: 'rotate(0deg)' },
+                  '100%': { transform: 'rotate(360deg)' },
+                },
+                '@keyframes pulse': {
+                  '0%': { transform: 'scale3d(1, 1, 1)', opacity: 1 },
+                  '50%': { transform: 'scale3d(1.05, 1.05, 1)', opacity: 0.5 },
+                  '100%': { transform: 'scale3d(1, 1, 1)', opacity: 1 },
                 },
               }}
             >
-                <Box
-                  className="profile-container"
+              <EntranceAnimation preset="scaleIn" delay={0.2}>
+                <ProfileImage size="large" showAnimation={true} />
+              </EntranceAnimation>
+            </Box>
+          </Box>
+
+          {/* Content */}
+          <Box
+            sx={{
+              flex: 1,
+              textAlign: { xs: 'center', md: 'left' },
+              maxWidth: '600px',
+              px: { xs: 1, sm: 0 },
+            }}
+          >
+            {/* Glitch text effect for name */}
+            <Box sx={{ position: 'relative', mb: { xs: 1.5, md: 2 } }}>
+              <EntranceAnimation preset="glitchEffect" delay={0.4}>
+                <Typography
+                  id="hero-heading"
+                  variant="h1"
+                  component="h1"
                   sx={{
+                    fontSize: { xs: '2rem', sm: '3rem', md: '4.5rem' },
+                    fontWeight: 900,
+                    fontFamily: '"Orbitron", "Roboto", sans-serif',
+                    textTransform: 'uppercase',
+                    letterSpacing: { xs: '0.02em', md: '0.05em' },
+                    background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
                     position: 'relative',
-                    transition: 'transform 0.3s ease',
-                    transformStyle: 'preserve-3d',
-                    transform: { xs: 'scale(0.85)', sm: 'scale(1)' },
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      inset: -20,
-                      background: `conic-gradient(from 0deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink}, ${colorPalette.accent.neonGreen}, ${colorPalette.accent.vibrantPurple}, ${colorPalette.accent.electricBlue})`,
-                      borderRadius: '50%',
-                      animation: 'rotate 60s linear infinite',
-                      filter: 'blur(15px)',
-                      opacity: 0.6,
-                      zIndex: -1,
-                    },
-                    '&::after': {
-                      content: '""',
-                      position: 'absolute',
-                      inset: -10,
-                      background: 'transparent',
-                      border: `2px solid ${colorPalette.accent.electricBlue}`,
-                      borderRadius: '50%',
-                      animation: 'pulse 60s linear infinite',
-                    },
-                    '@keyframes rotate': {
-                      '0%': { transform: 'rotate(0deg)' },
-                      '100%': { transform: 'rotate(360deg)' },
-                    },
-                    '@keyframes pulse': {
-                      '0%': { transform: 'scale3d(1, 1, 1)', opacity: 1 },
-                      '50%': { transform: 'scale3d(1.05, 1.05, 1)', opacity: 0.5 },
-                      '100%': { transform: 'scale3d(1, 1, 1)', opacity: 1 },
+                    textShadow: `0 0 40px ${colorPalette.accent.electricBlue}80`,
+                    animation: 'textGlow 60s linear infinite',
+                    lineHeight: { xs: 1.1, md: 1.2 },
+                    '@keyframes textGlow': {
+                      '0%': { filter: 'brightness(1)' },
+                      '25%': { filter: 'brightness(1.2)' },
+                      '50%': { filter: 'brightness(1.3)' },
+                      '75%': { filter: 'brightness(1.1)' },
+                      '100%': { filter: 'brightness(1)' },
                     },
                   }}
                 >
-                  <EntranceAnimation preset="scaleIn" delay={0.2}>
-                    <ProfileImage size="large" showAnimation={true} />
-                  </EntranceAnimation>
-                </Box>
-              </Box>
+                  Robert
+                  <br />
+                  Samalonis
+                </Typography>
+              </EntranceAnimation>
+            </Box>
 
-            {/* Content */}
-            <Box
+            {/* Retro badge for title */}
+            <EntranceAnimation preset="fadeInUp" delay={0.6}>
+              <Box
+                sx={{
+                  display: 'inline-block',
+                  mb: { xs: 2, md: 3 },
+                  px: { xs: 2, sm: 3 },
+                  py: { xs: 1, sm: 1.5 },
+                  background: `linear-gradient(90deg, ${colorPalette.accent.electricBlue}20, ${colorPalette.accent.hotPink}20)`,
+                  border: `2px solid ${colorPalette.accent.electricBlue}`,
+                  borderRadius: '0',
+                  clipPath:
+                    'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
+                  position: 'relative',
+                  maxWidth: '100%',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    inset: 0,
+                    background: `linear-gradient(90deg, transparent, ${colorPalette.accent.electricBlue}40, transparent)`,
+                    animation: 'shimmer 60s linear infinite',
+                  },
+                  '@keyframes shimmer': {
+                    '0%': { transform: 'translateX(-100%)' },
+                    '100%': { transform: 'translateX(100%)' },
+                  },
+                }}
+              >
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontSize: { xs: '0.75rem', sm: '1rem', md: '1.25rem' },
+                    fontWeight: 700,
+                    color: colorPalette.accent.electricBlue,
+                    textTransform: 'uppercase',
+                    letterSpacing: { xs: '0.05em', md: '0.1em' },
+                    fontFamily: '"Orbitron", "Roboto", sans-serif',
+                    whiteSpace: { xs: 'normal', sm: 'nowrap' },
+                  }}
+                >
+                  ⚡ Senior Software Engineer ⚡
+                </Typography>
+              </Box>
+            </EntranceAnimation>
+
+            {/* Description with typewriter effect styling */}
+            <EntranceAnimation preset="fadeInUp" delay={0.8}>
+              <Typography
+                sx={{
+                  fontSize: { xs: '0.875rem', sm: '1rem', md: '1.1rem' },
+                  color: colorPalette.neutral.lightGray,
+                  mb: { xs: 3, md: 4 },
+                  lineHeight: 1.7,
+                  fontFamily: '"Courier New", monospace',
+                  px: { xs: 1, sm: 0 },
+                  '&::before': {
+                    content: '">"',
+                    color: colorPalette.accent.neonGreen,
+                    marginRight: 1,
+                    fontWeight: 'bold',
+                  },
+                }}
+              >
+                I am a Developer specializing in React, TypeScript, and modern
+                frontend architecture. I ship polished, high-performance web
+                experiences utilizing AI-assisted workflows, and strong
+                attention to detail.
+              </Typography>
+            </EntranceAnimation>
+
+            {/* Retro-styled buttons */}
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={{ xs: 2, sm: 3 }}
               sx={{
-                flex: 1,
-                textAlign: { xs: 'center', md: 'left' },
-                maxWidth: '600px',
+                justifyContent: { xs: 'center', md: 'flex-start' },
                 px: { xs: 1, sm: 0 },
               }}
             >
-              {/* Glitch text effect for name */}
-              <Box sx={{ position: 'relative', mb: { xs: 1.5, md: 2 } }}>
-                <EntranceAnimation preset="glitchEffect" delay={0.4}>
-                  <Typography
-                    id="hero-heading"
-                    variant="h1"
-                    component="h1"
-                    sx={{
-                      fontSize: { xs: '2rem', sm: '3rem', md: '4.5rem' },
-                      fontWeight: 900,
-                      fontFamily: '"Orbitron", "Roboto", sans-serif',
-                      textTransform: 'uppercase',
-                      letterSpacing: { xs: '0.02em', md: '0.05em' },
-                      background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
-                      backgroundClip: 'text',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      position: 'relative',
-                      textShadow: `0 0 40px ${colorPalette.accent.electricBlue}80`,
-                      animation: 'textGlow 60s linear infinite',
-                      lineHeight: { xs: 1.1, md: 1.2 },
-                      '@keyframes textGlow': {
-                        '0%': { filter: 'brightness(1)' },
-                        '25%': { filter: 'brightness(1.2)' },
-                        '50%': { filter: 'brightness(1.3)' },
-                        '75%': { filter: 'brightness(1.1)' },
-                        '100%': { filter: 'brightness(1)' },
-                      },
-                    }}
-                  >
-                    Robert
-                    <br />
-                    Samalonis
-                  </Typography>
-                </EntranceAnimation>
-              </Box>
-
-              {/* Retro badge for title */}
-              <EntranceAnimation preset="fadeInUp" delay={0.6}>
-                <Box
-                  sx={{
-                    display: 'inline-block',
-                    mb: { xs: 2, md: 3 },
-                    px: { xs: 2, sm: 3 },
-                    py: { xs: 1, sm: 1.5 },
-                    background: `linear-gradient(90deg, ${colorPalette.accent.electricBlue}20, ${colorPalette.accent.hotPink}20)`,
-                    border: `2px solid ${colorPalette.accent.electricBlue}`,
-                    borderRadius: '0',
-                    clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
-                    position: 'relative',
-                    maxWidth: '100%',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      inset: 0,
-                      background: `linear-gradient(90deg, transparent, ${colorPalette.accent.electricBlue}40, transparent)`,
-                      animation: 'shimmer 60s linear infinite',
-                    },
-                    '@keyframes shimmer': {
-                      '0%': { transform: 'translateX(-100%)' },
-                      '100%': { transform: 'translateX(100%)' },
-                    },
-                  }}
-                >
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontSize: { xs: '0.75rem', sm: '1rem', md: '1.25rem' },
-                      fontWeight: 700,
-                      color: colorPalette.accent.electricBlue,
-                      textTransform: 'uppercase',
-                      letterSpacing: { xs: '0.05em', md: '0.1em' },
-                      fontFamily: '"Orbitron", "Roboto", sans-serif',
-                      whiteSpace: { xs: 'normal', sm: 'nowrap' },
-                    }}
-                  >
-                    ⚡ Senior Software Engineer ⚡
-                  </Typography>
-                </Box>
-              </EntranceAnimation>
-
-              {/* Description with typewriter effect styling */}
-              <EntranceAnimation preset="fadeInUp" delay={0.8}>
-                <Typography
-                  sx={{
-                    fontSize: { xs: '0.875rem', sm: '1rem', md: '1.1rem' },
-                    color: colorPalette.neutral.lightGray,
-                    mb: { xs: 3, md: 4 },
-                    lineHeight: 1.7,
-                    fontFamily: '"Courier New", monospace',
-                    px: { xs: 1, sm: 0 },
-                    '&::before': {
-                      content: '">"',
-                      color: colorPalette.accent.neonGreen,
-                      marginRight: 1,
-                      fontWeight: 'bold',
-                    },
-                  }}
-                >
-                  Crafting exceptional frontend experiences with React, TypeScript, and modern web technologies. Passionate about accessibility, performance, and creating user-centered digital solutions.
-                </Typography>
-              </EntranceAnimation>
-
-              {/* Retro-styled buttons */}
-              <Stack
-                direction={{ xs: 'column', sm: 'row' }}
-                spacing={{ xs: 2, sm: 3 }}
-                sx={{
-                  justifyContent: { xs: 'center', md: 'flex-start' },
-                  px: { xs: 1, sm: 0 },
-                }}
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                whileTap={{ scale: 0.95 }}
               >
-             
-                <motion.div
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    startIcon={<DownloadIcon />}
-                    onClick={handleResumeClick}
-                    sx={{
-                      px: { xs: 3, sm: 4 },
-                      py: { xs: 1.25, sm: 1.5 },
-                      fontSize: { xs: '0.875rem', sm: '1rem' },
-                      fontWeight: 700,
-                      fontFamily: '"Orbitron", "Roboto", sans-serif',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      width: { xs: '100%', sm: 'auto' },
-                      minWidth: { xs: 'auto', sm: '200px' },
+                <Button
+                  variant="outlined"
+                  size="large"
+                  startIcon={<DownloadIcon />}
+                  onClick={handleResumeClick}
+                  sx={{
+                    px: { xs: 3, sm: 4 },
+                    py: { xs: 1.25, sm: 1.5 },
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    fontWeight: 700,
+                    fontFamily: '"Orbitron", "Roboto", sans-serif',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    width: { xs: '100%', sm: 'auto' },
+                    minWidth: { xs: 'auto', sm: '200px' },
+                    borderColor: colorPalette.accent.neonGreen,
+                    border: `2px solid ${colorPalette.accent.neonGreen}`,
+                    borderRadius: 0,
+                    clipPath:
+                      'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+                    color: colorPalette.accent.neonGreen,
+                    boxShadow: `0 0 20px ${colorPalette.accent.neonGreen}40`,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&:hover::before': {
+                      left: '100%',
+                    },
+                    '&:hover': {
                       borderColor: colorPalette.accent.neonGreen,
-                      border: `2px solid ${colorPalette.accent.neonGreen}`,
-                      borderRadius: 0,
-                      clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
-                      color: colorPalette.accent.neonGreen,
-                      boxShadow: `0 0 20px ${colorPalette.accent.neonGreen}40`,
-                      position: 'relative',
-                      overflow: 'hidden',
-                      '&:hover::before': {
-                        left: '100%',
-                      },
-                      '&:hover': {
-                        borderColor: colorPalette.accent.neonGreen,
-                        backgroundColor: `${colorPalette.accent.neonGreen}10`,
-                        boxShadow: `0 0 30px ${colorPalette.accent.neonGreen}60`,
-                      },
-                    }}
-                  >
-                    View Resume
-                  </Button>
-                </motion.div>
-
-                   <motion.div
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  whileTap={{ scale: 0.95 }}
+                      backgroundColor: `${colorPalette.accent.neonGreen}10`,
+                      boxShadow: `0 0 30px ${colorPalette.accent.neonGreen}60`,
+                    },
+                  }}
                 >
-                  <Button
-                    variant="contained"
-                    size="large"
-                    startIcon={<EmailIcon />}
-                    onClick={handleContactClick}
-                    sx={{
-                      px: { xs: 3, sm: 4 },
-                      py: { xs: 1.25, sm: 1.5 },
-                      fontSize: { xs: '0.875rem', sm: '1rem' },
-                      fontWeight: 700,
-                      fontFamily: '"Orbitron", "Roboto", sans-serif',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      width: { xs: '100%', sm: 'auto' },
-                      minWidth: { xs: 'auto', sm: '200px' },
-                      background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
-                      border: `2px solid ${colorPalette.accent.electricBlue}`,
-                      borderRadius: 0,
-                      clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
-                      color: colorPalette.primary.black, // Black text for better contrast on gradient
-                      boxShadow: `0 0 20px ${colorPalette.accent.electricBlue}60, inset 0 0 20px ${colorPalette.accent.hotPink}40`,
-                      position: 'relative',
-                      overflow: 'hidden',
-                      '&:hover::before': {
-                        left: '100%',
-                      },
-                      '&:hover': {
-                        boxShadow: `0 0 30px ${colorPalette.accent.hotPink}80, inset 0 0 30px ${colorPalette.accent.electricBlue}60`,
-                      },
-                    }}
-                  >
-                    Get In Touch
-                  </Button>
-                </motion.div>
+                  View Resume
+                </Button>
+              </motion.div>
 
-              </Stack>
-            </Box>
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="contained"
+                  size="large"
+                  startIcon={<EmailIcon />}
+                  onClick={handleContactClick}
+                  sx={{
+                    px: { xs: 3, sm: 4 },
+                    py: { xs: 1.25, sm: 1.5 },
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    fontWeight: 700,
+                    fontFamily: '"Orbitron", "Roboto", sans-serif',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    width: { xs: '100%', sm: 'auto' },
+                    minWidth: { xs: 'auto', sm: '200px' },
+                    background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
+                    border: `2px solid ${colorPalette.accent.electricBlue}`,
+                    borderRadius: 0,
+                    clipPath:
+                      'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+                    color: colorPalette.primary.black, // Black text for better contrast on gradient
+                    boxShadow: `0 0 20px ${colorPalette.accent.electricBlue}60, inset 0 0 20px ${colorPalette.accent.hotPink}40`,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&:hover::before': {
+                      left: '100%',
+                    },
+                    '&:hover': {
+                      boxShadow: `0 0 30px ${colorPalette.accent.hotPink}80, inset 0 0 30px ${colorPalette.accent.electricBlue}60`,
+                    },
+                  }}
+                >
+                  Get In Touch
+                </Button>
+              </motion.div>
+            </Stack>
           </Box>
-        </Container>
+        </Box>
+      </Container>
     </Box>
   );
 };
