@@ -253,39 +253,6 @@ const Hero: React.FC = () => {
         }}
       /> */}
 
-      {/* Floating Neon Orbs */}
-      <Box
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          background: `
-            radial-gradient(circle at 15% 20%, ${colorPalette.accent.electricBlue}60 2px, transparent 3px),
-            radial-gradient(circle at 85% 30%, ${colorPalette.accent.hotPink}50 3px, transparent 4px),
-            radial-gradient(circle at 25% 70%, ${colorPalette.accent.neonGreen}40 2px, transparent 3px),
-            radial-gradient(circle at 75% 80%, ${colorPalette.accent.vibrantPurple}45 2px, transparent 3px),
-            radial-gradient(circle at 50% 40%, ${colorPalette.accent.electricBlue}35 1px, transparent 2px),
-            radial-gradient(circle at 90% 60%, ${colorPalette.accent.hotPink}30 1px, transparent 2px)
-          `,
-          backgroundSize: '200px 200px, 250px 250px, 180px 180px, 220px 220px, 160px 160px, 190px 190px',
-          animation: !prefersReducedMotion ? 'orbFloat 25s ease-in-out infinite' : 'none',
-          opacity: 0.8,
-          '@keyframes orbFloat': {
-            '0%, 100%': { 
-              transform: 'translate(0, 0) scale(1)',
-              backgroundPosition: '0 0, 0 0, 0 0, 0 0, 0 0, 0 0',
-            },
-            '33%': { 
-              transform: 'translate(20px, -15px) scale(1.1)',
-              backgroundPosition: '50px 30px, -30px 20px, 40px -25px, -20px 35px, 25px -10px, -35px 15px',
-            },
-            '66%': { 
-              transform: 'translate(-15px, 20px) scale(0.9)',
-              backgroundPosition: '-40px 50px, 60px -40px, -30px 45px, 50px -30px, -20px 40px, 45px -25px',
-            },
-          },
-        }}
-      />
-
       {/* Retro Scan Lines */}
       <Box
         sx={{
