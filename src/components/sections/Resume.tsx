@@ -75,16 +75,18 @@ const Resume: React.FC = () => {
     }));
   };
 
-  const getSkillColor = (proficiency: Skill['proficiency']) => {
-    switch (proficiency) {
-      case 'expert':
-        return colorPalette.accent.neonGreen;
-      case 'advanced':
-        return colorPalette.accent.electricBlue;
-      case 'intermediate':
-        return colorPalette.accent.hotPink;
-      case 'beginner':
-        return colorPalette.accent.brightOrange;
+  const getCategoryColor = (category: Skill['category']) => {
+    switch (category) {
+      case 'frontend':
+        return colorPalette.accent.electricBlue; // Blue for frontend technologies
+      case 'backend':
+        return colorPalette.accent.neonGreen; // Green for backend/infrastructure
+      case 'tools':
+        return colorPalette.accent.brightOrange; // Orange for tools and testing
+      case 'methodologies':
+        return colorPalette.accent.hotPink; // Pink for methodologies and processes
+      case 'other':
+        return colorPalette.accent.vibrantPurple; // Purple for other skills
       default:
         return colorPalette.neutral.mediumGray;
     }
@@ -727,50 +729,53 @@ const Resume: React.FC = () => {
                 Technical Skills
               </Typography>
 
-              {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
-                <Card
-                  key={category}
-                  sx={{
-                    mb: 3,
-                    mx: isMobile ? 2 : 0, // Add horizontal margin on mobile
-                    background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
-                    border: `1px solid ${colorPalette.accent.neonGreen}30`,
-                    borderRadius: 2,
-                    boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
-                  }}
-                >
-                  <CardContent sx={{ p: 3 }}>
-                    <Typography
-                      variant="h6"
-                      component="h4"
-                      sx={{
-                        color: colorPalette.accent.neonGreen,
-                        fontWeight: 600,
-                        mb: 2,
-                        textTransform: 'capitalize',
-                      }}
-                    >
-                      {category}
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                      {categorySkills.map((skill) => (
-                        <Chip
-                          key={skill.id}
-                          label={skill.name}
-                          size="small"
-                          sx={{
-                            backgroundColor: `${getSkillColor(skill.proficiency)}20`,
-                            color: getSkillColor(skill.proficiency),
-                            border: `1px solid ${getSkillColor(skill.proficiency)}50`,
-                            fontWeight: 500,
-                            mb: 0.5,
-                          }}
-                        />
-                      ))}
-                    </Box>
-                  </CardContent>
-                </Card>
-              ))}
+              {Object.entries(skillsByCategory).map(([category, categorySkills]) => {
+                const categoryColor = getCategoryColor(category as Skill['category']);
+                return (
+                  <Card
+                    key={category}
+                    sx={{
+                      mb: 3,
+                      mx: isMobile ? 2 : 0, // Add horizontal margin on mobile
+                      background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
+                      border: `1px solid ${categoryColor}30`,
+                      borderRadius: 2,
+                      boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        component="h4"
+                        sx={{
+                          color: categoryColor,
+                          fontWeight: 600,
+                          mb: 2,
+                          textTransform: 'capitalize',
+                        }}
+                      >
+                        {category}
+                      </Typography>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {categorySkills.map((skill) => (
+                          <Chip
+                            key={skill.id}
+                            label={skill.name}
+                            size="small"
+                            sx={{
+                              backgroundColor: `${categoryColor}20`,
+                              color: categoryColor,
+                              border: `1px solid ${categoryColor}50`,
+                              fontWeight: 500,
+                              mb: 0.5,
+                            }}
+                          />
+                        ))}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </AnimatedSection>
           </Grid>
         </Grid>
