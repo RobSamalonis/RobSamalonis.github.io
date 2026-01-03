@@ -128,7 +128,7 @@ export const cssVariables = {
   },
 };
 
-// Color palette based on emo/scene aesthetic from design document
+// Color palette based on emo/scene aesthetic from design document - Improved for accessibility
 const colorPalette = {
   primary: {
     black: '#000000',
@@ -139,13 +139,13 @@ const colorPalette = {
     electricBlue: '#00ffff',
     hotPink: '#ff1493',
     neonGreen: '#39ff14',
-    vibrantPurple: '#8a2be2',
+    vibrantPurple: '#b347d9',  // Improved from #8a2be2 for better contrast
     brightOrange: '#ff4500',
   },
   neutral: {
     white: '#ffffff',
-    lightGray: '#cccccc',
-    mediumGray: '#666666',
+    lightGray: '#f5f5f5',  // Much whiter for better readability
+    mediumGray: '#e8e8e8',  // Almost white for better contrast
   },
 };
 

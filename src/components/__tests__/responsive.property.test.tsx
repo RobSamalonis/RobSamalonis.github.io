@@ -269,7 +269,16 @@ describe('Responsive Design Property Tests', () => {
       headings.forEach(heading => {
         const htmlHeading = heading as HTMLElement;
         const computedStyle = window.getComputedStyle(htmlHeading);
-        const fontSize = parseFloat(computedStyle.fontSize);
+        const fontSizeStr = computedStyle.fontSize;
+        
+        // Parse font size - handle both px and rem units
+        let fontSize: number;
+        if (fontSizeStr.includes('rem')) {
+          // Convert rem to px (assuming 1rem = 16px)
+          fontSize = parseFloat(fontSizeStr) * 16;
+        } else {
+          fontSize = parseFloat(fontSizeStr);
+        }
         
         // Headings should have appropriate minimum sizes
         const tagName = htmlHeading.tagName.toLowerCase();

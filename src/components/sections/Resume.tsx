@@ -8,7 +8,6 @@ import {
   CardContent,
   Chip,
   Button,
-  Stack,
   List,
   ListItem,
   ListItemText,
@@ -22,9 +21,6 @@ import {
   Download as DownloadIcon,
   Work as WorkIcon,
   School as SchoolIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-  LinkedIn as LinkedInIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
@@ -551,62 +547,6 @@ const Resume: React.FC = () => {
             </Typography>
 
             {/* Contact Info and PDF Download */}
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={{ xs: 2, sm: 2 }}
-              justifyContent="center"
-              alignItems="center"
-              sx={{ mb: 4, flexWrap: 'wrap' }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: { xs: 'auto', sm: '200px' } }}>
-                <EmailIcon sx={{ color: colorPalette.accent.electricBlue, fontSize: '1.2rem' }} />
-                <Typography
-                  component="a"
-                  href={`mailto:${personalInfo.email}`}
-                  sx={{
-                    color: colorPalette.neutral.white,
-                    textDecoration: 'none',
-                    fontSize: { xs: '0.9rem', sm: '1rem' },
-                    '&:hover': { color: colorPalette.accent.electricBlue },
-                  }}
-                >
-                  {personalInfo.email}
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: { xs: 'auto', sm: '150px' } }}>
-                <PhoneIcon sx={{ color: colorPalette.accent.hotPink, fontSize: '1.2rem' }} />
-                <Typography
-                  component="a"
-                  href={`tel:${personalInfo.phone}`}
-                  sx={{
-                    color: colorPalette.neutral.white,
-                    textDecoration: 'none',
-                    fontSize: { xs: '0.9rem', sm: '1rem' },
-                    '&:hover': { color: colorPalette.accent.hotPink },
-                  }}
-                >
-                  {personalInfo.phone}
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: { xs: 'auto', sm: '120px' } }}>
-                <LinkedInIcon sx={{ color: colorPalette.accent.neonGreen, fontSize: '1.2rem' }} />
-                <Typography
-                  component="a"
-                  href={`https://${personalInfo.linkedin}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{
-                    color: colorPalette.neutral.white,
-                    textDecoration: 'none',
-                    fontSize: { xs: '0.9rem', sm: '1rem' },
-                    '&:hover': { color: colorPalette.accent.neonGreen },
-                  }}
-                >
-                  LinkedIn
-                </Typography>
-              </Box>
-            </Stack>
-
             <motion.div
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}

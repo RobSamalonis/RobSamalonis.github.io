@@ -6,8 +6,6 @@ import {
   Grid,
   Card,
   CardContent,
-  IconButton,
-  Link,
 } from '@mui/material';
 import {
   Email as EmailIcon,
@@ -20,8 +18,12 @@ import { colorPalette } from '../../styles/theme';
 import { resumeData } from '../../data/resumeData';
 import { ContactMethod } from '../../types';
 import { animationConfigs } from '../../utils/animationPresets';
+import { useMobileSpacing } from '../../hooks/useMobileSpacing';
 
 const Contact: React.FC = () => {
+  // Use mobile spacing hook for dynamic bottom padding
+  const { safeBottomPadding } = useMobileSpacing();
+
   // Contact methods data
   const contactMethods: ContactMethod[] = [
     {
@@ -67,14 +69,24 @@ const Contact: React.FC = () => {
         return method.value;
     }
   };
+
+  // Handle contact card click
+  const handleContactClick = (method: ContactMethod) => {
+    const href = getContactHref(method);
+    if (method.type === 'linkedin') {
+      window.open(href, '_blank', 'noopener,noreferrer');
+    } else {
+      window.location.href = href;
+    }
+  };
   const getAccentColor = (type: string): string => {
     switch (type) {
       case 'email':
-        return colorPalette.accent.electricBlue;
-      case 'phone':
         return colorPalette.accent.hotPink;
-      case 'linkedin':
+      case 'phone':
         return colorPalette.accent.neonGreen;
+      case 'linkedin':
+        return colorPalette.accent.electricBlue;
       default:
         return colorPalette.accent.electricBlue;
     }
@@ -87,6 +99,7 @@ const Contact: React.FC = () => {
       aria-labelledby="contact-heading"
       sx={{
         py: 8,
+        pb: safeBottomPadding, // Dynamic bottom padding for mobile safety
         background: `linear-gradient(180deg, ${colorPalette.primary.black} 0%, ${colorPalette.primary.darkGray} 50%, ${colorPalette.primary.black} 100%)`,
         position: 'relative',
         '&::before': {
@@ -163,14 +176,33 @@ const Contact: React.FC = () => {
                     whileHover={{ scale: 1.02, y: -4 }}
                   >
                     <Card
+                      onClick={() => handleContactClick(method)}
                       sx={{
                         background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
                         border: `1px solid ${accentColor}30`,
                         borderRadius: 2,
                         boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
+                        cursor: 'pointer',
                         '&:hover': {
                           boxShadow: `0 12px 35px ${accentColor}20`,
                           borderColor: `${accentColor}60`,
+                          transform: 'translateY(-2px)',
+                        },
+                        '&:focus-visible': {
+                          outline: `3px solid ${accentColor}`,
+                          outlineOffset: '2px',
+                          boxShadow: `0 12px 35px ${accentColor}30, 0 0 0 3px ${accentColor}40`,
+                          borderColor: `${accentColor}80`,
+                        },
+                        '&:focus': {
+                          outline: `3px solid ${accentColor}`,
+                          outlineOffset: '2px',
+                          boxShadow: `0 12px 35px ${accentColor}30, 0 0 0 3px ${accentColor}40`,
+                          borderColor: `${accentColor}80`,
+                        },
+                        '&:active': {
+                          transform: 'translateY(0px)',
+                          boxShadow: `0 6px 20px ${accentColor}15`,
                         },
                         transition: 'all 0.3s ease-in-out',
                         position: 'relative',
@@ -185,33 +217,58 @@ const Contact: React.FC = () => {
                           background: `linear-gradient(90deg, ${accentColor}, ${accentColor}80)`,
                         },
                       }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`Contact via ${method.label}: ${getDisplayText(method)}. Press Enter or Space to ${method.type === 'linkedin' ? 'open LinkedIn profile in new tab' : method.type === 'email' ? 'open email client' : 'open phone dialer'}.`}
+                      aria-describedby={`contact-${method.type}-description`}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleContactClick(method);
+                        }
+                      }}
                     >
                       <CardContent sx={{ display: 'flex', alignItems: 'center', p: { xs: 3, sm: 4 } }}>
-                        <IconButton
-                          component={Link}
-                          href={getContactHref(method)}
-                          target={method.type === 'linkedin' ? '_blank' : undefined}
-                          rel={method.type === 'linkedin' ? 'noopener noreferrer' : undefined}
+                        {/* Hidden description for screen readers */}
+                        <Box
+                          id={`contact-${method.type}-description`}
+                          sx={{ 
+                            position: 'absolute',
+                            left: '-10000px',
+                            width: '1px',
+                            height: '1px',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          {method.type === 'linkedin' 
+                            ? 'Opens LinkedIn profile in a new tab' 
+                            : method.type === 'email' 
+                            ? 'Opens your default email client to send an email'
+                            : 'Opens your phone dialer to make a call'
+                          }
+                        </Box>
+                        <Box
                           sx={{
                             mr: { xs: 2, sm: 3 },
-                            minWidth: { xs: '56px', sm: '64px' },
-                            minHeight: { xs: '56px', sm: '64px' },
+                            width: { xs: '56px', sm: '64px' },
+                            height: { xs: '56px', sm: '64px' },
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
                             background: `linear-gradient(135deg, ${accentColor}, ${accentColor}CC)`,
                             color: colorPalette.primary.black,
                             borderRadius: 0,
                             clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))',
                             boxShadow: `0 0 20px ${accentColor}40, inset 0 0 20px ${colorPalette.neutral.white}20`,
-                            '&:hover': {
-                              background: `linear-gradient(135deg, ${accentColor}DD, ${accentColor})`,
-                              transform: 'scale(1.1)',
-                              boxShadow: `0 0 30px ${accentColor}60, inset 0 0 30px ${colorPalette.neutral.white}30`,
-                            },
                             transition: 'all 0.3s ease',
+                            flexShrink: 0,
+                            '& > svg': {
+                              fontSize: { xs: '1.5rem', sm: '1.75rem' },
+                            },
                           }}
-                          aria-label={`Contact via ${method.label}`}
                         >
-                          <IconComponent sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }} />
-                        </IconButton>
+                          <IconComponent />
+                        </Box>
                         <Box sx={{ flex: 1, minWidth: 0 }}>
                           <Typography
                             variant="h5"
@@ -226,26 +283,17 @@ const Contact: React.FC = () => {
                           >
                             {method.label}
                           </Typography>
-                          <Link
-                            href={getContactHref(method)}
-                            target={method.type === 'linkedin' ? '_blank' : undefined}
-                            rel={method.type === 'linkedin' ? 'noopener noreferrer' : undefined}
+                          <Typography
                             sx={{
                               color: accentColor,
-                              textDecoration: 'none',
                               fontSize: { xs: '0.9rem', sm: '1rem' },
                               fontWeight: 500,
                               wordBreak: 'break-word',
-                              '&:hover': {
-                                color: colorPalette.neutral.white,
-                                textDecoration: 'underline',
-                                textShadow: `0 0 10px ${accentColor}80`,
-                              },
                               transition: 'all 0.3s ease',
                             }}
                           >
                             {getDisplayText(method)}
-                          </Link>
+                          </Typography>
                         </Box>
                       </CardContent>
                     </Card>

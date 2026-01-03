@@ -51,7 +51,10 @@ jest.mock('framer-motion', () => ({
   }),
 }));
 
-// Mock animation components
+// Mock PDF generator
+jest.mock('../utils/pdfGenerator', () => ({
+  generateResumePDF: jest.fn().mockResolvedValue(undefined)
+}));
 jest.mock('../components/common/AnimatedSection', () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -155,7 +158,7 @@ describe('Component Interactions Integration Tests', () => {
 
   test('resume section displays and download works', async () => {
     const user = userEvent.setup();
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const { generateResumePDF } = await import('../utils/pdfGenerator');
     
     renderWithTheme(<Resume />);
 
@@ -166,9 +169,7 @@ describe('Component Interactions Integration Tests', () => {
     // Download button works
     const downloadButton = screen.getByRole('button', { name: /download pdf version of resume/i });
     await user.click(downloadButton);
-    expect(consoleSpy).toHaveBeenCalledWith('PDF download functionality to be implemented');
-    
-    consoleSpy.mockRestore();
+    expect(generateResumePDF).toHaveBeenCalled();
   });
 
   test('contact section displays contact information', async () => {
@@ -178,8 +179,8 @@ describe('Component Interactions Integration Tests', () => {
     expect(screen.getByText('robsamalonis@gmail.com')).toBeInTheDocument();
     expect(screen.getByText('267-772-1647')).toBeInTheDocument();
     
-    // Contact links work
-    expect(screen.getByRole('link', { name: /contact via email/i })).toHaveAttribute('href', 'mailto:robsamalonis@gmail.com');
-    expect(screen.getByRole('link', { name: /contact via phone/i })).toHaveAttribute('href', 'tel:267-772-1647');
+    // Contact links work (now buttons due to full card clickability)
+    expect(screen.getByRole('button', { name: /contact via email/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /contact via phone/i })).toBeInTheDocument();
   });
 });

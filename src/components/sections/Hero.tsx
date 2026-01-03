@@ -145,7 +145,7 @@ const Hero: React.FC = () => {
           transform: 'perspective(800px) rotateX(60deg) translateZ(-400px)',
           transformOrigin: 'center center',
           opacity: 0.8,
-          animation: !prefersReducedMotion ? 'tunnelFlow 20s linear infinite' : 'none',
+          animation: !prefersReducedMotion ? 'tunnelFlow 60s linear infinite' : 'none',
           maskImage: `
             radial-gradient(ellipse 120% 60% at center 80%, 
               rgba(0,0,0,1) 0%, 
@@ -165,11 +165,15 @@ const Hero: React.FC = () => {
           '@keyframes tunnelFlow': {
             '0%': { 
               backgroundPosition: '0 0, 0 0, 0 0, 0 0',
-              transform: 'perspective(800px) rotateX(60deg) translateZ(-400px) scale(1)',
+              transform: 'perspective(800px) rotateX(60deg) translateZ(-400px) scale3d(1, 1, 1)',
+            },
+            '50%': { 
+              backgroundPosition: '50px 50px, 50px 50px, 25px 25px, 25px 25px',
+              transform: 'perspective(800px) rotateX(60deg) translateZ(-400px) scale3d(1.05, 1.05, 1)',
             },
             '100%': { 
               backgroundPosition: '100px 100px, 100px 100px, 50px 50px, 50px 50px',
-              transform: 'perspective(800px) rotateX(60deg) translateZ(-400px) scale(1.1)',
+              transform: 'perspective(800px) rotateX(60deg) translateZ(-400px) scale3d(1, 1, 1)',
             },
           },
         }}
@@ -267,11 +271,11 @@ const Hero: React.FC = () => {
               ${colorPalette.accent.hotPink}15 4px
             )
           `,
-          animation: !prefersReducedMotion ? 'scanlineMove 12s linear infinite' : 'none',
+          animation: !prefersReducedMotion ? 'scanlineMove 60s linear infinite' : 'none',
           opacity: 0.4,
           '@keyframes scanlineMove': {
-            '0%': { transform: 'translateY(0)' },
-            '100%': { transform: 'translateY(100px)' },
+            '0%': { transform: 'translate3d(0, 0, 0)' },
+            '100%': { transform: 'translate3d(0, 1500px, 0)' },
           },
         }}
       />
@@ -296,23 +300,23 @@ const Hero: React.FC = () => {
           opacity: 0.6,
           '@keyframes starsRetro': {
             '0%': { 
-              transform: 'translate(0, 0) rotate(0deg) scale(1)',
+              transform: 'translate3d(0, 0, 0) rotate(0deg) scale3d(1, 1, 1)',
               backgroundPosition: '0% 0%',
             },
             '25%': { 
-              transform: 'translate(-50px, -30px) rotate(90deg) scale(1.1)',
+              transform: 'translate3d(-50px, -30px, 0) rotate(90deg) scale3d(1.05, 1.05, 1)',
               backgroundPosition: '25% 25%',
             },
             '50%': { 
-              transform: 'translate(-100px, -60px) rotate(180deg) scale(0.9)',
+              transform: 'translate3d(-100px, -60px, 0) rotate(180deg) scale3d(0.95, 0.95, 1)',
               backgroundPosition: '50% 50%',
             },
             '75%': { 
-              transform: 'translate(-150px, -90px) rotate(270deg) scale(1.05)',
+              transform: 'translate3d(-150px, -90px, 0) rotate(270deg) scale3d(1.02, 1.02, 1)',
               backgroundPosition: '75% 75%',
             },
             '100%': { 
-              transform: 'translate(-200px, -120px) rotate(360deg) scale(1)',
+              transform: 'translate3d(-200px, -120px, 0) rotate(360deg) scale3d(1, 1, 1)',
               backgroundPosition: '100% 100%',
             },
           },
@@ -329,19 +333,31 @@ const Hero: React.FC = () => {
             radial-gradient(circle at 70% 60%, ${colorPalette.accent.electricBlue}06 0%, transparent 40%),
             radial-gradient(circle at 50% 80%, ${colorPalette.accent.neonGreen}05 0%, transparent 35%)
           `,
-          animation: !prefersReducedMotion ? 'neonGlow 15s ease-in-out infinite' : 'none',
+          animation: !prefersReducedMotion ? 'neonGlow 60s linear infinite' : 'none',
           '@keyframes neonGlow': {
-            '0%, 100%': { 
+            '0%': { 
               opacity: 0.5,
-              transform: 'scale(1)',
+              transform: 'scale3d(1, 1, 1)',
             },
-            '33%': { 
+            '20%': { 
               opacity: 0.8,
-              transform: 'scale(1.05)',
+              transform: 'scale3d(1.02, 1.02, 1)',
             },
-            '66%': { 
+            '40%': { 
               opacity: 0.3,
-              transform: 'scale(0.95)',
+              transform: 'scale3d(0.98, 0.98, 1)',
+            },
+            '60%': { 
+              opacity: 0.7,
+              transform: 'scale3d(1.01, 1.01, 1)',
+            },
+            '80%': { 
+              opacity: 0.4,
+              transform: 'scale3d(0.99, 0.99, 1)',
+            },
+            '100%': { 
+              opacity: 0.5,
+              transform: 'scale3d(1, 1, 1)',
             },
           },
         }}
@@ -393,7 +409,7 @@ const Hero: React.FC = () => {
                       inset: -20,
                       background: `conic-gradient(from 0deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink}, ${colorPalette.accent.neonGreen}, ${colorPalette.accent.vibrantPurple}, ${colorPalette.accent.electricBlue})`,
                       borderRadius: '50%',
-                      animation: 'rotate 4s linear infinite',
+                      animation: 'rotate 60s linear infinite',
                       filter: 'blur(15px)',
                       opacity: 0.6,
                       zIndex: -1,
@@ -405,15 +421,16 @@ const Hero: React.FC = () => {
                       background: 'transparent',
                       border: `2px solid ${colorPalette.accent.electricBlue}`,
                       borderRadius: '50%',
-                      animation: 'pulse 2s ease-in-out infinite',
+                      animation: 'pulse 60s linear infinite',
                     },
                     '@keyframes rotate': {
                       '0%': { transform: 'rotate(0deg)' },
                       '100%': { transform: 'rotate(360deg)' },
                     },
                     '@keyframes pulse': {
-                      '0%, 100%': { transform: 'scale(1)', opacity: 1 },
-                      '50%': { transform: 'scale(1.05)', opacity: 0.5 },
+                      '0%': { transform: 'scale3d(1, 1, 1)', opacity: 1 },
+                      '50%': { transform: 'scale3d(1.05, 1.05, 1)', opacity: 0.5 },
+                      '100%': { transform: 'scale3d(1, 1, 1)', opacity: 1 },
                     },
                   }}
                 >
@@ -451,11 +468,14 @@ const Hero: React.FC = () => {
                       WebkitTextFillColor: 'transparent',
                       position: 'relative',
                       textShadow: `0 0 40px ${colorPalette.accent.electricBlue}80`,
-                      animation: 'textGlow 2s ease-in-out infinite',
+                      animation: 'textGlow 60s linear infinite',
                       lineHeight: { xs: 1.1, md: 1.2 },
                       '@keyframes textGlow': {
-                        '0%, 100%': { filter: 'brightness(1)' },
+                        '0%': { filter: 'brightness(1)' },
+                        '25%': { filter: 'brightness(1.2)' },
                         '50%': { filter: 'brightness(1.3)' },
+                        '75%': { filter: 'brightness(1.1)' },
+                        '100%': { filter: 'brightness(1)' },
                       },
                     }}
                   >
@@ -485,7 +505,7 @@ const Hero: React.FC = () => {
                       position: 'absolute',
                       inset: 0,
                       background: `linear-gradient(90deg, transparent, ${colorPalette.accent.electricBlue}40, transparent)`,
-                      animation: 'shimmer 3s infinite',
+                      animation: 'shimmer 60s linear infinite',
                     },
                     '@keyframes shimmer': {
                       '0%': { transform: 'translateX(-100%)' },
@@ -606,7 +626,7 @@ const Hero: React.FC = () => {
                       border: `2px solid ${colorPalette.accent.electricBlue}`,
                       borderRadius: 0,
                       clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
-                      color: colorPalette.primary.black,
+                      color: colorPalette.primary.black, // Black text for better contrast on gradient
                       boxShadow: `0 0 20px ${colorPalette.accent.electricBlue}60, inset 0 0 20px ${colorPalette.accent.hotPink}40`,
                       position: 'relative',
                       overflow: 'hidden',

@@ -5,19 +5,19 @@
   --color-primary-dark-gray: #1a1a1a;
   --color-primary-charcoal: #2d2d2d;
 
-  /* Accent Colors */
+  /* Accent Colors - Improved for better accessibility */
   --color-accent-electric-blue: #00ffff;
   --color-accent-hot-pink: #ff1493;
   --color-accent-neon-green: #39ff14;
-  --color-accent-vibrant-purple: #8a2be2;
+  --color-accent-vibrant-purple: #b347d9;  /* Improved from #8a2be2 for better contrast */
 
-  /* Neutral Colors */
+  /* Neutral Colors - Much whiter for better readability */
   --color-neutral-white: #ffffff;
   --color-neutral-gray-100: #f5f5f5;
   --color-neutral-gray-200: #e5e5e5;
   --color-neutral-gray-300: #d4d4d4;
   --color-neutral-gray-400: #a3a3a3;
-  --color-neutral-gray-500: #737373;
+  --color-neutral-gray-500: #e8e8e8;  /* Almost white for better readability */
   --color-neutral-gray-600: #525252;
   --color-neutral-gray-700: #404040;
   --color-neutral-gray-800: #262626;

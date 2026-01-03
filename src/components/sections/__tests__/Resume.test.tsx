@@ -84,9 +84,9 @@ describe('Resume Component', () => {
     test('renders main resume heading', () => {
       renderWithTheme(<Resume />);
       
-      const heading = screen.getByRole('heading', { level: 2, name: /resume/i });
+      const heading = screen.getByRole('heading', { level: 2, name: /about me/i });
       expect(heading).toBeInTheDocument();
-      expect(heading).toHaveTextContent('Resume');
+      expect(heading).toHaveTextContent('About Me');
     });
 
     test('renders personal summary from resume data', () => {
@@ -375,7 +375,7 @@ describe('Resume Component', () => {
       const h4Headings = screen.getAllByRole('heading', { level: 4 });
       
       // Should have proper heading structure
-      expect(h2Headings.length).toBe(1); // Main "Resume" heading
+      expect(h2Headings.length).toBe(1); // Main "About Me" heading
       expect(h3Headings.length).toBeGreaterThanOrEqual(3); // Professional Experience, Education, Technical Skills + job titles + degree
       expect(h4Headings.length).toBeGreaterThan(0); // Company names, education institutions, skill categories
     });

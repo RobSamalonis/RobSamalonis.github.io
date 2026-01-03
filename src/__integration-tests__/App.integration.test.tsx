@@ -111,9 +111,10 @@ describe('App Integration Tests', () => {
   test('contact section displays contact information', async () => {
     renderWithTheme(<Contact />);
 
-    // Test contact links exist
-    expect(screen.getByRole('link', { name: /contact via email/i })).toHaveAttribute('href', 'mailto:robsamalonis@gmail.com');
-    expect(screen.getByRole('link', { name: /contact via phone/i })).toHaveAttribute('href', 'tel:267-772-1647');
+    // Test contact buttons exist (now buttons instead of links due to full card clickability)
+    expect(screen.getByRole('button', { name: /contact via email/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /contact via phone/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /contact via linkedin/i })).toBeInTheDocument();
     expect(screen.getByText('robsamalonis@gmail.com')).toBeInTheDocument();
     expect(screen.getByText('267-772-1647')).toBeInTheDocument();
   });
@@ -125,7 +126,7 @@ describe('App Integration Tests', () => {
     renderWithTheme(<Resume />);
 
     // Check resume content
-    expect(screen.getByRole('heading', { level: 2, name: /resume/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: /about me/i })).toBeInTheDocument();
     expect(screen.getByText('eMoney Advisor')).toBeInTheDocument();
     expect(screen.getByText('Senior Software Engineer')).toBeInTheDocument();
 

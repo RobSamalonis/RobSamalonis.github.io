@@ -65,7 +65,7 @@ const ProfileImage: React.FC<ProfileImageProps> = ({
             borderRadius: '50%',
             background: `conic-gradient(from 0deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink}, ${colorPalette.accent.neonGreen}, ${colorPalette.accent.vibrantPurple}, ${colorPalette.accent.electricBlue})`,
             // Animation will be controlled by the component based on motion preferences
-            animation: shouldAnimate ? 'rotate 4s linear infinite' : 'none',
+            animation: shouldAnimate ? 'rotate 60s linear infinite' : 'none',
             zIndex: -1,
           },
           
@@ -109,7 +109,7 @@ const ProfileImage: React.FC<ProfileImageProps> = ({
           },
           
           '@keyframes pulse': {
-            '0%, 100%': { 
+            '0%': { 
               boxShadow: `
                 0 0 20px ${colorPalette.accent.electricBlue}60,
                 0 0 40px ${colorPalette.accent.hotPink}40,
@@ -121,6 +121,13 @@ const ProfileImage: React.FC<ProfileImageProps> = ({
                 0 0 30px ${colorPalette.accent.electricBlue}80,
                 0 0 60px ${colorPalette.accent.hotPink}60,
                 0 0 90px ${colorPalette.accent.neonGreen}40
+              ` 
+            },
+            '100%': { 
+              boxShadow: `
+                0 0 20px ${colorPalette.accent.electricBlue}60,
+                0 0 40px ${colorPalette.accent.hotPink}40,
+                0 0 60px ${colorPalette.accent.neonGreen}20
               ` 
             },
           },

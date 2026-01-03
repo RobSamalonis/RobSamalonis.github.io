@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, LinearProgress, useTheme } from '@mui/material';
+import { Box, LinearProgress, useTheme, useMediaQuery } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ScrollProgressIndicatorProps {
@@ -28,12 +28,18 @@ const ScrollProgressIndicator: React.FC<ScrollProgressIndicatorProps> = ({
   sx = {}
 }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [scrollProgress, setScrollProgress] = useState<ScrollProgress>({
     progress: 0,
     isVisible: false
   });
 
   useEffect(() => {
+    // Don't set up listeners on mobile devices
+    if (isMobile) {
+      return;
+    }
+
     let ticking = false;
 
     const calculateProgress = () => {
@@ -89,7 +95,12 @@ const ScrollProgressIndicator: React.FC<ScrollProgressIndicatorProps> = ({
       window.removeEventListener('scroll', calculateProgress);
       window.removeEventListener('resize', calculateProgress);
     };
-  }, [mode, sectionId]);
+  }, [mode, sectionId, isMobile]);
+
+  // Don't render on mobile devices
+  if (isMobile) {
+    return null;
+  }
 
   const getPositionStyles = () => {
     const baseStyles = {

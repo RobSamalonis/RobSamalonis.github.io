@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import Contact from '../Contact';
 import { theme } from '../../../styles/theme';
@@ -80,25 +80,23 @@ describe('Contact Component', () => {
       expect(screen.getByRole('heading', { name: /linkedin/i })).toBeInTheDocument();
     });
 
-    test('renders contact links with proper attributes', () => {
+    test('renders contact cards with proper attributes', () => {
       renderWithTheme(<Contact />);
       
-      // Check for email link
-      const emailLink = screen.getByRole('link', { name: /contact via email/i });
-      expect(emailLink).toBeInTheDocument();
-      expect(emailLink).toHaveAttribute('href', expect.stringContaining('mailto:'));
+      // Check for email card button
+      const emailCard = screen.getByRole('button', { name: /contact via email/i });
+      expect(emailCard).toBeInTheDocument();
+      expect(emailCard).toHaveAttribute('tabindex', '0');
       
-      // Check for phone link
-      const phoneLink = screen.getByRole('link', { name: /contact via phone/i });
-      expect(phoneLink).toBeInTheDocument();
-      expect(phoneLink).toHaveAttribute('href', expect.stringContaining('tel:'));
+      // Check for phone card button
+      const phoneCard = screen.getByRole('button', { name: /contact via phone/i });
+      expect(phoneCard).toBeInTheDocument();
+      expect(phoneCard).toHaveAttribute('tabindex', '0');
       
-      // Check for LinkedIn link
-      const linkedinLink = screen.getByRole('link', { name: /contact via linkedin/i });
-      expect(linkedinLink).toBeInTheDocument();
-      expect(linkedinLink).toHaveAttribute('href', expect.stringContaining('https://'));
-      expect(linkedinLink).toHaveAttribute('target', '_blank');
-      expect(linkedinLink).toHaveAttribute('rel', 'noopener noreferrer');
+      // Check for LinkedIn card button
+      const linkedinCard = screen.getByRole('button', { name: /contact via linkedin/i });
+      expect(linkedinCard).toBeInTheDocument();
+      expect(linkedinCard).toHaveAttribute('tabindex', '0');
     });
 
     test('renders content within animated sections', () => {
@@ -106,6 +104,42 @@ describe('Contact Component', () => {
       
       const animatedSections = screen.getAllByTestId('animated-section');
       expect(animatedSections).toHaveLength(1); // Header section
+    });
+
+    test('supports keyboard interaction', () => {
+      // Mock window.location.href and window.open
+      const originalLocation = window.location;
+      const originalOpen = window.open;
+      
+      Object.defineProperty(window, 'location', {
+        value: { href: '' },
+        writable: true,
+      });
+      
+      window.open = jest.fn();
+      
+      renderWithTheme(<Contact />);
+      
+      // Test Enter key on email card
+      const emailCard = screen.getByRole('button', { name: /contact via email/i });
+      fireEvent.keyDown(emailCard, { key: 'Enter' });
+      expect(window.location.href).toContain('mailto:');
+      
+      // Test Space key on LinkedIn card
+      const linkedinCard = screen.getByRole('button', { name: /contact via linkedin/i });
+      fireEvent.keyDown(linkedinCard, { key: ' ' });
+      expect(window.open).toHaveBeenCalledWith(
+        expect.stringContaining('https://'),
+        '_blank',
+        'noopener,noreferrer'
+      );
+      
+      // Restore original functions
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true,
+      });
+      window.open = originalOpen;
     });
   });
 
@@ -130,12 +164,18 @@ describe('Contact Component', () => {
       expect(cards.length).toBeGreaterThanOrEqual(3); // At least 3 contact methods
     });
 
-    test('contact icons have angled corner styling', () => {
+    test('contact cards have clickable styling', () => {
       const { container } = renderWithTheme(<Contact />);
       
-      // Check for IconButton components (one per contact method)
-      const iconButtons = container.querySelectorAll('[class*="MuiIconButton"]');
-      expect(iconButtons.length).toBe(3); // Email, Phone, LinkedIn
+      // Check for clickable Card components (one per contact method)
+      const clickableCards = container.querySelectorAll('[role="button"]');
+      expect(clickableCards.length).toBe(3); // Email, Phone, LinkedIn
+      
+      // Verify cards have cursor pointer styling
+      clickableCards.forEach(card => {
+        expect(card).toHaveAttribute('tabindex', '0');
+        expect(card).toHaveAttribute('role', 'button');
+      });
     });
   });
 });

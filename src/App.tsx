@@ -8,12 +8,12 @@ import {
   PageTransition, 
   LoadingSpinner, 
   PerformanceOptimizer,
-  ScrollProgressIndicator,
   BackToTop
 } from './components/common';
 import { useSEO } from './hooks/useSEO';
 import { initializePerformanceOptimizations } from './utils/performance';
 import './App.css';
+import './styles/accessibility.css';
 
 // Lazy load components for better performance
 const Hero = lazy(() => import('./components/sections/Hero'));
@@ -46,18 +46,12 @@ function App() {
               role="main"
               aria-label="Robert Samalonis Portfolio Website"
             >
-              {/* Scroll Progress Indicators */}
-              <ScrollProgressIndicator 
-                mode="page" 
-                position="top" 
-              />
-              
               {/* Back to Top Button */}
               <BackToTop />
               
               {/* Main content sections with page transitions */}
               <PageTransition>
-                <main>
+                <main id="main-content">
                   <Suspense fallback={<LoadingSpinner message="Loading Hero section..." />}>
                     <Hero />
                   </Suspense>

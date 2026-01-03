@@ -1,0 +1,227 @@
+/**
+ * Accessibility enhancements for high contrast mode and user preferences
+ * Ensures WCAG 2.1 AA compliance and supports user accessibility preferences
+ */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    /* Enhanced contrast colors for high contrast mode */
+    --color-accent-electric-blue: #00e6ff;
+    --color-accent-hot-pink: #ff0080;
+    --color-accent-neon-green: #00ff00;
+    --color-accent-vibrant-purple: #cc66ff;
+    
+    /* Stronger neutral colors */
+    --color-neutral-gray-300: #ffffff;
+    --color-neutral-gray-500: #ffffff;
+    --color-neutral-gray-600: #ffffff;
+  }
+  
+  /* Increase border visibility */
+  .MuiCard-root,
+  .MuiButton-root,
+  .MuiTextField-root {
+    border-width: 3px !important;
+  }
+  
+  /* Enhanced focus indicators */
+  *:focus-visible {
+    outline: 4px solid var(--color-accent-electric-blue) !important;
+    outline-offset: 3px !important;
+  }
+  
+  /* Remove subtle effects that may reduce contrast */
+  .glow-blue,
+  .glow-pink,
+  .glow-green,
+  .glow-purple {
+    box-shadow: none !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* Disable parallax and complex animations */
+  .parallax-element,
+  .floating-animation,
+  .rotation-animation {
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+/* Enhanced focus indicators for better accessibility */
+:focus-visible {
+  outline: 3px solid var(--color-accent-electric-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip to main content link */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--color-accent-electric-blue);
+  color: var(--color-primary-black);
+  padding: 8px 16px;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 4px;
+  z-index: 9999;
+  transition: top 0.3s ease;
+}
+
+.skip-to-main:focus {
+  top: 6px;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Ensure sufficient color contrast for all interactive elements */
+button:not(:disabled),
+a,
+[role="button"],
+[role="link"],
+[tabindex]:not([tabindex="-1"]) {
+  position: relative;
+}
+
+/* Enhanced button contrast */
+.MuiButton-contained {
+  color: var(--color-primary-black) !important;
+}
+
+.MuiButton-outlined {
+  border-width: 2px !important;
+}
+
+/* Ensure form elements have proper contrast */
+.MuiTextField-root .MuiOutlinedInput-root {
+  background-color: var(--color-primary-dark-gray);
+}
+
+.MuiTextField-root .MuiInputLabel-root {
+  color: var(--color-neutral-gray-300);
+}
+
+/* High contrast mode specific overrides */
+@media (prefers-contrast: high) {
+  /* Force high contrast text */
+  p, span, div, h1, h2, h3, h4, h5, h6 {
+    text-shadow: none !important;
+  }
+  
+  /* Ensure all text meets AAA standards in high contrast mode */
+  .MuiTypography-root {
+    color: var(--color-neutral-white) !important;
+  }
+  
+  /* Make gradients solid colors for better contrast */
+  .gradient-text {
+    background: var(--color-accent-electric-blue) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+  }
+}
+
+/* Print styles for accessibility */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  a, a:visited {
+    text-decoration: underline;
+  }
+  
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+}
+
+/* Touch target size for mobile accessibility */
+@media (max-width: 768px) {
+  button,
+  a,
+  [role="button"],
+  [role="link"],
+  input,
+  textarea,
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Color blind friendly indicators */
+.status-indicator {
+  position: relative;
+}
+
+.status-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: currentColor;
+}
+
+/* Ensure sufficient spacing for readability */
+p, li, td {
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.3;
+}
+
+/* Enhanced keyboard navigation indicators */
+.keyboard-navigation-active *:focus {
+  outline: 3px solid var(--color-accent-electric-blue) !important;
+  outline-offset: 2px !important;
+}
+
+/* Ensure proper heading hierarchy is visually clear */
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1rem; }
+
+/* Responsive text scaling */
+@media (max-width: 768px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.5rem; }
+  h4 { font-size: 1.25rem; }
+  h5 { font-size: 1.125rem; }
+  h6 { font-size: 1rem; }
+}
