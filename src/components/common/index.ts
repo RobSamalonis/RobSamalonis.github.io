@@ -31,6 +31,7 @@ export { default as ScrollProgressIndicator } from './ScrollProgressIndicator';
 export { default as ContextualNavigation } from './ContextualNavigation';
 export { default as NavigationBreadcrumbs } from './NavigationBreadcrumbs';
 export { default as BackToTop } from './BackToTop';
+export { default as Footer } from './Footer';
 
 // Re-export animation types and utilities
 export type { 

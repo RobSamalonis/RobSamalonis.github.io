@@ -98,8 +98,11 @@ const Contact: React.FC = () => {
       id="contact"
       aria-labelledby="contact-heading"
       sx={{
-        py: 8,
-        pb: safeBottomPadding, // Dynamic bottom padding for mobile safety
+        minHeight: { xs: '100svh', md: '100vh' }, // Full viewport height
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        py: { xs: 4, md: 8 },
         background: `linear-gradient(180deg, ${colorPalette.primary.black} 0%, ${colorPalette.primary.darkGray} 50%, ${colorPalette.primary.black} 100%)`,
         position: 'relative',
         '&::before': {
@@ -116,11 +119,15 @@ const Contact: React.FC = () => {
         },
       }}
     >
-      <Container 
-        maxWidth="lg" 
-        sx={{ 
-          position: 'relative', 
+      <Container
+        maxWidth="lg"
+        sx={{
+          position: 'relative',
           zIndex: 1,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
         }}
       >
         {/* Section Header */}
@@ -161,143 +168,154 @@ const Contact: React.FC = () => {
         <Grid container spacing={{ xs: 3, md: 4 }} justifyContent="center">
           {/* Contact Information */}
           <Grid item xs={12} md={8} lg={6}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 } }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: { xs: 2, sm: 3 },
+              }}
+            >
               {contactMethods.map((method, index) => {
                 const IconComponent = method.icon;
                 const accentColor = getAccentColor(method.type);
-                
+
                 return (
-                  <motion.div
+                  <Card
                     key={method.type}
+                    component={motion.div}
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.2 }}
                     viewport={{ once: true }}
                     whileHover={{ scale: 1.02, y: -4 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleContactClick(method)}
+                    sx={{
+                      background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
+                      border: `1px solid ${accentColor}30`,
+                      borderRadius: 2,
+                      boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
+                      cursor: 'pointer',
+                      '&:hover': {
+                        boxShadow: `0 12px 35px ${accentColor}20`,
+                        borderColor: `${accentColor}60`,
+                        transform: 'scale(1.02) translateY(-4px)',
+                      },
+                      '&:focus-visible': {
+                        outline: `3px solid ${accentColor}`,
+                        outlineOffset: '2px',
+                        boxShadow: `0 12px 35px ${accentColor}30, 0 0 0 3px ${accentColor}40`,
+                        borderColor: `${accentColor}80`,
+                      },
+                      '&:focus': {
+                        outline: `3px solid ${accentColor}`,
+                        outlineOffset: '2px',
+                        boxShadow: `0 12px 35px ${accentColor}30, 0 0 0 3px ${accentColor}40`,
+                        borderColor: `${accentColor}80`,
+                      },
+                      '&:active': {
+                        transform: 'scale(0.98)',
+                        boxShadow: `0 6px 20px ${accentColor}15`,
+                      },
+                      transition: 'all 0.3s ease-in-out',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: '3px',
+                        background: `linear-gradient(90deg, ${accentColor}, ${accentColor}80)`,
+                      },
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Contact via ${method.label}: ${getDisplayText(method)}. Press Enter or Space to ${method.type === 'linkedin' ? 'open LinkedIn profile in new tab' : method.type === 'email' ? 'open email client' : 'open phone dialer'}.`}
+                    aria-describedby={`contact-${method.type}-description`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleContactClick(method);
+                      }
+                    }}
                   >
-                    <Card
-                      onClick={() => handleContactClick(method)}
+                    <CardContent
                       sx={{
-                        background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
-                        border: `1px solid ${accentColor}30`,
-                        borderRadius: 2,
-                        boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
-                        cursor: 'pointer',
-                        '&:hover': {
-                          boxShadow: `0 12px 35px ${accentColor}20`,
-                          borderColor: `${accentColor}60`,
-                          transform: 'translateY(-2px)',
-                        },
-                        '&:focus-visible': {
-                          outline: `3px solid ${accentColor}`,
-                          outlineOffset: '2px',
-                          boxShadow: `0 12px 35px ${accentColor}30, 0 0 0 3px ${accentColor}40`,
-                          borderColor: `${accentColor}80`,
-                        },
-                        '&:focus': {
-                          outline: `3px solid ${accentColor}`,
-                          outlineOffset: '2px',
-                          boxShadow: `0 12px 35px ${accentColor}30, 0 0 0 3px ${accentColor}40`,
-                          borderColor: `${accentColor}80`,
-                        },
-                        '&:active': {
-                          transform: 'translateY(0px)',
-                          boxShadow: `0 6px 20px ${accentColor}15`,
-                        },
-                        transition: 'all 0.3s ease-in-out',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        '&::before': {
-                          content: '""',
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          height: '3px',
-                          background: `linear-gradient(90deg, ${accentColor}, ${accentColor}80)`,
-                        },
-                      }}
-                      tabIndex={0}
-                      role="button"
-                      aria-label={`Contact via ${method.label}: ${getDisplayText(method)}. Press Enter or Space to ${method.type === 'linkedin' ? 'open LinkedIn profile in new tab' : method.type === 'email' ? 'open email client' : 'open phone dialer'}.`}
-                      aria-describedby={`contact-${method.type}-description`}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleContactClick(method);
-                        }
+                        display: 'flex',
+                        alignItems: 'center',
+                        p: { xs: 3, sm: 4 },
                       }}
                     >
-                      <CardContent sx={{ display: 'flex', alignItems: 'center', p: { xs: 3, sm: 4 } }}>
-                        {/* Hidden description for screen readers */}
-                        <Box
-                          id={`contact-${method.type}-description`}
-                          sx={{ 
-                            position: 'absolute',
-                            left: '-10000px',
-                            width: '1px',
-                            height: '1px',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          {method.type === 'linkedin' 
-                            ? 'Opens LinkedIn profile in a new tab' 
-                            : method.type === 'email' 
+                      {/* Hidden description for screen readers */}
+                      <Box
+                        id={`contact-${method.type}-description`}
+                        sx={{
+                          position: 'absolute',
+                          left: '-10000px',
+                          width: '1px',
+                          height: '1px',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        {method.type === 'linkedin'
+                          ? 'Opens LinkedIn profile in a new tab'
+                          : method.type === 'email'
                             ? 'Opens your default email client to send an email'
-                            : 'Opens your phone dialer to make a call'
-                          }
-                        </Box>
-                        <Box
+                            : 'Opens your phone dialer to make a call'}
+                      </Box>
+                      <Box
+                        sx={{
+                          mr: { xs: 2, sm: 3 },
+                          width: { xs: '56px', sm: '64px' },
+                          height: { xs: '56px', sm: '64px' },
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: `linear-gradient(135deg, ${accentColor}, ${accentColor}CC)`,
+                          color: colorPalette.primary.black,
+                          borderRadius: 0,
+                          clipPath:
+                            'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))',
+                          boxShadow: `0 0 20px ${accentColor}40, inset 0 0 20px ${colorPalette.neutral.white}20`,
+                          transition: 'all 0.3s ease',
+                          flexShrink: 0,
+                          '& > svg': {
+                            fontSize: { xs: '1.5rem', sm: '1.75rem' },
+                          },
+                        }}
+                      >
+                        <IconComponent />
+                      </Box>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          variant="h5"
+                          component="h3"
                           sx={{
-                            mr: { xs: 2, sm: 3 },
-                            width: { xs: '56px', sm: '64px' },
-                            height: { xs: '56px', sm: '64px' },
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: `linear-gradient(135deg, ${accentColor}, ${accentColor}CC)`,
-                            color: colorPalette.primary.black,
-                            borderRadius: 0,
-                            clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))',
-                            boxShadow: `0 0 20px ${accentColor}40, inset 0 0 20px ${colorPalette.neutral.white}20`,
-                            transition: 'all 0.3s ease',
-                            flexShrink: 0,
-                            '& > svg': {
-                              fontSize: { xs: '1.5rem', sm: '1.75rem' },
-                            },
+                            color: colorPalette.neutral.white,
+                            fontWeight: 600,
+                            mb: 0.5,
+                            fontSize: { xs: '1.125rem', sm: '1.5rem' },
+                            lineHeight: 1.3,
                           }}
                         >
-                          <IconComponent />
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Typography
-                            variant="h5"
-                            component="h3"
-                            sx={{ 
-                              color: colorPalette.neutral.white,
-                              fontWeight: 600,
-                              mb: 0.5,
-                              fontSize: { xs: '1.125rem', sm: '1.5rem' },
-                              lineHeight: 1.3,
-                            }}
-                          >
-                            {method.label}
-                          </Typography>
-                          <Typography
-                            sx={{
-                              color: accentColor,
-                              fontSize: { xs: '0.9rem', sm: '1rem' },
-                              fontWeight: 500,
-                              wordBreak: 'break-word',
-                              transition: 'all 0.3s ease',
-                            }}
-                          >
-                            {getDisplayText(method)}
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
+                          {method.label}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            color: accentColor,
+                            fontSize: { xs: '0.9rem', sm: '1rem' },
+                            fontWeight: 500,
+                            wordBreak: 'break-word',
+                            transition: 'all 0.3s ease',
+                          }}
+                        >
+                          {getDisplayText(method)}
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 );
               })}
             </Box>

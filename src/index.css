@@ -136,6 +136,23 @@
   -webkit-text-size-adjust: 100%;
 }
 
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: var(--color-primary-black);
+}
+
+/* Universal reset to prevent browser defaults from causing spacing issues */
+* {
+  box-sizing: border-box;
+}
+
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -147,6 +164,9 @@ body {
   line-height: var(--line-height-base);
   color: var(--color-neutral-white);
   background-color: var(--color-primary-black);
+  /* Ensure no top spacing from browser chrome */
+  position: relative;
+  top: 0;
 }
 
 #root {
@@ -155,6 +175,8 @@ body {
   width: 100%;
   min-height: 100vh;
   box-sizing: border-box;
+  position: relative;
+  top: 0;
 }
 
 /* ===== Typography Utilities ===== */

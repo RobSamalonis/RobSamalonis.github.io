@@ -8,6 +8,7 @@ import {
 import EntranceAnimation from '../common/EntranceAnimation';
 import ProfileImage from '../common/ProfileImage';
 import { colorPalette } from '../../styles/theme';
+import { useSmartScrolling } from '../../utils/smartScrolling';
 
 /**
  * Hero section with retro-futuristic design and advanced UX interactions
@@ -17,6 +18,9 @@ const Hero: React.FC = () => {
   // Mouse tracking for interactive effects (not used with shooting stars but kept for other elements)
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+
+  // Smart scrolling hook for enhanced navigation with focus management
+  const { scrollToSection } = useSmartScrolling();
 
   // Reduced motion preference check
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
@@ -70,24 +74,20 @@ const Hero: React.FC = () => {
     };
   }, [mouseX, mouseY]);
 
-  const handleContactClick = () => {
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }
+  const handleContactClick = async () => {
+    await scrollToSection('contact', {
+      offset: 0, // No offset - scroll directly to the top of the contact section
+      duration: 800,
+      easing: 'easeInOut',
+    });
   };
 
-  const handleResumeClick = () => {
-    const resumeSection = document.getElementById('resume');
-    if (resumeSection) {
-      resumeSection.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }
+  const handleResumeClick = async () => {
+    await scrollToSection('resume', {
+      offset: 0, // No offset - scroll directly to the top of the resume section
+      duration: 800,
+      easing: 'easeInOut',
+    });
   };
 
   return (
@@ -106,6 +106,9 @@ const Hero: React.FC = () => {
         width: '100vw',
         marginLeft: 'calc(-50vw + 50%)',
         contain: 'layout style paint',
+        // Ensure the section starts at the very top
+        marginTop: 0,
+        paddingTop: 0,
       }}
     >
       {/* Retro-Futuristic Neon Grid Tunnel Background */}
@@ -619,87 +622,95 @@ const Hero: React.FC = () => {
                 px: { xs: 1, sm: 0 },
               }}
             >
-              <motion.div
+              <Button
+                component={motion.button}
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  variant="outlined"
-                  size="large"
-                  startIcon={<DownloadIcon />}
-                  onClick={handleResumeClick}
-                  sx={{
-                    px: { xs: 3, sm: 4 },
-                    py: { xs: 1.25, sm: 1.5 },
-                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                    fontWeight: 700,
-                    fontFamily: '"Orbitron", "Roboto", sans-serif',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                    width: { xs: '100%', sm: 'auto' },
-                    minWidth: { xs: 'auto', sm: '200px' },
+                variant="outlined"
+                size="large"
+                startIcon={<DownloadIcon />}
+                onClick={handleResumeClick}
+                sx={{
+                  px: { xs: 3, sm: 4 },
+                  py: { xs: 1.25, sm: 1.5 },
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  fontWeight: 700,
+                  fontFamily: '"Orbitron", "Roboto", sans-serif',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  width: { xs: '100%', sm: 'auto' },
+                  minWidth: { xs: 'auto', sm: '200px' },
+                  borderColor: colorPalette.accent.neonGreen,
+                  border: `2px solid ${colorPalette.accent.neonGreen}`,
+                  borderRadius: 0,
+                  clipPath:
+                    'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+                  color: colorPalette.accent.neonGreen,
+                  boxShadow: `0 0 20px ${colorPalette.accent.neonGreen}40`,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover::before': {
+                    left: '100%',
+                  },
+                  '&:hover': {
                     borderColor: colorPalette.accent.neonGreen,
-                    border: `2px solid ${colorPalette.accent.neonGreen}`,
-                    borderRadius: 0,
-                    clipPath:
-                      'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
-                    color: colorPalette.accent.neonGreen,
-                    boxShadow: `0 0 20px ${colorPalette.accent.neonGreen}40`,
-                    position: 'relative',
-                    overflow: 'hidden',
-                    '&:hover::before': {
-                      left: '100%',
-                    },
-                    '&:hover': {
-                      borderColor: colorPalette.accent.neonGreen,
-                      backgroundColor: `${colorPalette.accent.neonGreen}10`,
-                      boxShadow: `0 0 30px ${colorPalette.accent.neonGreen}60`,
-                    },
-                  }}
-                >
-                  View Resume
-                </Button>
-              </motion.div>
+                    backgroundColor: `${colorPalette.accent.neonGreen}10`,
+                    boxShadow: `0 0 30px ${colorPalette.accent.neonGreen}60`,
+                    transform: 'scale(1.05) translateY(-5px)',
+                  },
+                  '&:focus-visible': {
+                    outline: `3px solid ${colorPalette.accent.neonGreen}`,
+                    outlineOffset: '2px',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                View Resume
+              </Button>
 
-              <motion.div
+              <Button
+                component={motion.button}
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
+                variant="contained"
+                size="large"
+                startIcon={<EmailIcon />}
+                onClick={handleContactClick}
+                sx={{
+                  px: { xs: 3, sm: 4 },
+                  py: { xs: 1.25, sm: 1.5 },
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  fontWeight: 700,
+                  fontFamily: '"Orbitron", "Roboto", sans-serif',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  width: { xs: '100%', sm: 'auto' },
+                  minWidth: { xs: 'auto', sm: '200px' },
+                  background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
+                  border: `2px solid ${colorPalette.accent.electricBlue}`,
+                  borderRadius: 0,
+                  clipPath:
+                    'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+                  color: colorPalette.primary.black, // Black text for better contrast on gradient
+                  boxShadow: `0 0 20px ${colorPalette.accent.electricBlue}60, inset 0 0 20px ${colorPalette.accent.hotPink}40`,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover::before': {
+                    left: '100%',
+                  },
+                  '&:hover': {
+                    boxShadow: `0 0 30px ${colorPalette.accent.hotPink}80, inset 0 0 30px ${colorPalette.accent.electricBlue}60`,
+                    transform: 'scale(1.05) translateY(-5px)',
+                  },
+                  '&:focus-visible': {
+                    outline: `3px solid ${colorPalette.accent.electricBlue}`,
+                    outlineOffset: '2px',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
               >
-                <Button
-                  variant="contained"
-                  size="large"
-                  startIcon={<EmailIcon />}
-                  onClick={handleContactClick}
-                  sx={{
-                    px: { xs: 3, sm: 4 },
-                    py: { xs: 1.25, sm: 1.5 },
-                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                    fontWeight: 700,
-                    fontFamily: '"Orbitron", "Roboto", sans-serif',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                    width: { xs: '100%', sm: 'auto' },
-                    minWidth: { xs: 'auto', sm: '200px' },
-                    background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
-                    border: `2px solid ${colorPalette.accent.electricBlue}`,
-                    borderRadius: 0,
-                    clipPath:
-                      'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
-                    color: colorPalette.primary.black, // Black text for better contrast on gradient
-                    boxShadow: `0 0 20px ${colorPalette.accent.electricBlue}60, inset 0 0 20px ${colorPalette.accent.hotPink}40`,
-                    position: 'relative',
-                    overflow: 'hidden',
-                    '&:hover::before': {
-                      left: '100%',
-                    },
-                    '&:hover': {
-                      boxShadow: `0 0 30px ${colorPalette.accent.hotPink}80, inset 0 0 30px ${colorPalette.accent.electricBlue}60`,
-                    },
-                  }}
-                >
-                  Get In Touch
-                </Button>
-              </motion.div>
+                Get In Touch
+              </Button>
             </Stack>
           </Box>
         </Box>

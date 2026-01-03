@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Fab, useScrollTrigger, Zoom, Box, Typography } from '@mui/material';
+import { useScrollTrigger, Zoom, Box, Typography } from '@mui/material';
 import { KeyboardArrowUp } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { colorPalette } from '../../styles/theme';
@@ -12,7 +12,7 @@ import { useSafariNavigation } from '../../hooks/useSafariNavigation';
  */
 const BackToTop: React.FC = () => {
   const [show, setShow] = useState(false);
-  
+
   // Get Safari navigation state for iPhone compatibility
   const safariNavigation = useSafariNavigation();
 
@@ -45,21 +45,27 @@ const BackToTop: React.FC = () => {
   }, [safariNavigation.isSafari, safariNavigation.isIOS]);
 
   // Enhanced touch event handling for iPhone Safari
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    // Prevent touch event from being intercepted by Safari navigation
-    if (safariNavigation.isSafari && safariNavigation.isIOS) {
-      e.stopPropagation();
-    }
-  }, [safariNavigation.isSafari, safariNavigation.isIOS]);
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      // Prevent touch event from being intercepted by Safari navigation
+      if (safariNavigation.isSafari && safariNavigation.isIOS) {
+        e.stopPropagation();
+      }
+    },
+    [safariNavigation.isSafari, safariNavigation.isIOS]
+  );
 
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    // Ensure touch end triggers the click action reliably on Safari
-    if (safariNavigation.isSafari && safariNavigation.isIOS) {
-      e.preventDefault();
-      e.stopPropagation();
-      handleClick();
-    }
-  }, [safariNavigation.isSafari, safariNavigation.isIOS, handleClick]);
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      // Ensure touch end triggers the click action reliably on Safari
+      if (safariNavigation.isSafari && safariNavigation.isIOS) {
+        e.preventDefault();
+        e.stopPropagation();
+        handleClick();
+      }
+    },
+    [safariNavigation.isSafari, safariNavigation.isIOS, handleClick]
+  );
 
   // Calculate dynamic positioning based on Safari navigation state
   const getButtonPosition = () => {
@@ -76,108 +82,105 @@ const BackToTop: React.FC = () => {
 
   return (
     <Zoom in={show}>
-      <motion.div
+      <Box
+        component={motion.button}
         whileHover={{ scale: 1.05, y: -5 }}
         whileTap={{ scale: 0.95 }}
-        style={{
+        onClick={handleClick}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={
+          safariNavigation.isSafari && safariNavigation.isIOS
+            ? handleTouchEnd
+            : undefined
+        }
+        aria-label={`Scroll back to top${safariNavigation.isSafari && safariNavigation.isIOS ? ' (iPhone optimized)' : ''}`}
+        sx={{
           position: 'fixed',
           bottom: buttonPosition.bottom,
           right: buttonPosition.right,
           zIndex: 1000,
-          // Add buffer zone for Safari navigation conflicts
-          ...(safariNavigation.isSafari && safariNavigation.isIOS && {
-            touchAction: 'manipulation', // Improve touch responsiveness on iOS
-          }),
-        }}
-      >
-        <Box
-          onClick={handleClick}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={safariNavigation.isSafari && safariNavigation.isIOS ? handleTouchEnd : undefined}
-          role="button"
-          tabIndex={0}
-          aria-label={`Scroll back to top${safariNavigation.isSafari && safariNavigation.isIOS ? ' (iPhone optimized)' : ''}`}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleClick();
-            }
-          }}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-            px: 2.5,
-            py: 1.5,
-            background: `linear-gradient(135deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
-            color: colorPalette.primary.black, // Black text for better contrast on gradient
-            border: `2px solid ${colorPalette.accent.electricBlue}`,
-            borderRadius: 0,
-            clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
-            boxShadow: `0 0 30px ${colorPalette.accent.electricBlue}60, inset 0 0 20px ${colorPalette.accent.hotPink}40`,
-            position: 'relative',
-            overflow: 'hidden',
-            cursor: 'pointer',
-            // Enhanced touch target for mobile
-            minHeight: '48px',
-            minWidth: '48px',
-            // Safari-specific optimizations
-            ...(safariNavigation.isSafari && safariNavigation.isIOS && {
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          px: 2.5,
+          py: 1.5,
+          background: `linear-gradient(135deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
+          color: colorPalette.primary.black, // Black text for better contrast on gradient
+          border: `2px solid ${colorPalette.accent.electricBlue}`,
+          borderRadius: 0,
+          clipPath:
+            'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+          boxShadow: `0 0 30px ${colorPalette.accent.electricBlue}60, inset 0 0 20px ${colorPalette.accent.hotPink}40`,
+          overflow: 'hidden',
+          cursor: 'pointer',
+          // Enhanced touch target for mobile
+          minHeight: '48px',
+          minWidth: '48px',
+          // Ensure the button doesn't interfere with page layout when hidden
+          visibility: show ? 'visible' : 'hidden',
+          opacity: show ? 1 : 0,
+          transform: show ? 'scale(1)' : 'scale(0)',
+          pointerEvents: show ? 'auto' : 'none',
+          // Safari-specific optimizations
+          ...(safariNavigation.isSafari &&
+            safariNavigation.isIOS && {
               WebkitTapHighlightColor: 'transparent', // Remove iOS tap highlight
               WebkitTouchCallout: 'none', // Disable iOS callout menu
               WebkitUserSelect: 'none', // Prevent text selection
               userSelect: 'none',
+              touchAction: 'manipulation', // Improve touch responsiveness on iOS
             }),
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              inset: 0,
-              background: `linear-gradient(45deg, transparent, ${colorPalette.neutral.white}30, transparent)`,
-              animation: 'shimmer 60s linear infinite',
-            },
-            '&:hover': {
-              background: `linear-gradient(135deg, ${colorPalette.accent.hotPink}, ${colorPalette.accent.electricBlue})`,
-              color: colorPalette.primary.black, // Maintain black text on hover
-              boxShadow: `0 0 40px ${colorPalette.accent.hotPink}80, inset 0 0 30px ${colorPalette.accent.electricBlue}60`,
-            },
-            '&:focus-visible': {
-              outline: `3px solid ${colorPalette.accent.neonGreen}`,
-              outlineOffset: '2px',
-            },
-            // Enhanced active state for touch devices
-            '&:active': {
-              transform: 'scale(0.95)',
-              transition: 'transform 0.1s ease',
-            },
-            '@keyframes shimmer': {
-              '0%': { transform: 'translate3d(-100%, -100%, 0)' },
-              '100%': { transform: 'translate3d(100%, 100%, 0)' },
-            },
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            background: `linear-gradient(45deg, transparent, ${colorPalette.neutral.white}30, transparent)`,
+            animation: 'shimmer 60s linear infinite',
+          },
+          '&:hover': {
+            background: `linear-gradient(135deg, ${colorPalette.accent.hotPink}, ${colorPalette.accent.electricBlue})`,
+            color: colorPalette.primary.black, // Maintain black text on hover
+            boxShadow: `0 0 40px ${colorPalette.accent.hotPink}80, inset 0 0 30px ${colorPalette.accent.electricBlue}60`,
+            transform: 'scale(1.05) translateY(-5px)',
+          },
+          '&:focus-visible': {
+            outline: `3px solid ${colorPalette.accent.neonGreen}`,
+            outlineOffset: '2px',
+          },
+          // Enhanced active state for touch devices
+          '&:active': {
+            transform: 'scale(0.95)',
+            transition: 'transform 0.1s ease',
+          },
+          '@keyframes shimmer': {
+            '0%': { transform: 'translate3d(-100%, -100%, 0)' },
+            '100%': { transform: 'translate3d(100%, 100%, 0)' },
+          },
+          transition: 'all 0.3s ease',
+        }}
+      >
+        <KeyboardArrowUp
+          sx={{
+            fontSize: '1.5rem',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        />
+        <Typography
+          sx={{
+            fontSize: '0.875rem',
+            fontWeight: 700,
+            fontFamily: '"Orbitron", "Roboto", sans-serif',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            position: 'relative',
+            zIndex: 1,
+            whiteSpace: 'nowrap',
           }}
         >
-          <KeyboardArrowUp
-            sx={{
-              fontSize: '1.5rem',
-              position: 'relative',
-              zIndex: 1,
-            }}
-          />
-          <Typography
-            sx={{
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              fontFamily: '"Orbitron", "Roboto", sans-serif',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              position: 'relative',
-              zIndex: 1,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Back to Top
-          </Typography>
-        </Box>
-      </motion.div>
+          Back to Top
+        </Typography>
+      </Box>
     </Zoom>
   );
 };
