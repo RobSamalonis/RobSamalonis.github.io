@@ -12,7 +12,7 @@ export const modernNavigationItems: NavigationItem[] = [
   },
   {
     id: 'resume',
-    label: 'Experience',
+    label: 'About Me',
     icon: Briefcase,
     href: '#resume',
     description: 'Professional Background'

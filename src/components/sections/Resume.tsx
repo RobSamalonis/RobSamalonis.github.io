@@ -533,7 +533,7 @@ const Resume: React.FC = () => {
                 textShadow: `0 0 30px ${colorPalette.accent.electricBlue}50`,
               }}
             >
-              Resume
+              About Me
             </Typography>
             <Typography
               variant="h5"
