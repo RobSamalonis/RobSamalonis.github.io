@@ -5,50 +5,50 @@ import { respectsReducedMotion } from './performance';
 // Animation presets for common animations
 export const animationPresets: AnimationPresets = {
   fadeInUp: {
-    initial: { opacity: 0, y: 50 },
+    initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6, ease: 'easeOut' }
+    transition: { duration: 0.8, ease: 'easeOut' }
   },
   
   slideInLeft: {
-    initial: { opacity: 0, x: -100 },
+    initial: { opacity: 0, x: -30 },
     animate: { opacity: 1, x: 0 },
     transition: { duration: 0.8, ease: 'easeOut' }
   },
   
   scaleIn: {
-    initial: { opacity: 0, scale: 0.8 },
+    initial: { opacity: 0, scale: 0.95 },
     animate: { opacity: 1, scale: 1 },
-    transition: { duration: 0.5, ease: 'easeOut' }
+    transition: { duration: 0.8, ease: 'easeOut' }
   },
   
   glitchEffect: {
     initial: { opacity: 0 },
     animate: { 
-      opacity: [0, 1, 0.8, 1],
-      x: [0, -2, 2, 0],
-      filter: ['hue-rotate(0deg)', 'hue-rotate(90deg)', 'hue-rotate(0deg)']
+      opacity: [0, 1, 0.9, 1],
+      x: [0, -1, 1, 0],
+      filter: ['hue-rotate(0deg)', 'hue-rotate(45deg)', 'hue-rotate(0deg)']
     },
     transition: { 
-      duration: 0.8, 
-      ease: 'easeInOut',
-      times: [0, 0.3, 0.6, 1]
+      duration: 1.0, 
+      ease: 'easeOut',
+      times: [0, 0.4, 0.7, 1]
     }
   },
   
   neonGlow: {
-    initial: { opacity: 0, scale: 0.9 },
+    initial: { opacity: 0, scale: 0.98 },
     animate: { 
       opacity: 1, 
       scale: 1,
       boxShadow: [
         '0 0 5px #00ffff',
-        '0 0 20px #00ffff, 0 0 30px #00ffff',
+        '0 0 15px #00ffff, 0 0 25px #00ffff',
         '0 0 5px #00ffff'
       ]
     },
     transition: { 
-      duration: 1.2, 
+      duration: 1.0, 
       ease: 'easeOut',
       boxShadow: {
         repeat: Infinity,
@@ -181,7 +181,7 @@ export const animationConfigs: Record<string, AnimationConfig> = {
   entrance: {
     type: 'entrance',
     duration: 0.8,
-    delay: 0.2,
+    delay: 0.1,
     easing: 'easeOut'
   },
   
