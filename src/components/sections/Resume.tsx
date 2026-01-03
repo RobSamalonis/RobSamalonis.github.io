@@ -513,6 +513,7 @@ const Resume: React.FC = () => {
           px: { xs: 0, sm: 2, md: 3 }, // Remove horizontal padding on mobile
         }}
       >
+        
         {/* Section Header */}
         <AnimatedSection animation={animationConfigs.scrollReveal}>
           <Box sx={{ textAlign: 'center', mb: 6, px: { xs: 2, sm: 0 } }}>

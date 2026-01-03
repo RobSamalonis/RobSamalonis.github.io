@@ -328,7 +328,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, onSectionChange
                   width: '100%',
                 }}
               >
-                {/* Desktop Navigation - Centered */}
+                {/* Desktop Navigation */}
                 {!isMobile && <DesktopNavigation />}
                 
                 {/* Mobile Menu Button */}
