@@ -172,7 +172,7 @@ const Resume: React.FC = () => {
                   variant="h6"
                   component="h4"
                   sx={{
-                    color: colorPalette.accent.hotPink,
+                    color: colorPalette.accent.electricBlue,
                     fontWeight: 500,
                     fontSize: isMobile ? '0.9375rem' : '1.25rem',
                     mb: isMobile ? 1 : 0,
@@ -298,9 +298,9 @@ const Resume: React.FC = () => {
                         label={tech}
                         size="small"
                         sx={{
-                          backgroundColor: `${colorPalette.accent.neonGreen}20`,
-                          color: colorPalette.accent.neonGreen,
-                          border: `1px solid ${colorPalette.accent.neonGreen}50`,
+                          backgroundColor: `${colorPalette.neutral.white}20`,
+                          color: colorPalette.neutral.white,
+                          border: `1px solid ${colorPalette.neutral.white}50`,
                           fontWeight: 500,
                           fontSize: '0.75rem',
                           height: '24px',
@@ -337,9 +337,9 @@ const Resume: React.FC = () => {
                       label={tech}
                       size="small"
                       sx={{
-                        backgroundColor: `${colorPalette.accent.neonGreen}20`,
-                        color: colorPalette.accent.neonGreen,
-                        border: `1px solid ${colorPalette.accent.neonGreen}50`,
+                        backgroundColor: `${colorPalette.neutral.white}20`,
+                        color: colorPalette.neutral.white,
+                        border: `1px solid ${colorPalette.neutral.white}50`,
                         fontWeight: 500,
                       }}
                     />
@@ -366,11 +366,11 @@ const Resume: React.FC = () => {
             mb: 3,
             mx: isMobile ? 2 : 0, // Add horizontal margin on mobile
             background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
-            border: `1px solid ${colorPalette.accent.hotPink}30`,
+            border: `1px solid ${colorPalette.accent.electricBlue}30`,
             borderRadius: 2,
             boxShadow: `0 8px 25px ${colorPalette.primary.black}50`,
             '&:hover': {
-              boxShadow: `0 12px 35px ${colorPalette.accent.hotPink}20`,
+              boxShadow: `0 12px 35px ${colorPalette.accent.electricBlue}20`,
               transform: 'translateY(-4px)',
             },
             transition: 'all 0.3s ease-in-out',
@@ -393,7 +393,7 @@ const Resume: React.FC = () => {
             >
               <SchoolIcon 
                 sx={{ 
-                  color: colorPalette.accent.hotPink, 
+                  color: colorPalette.accent.electricBlue, 
                   mr: 2,
                   mt: 0.5,
                   fontSize: isMobile ? '1.5rem' : '1.75rem',
@@ -418,7 +418,7 @@ const Resume: React.FC = () => {
                   variant="h6"
                   component="h4"
                   sx={{
-                    color: colorPalette.accent.hotPink,
+                    color: colorPalette.accent.electricBlue,
                     fontWeight: 500,
                     fontSize: isMobile ? '0.9375rem' : '1.25rem',
                     mb: isMobile ? 1 : 0,
@@ -449,15 +449,15 @@ const Resume: React.FC = () => {
                     px: 2,
                     py: 1,
                     borderRadius: 1,
-                    backgroundColor: `${colorPalette.accent.hotPink}15`,
-                    border: `1px solid ${colorPalette.accent.hotPink}40`,
+                    backgroundColor: `${colorPalette.accent.electricBlue}15`,
+                    border: `1px solid ${colorPalette.accent.electricBlue}40`,
                     flexShrink: 0,
                   }}
                 >
                   <Typography
                     variant="body1"
                     sx={{
-                      color: colorPalette.accent.hotPink,
+                      color: colorPalette.accent.electricBlue,
                       fontWeight: 600,
                       fontSize: '0.9375rem',
                       letterSpacing: '0.02em',
