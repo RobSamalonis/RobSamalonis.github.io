@@ -59,7 +59,7 @@ export const generateResumePDF = async (): Promise<void> => {
     pdf.setTextColor(80, 80, 80);
     pdf.setFontSize(9);
     pdf.setFont('helvetica', 'normal');
-    const contactLine = `${resumeData.personalInfo.email} • ${resumeData.personalInfo.phone} • ${resumeData.personalInfo.linkedin}`;
+    const contactLine = `${resumeData.personalInfo.email} • ${resumeData.personalInfo.linkedin}`;
     pdf.text(contactLine, margin, currentY);
     currentY += 8;
 

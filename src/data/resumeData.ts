@@ -5,7 +5,6 @@ export const resumeData: ResumeData = {
     name: 'Robert Samalonis',
     title: 'Senior Software Engineer',
     email: 'robsamalonis@gmail.com',
-    phone: '267-772-1647',
     linkedin: 'linkedin.com/in/robert-samalonis-4a092a137',
     summary: 'Innovative Senior Software Engineer specializing in React, TypeScript, and accessibility-first development. Expert in leveraging AI-assisted development workflows and rapid prototyping methodologies to deliver exceptional, inclusive web applications with cutting-edge user experiences.'
   },

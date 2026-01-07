@@ -159,7 +159,7 @@ export const defaultSEOConfig: SEOConfig = {
   title: 'Robert Samalonis - Senior Software Engineer | React & TypeScript Expert',
   description: 'Experienced Senior Software Engineer specializing in React, TypeScript, and accessibility. Currently at eMoney Advisor, passionate about creating inclusive, performant web applications with exceptional user experiences.',
   keywords: 'Robert Samalonis, Senior Software Engineer, React Developer, TypeScript, Frontend Developer, Web Accessibility, WCAG, JavaScript, HTML5, CSS3, eMoney Advisor, Portfolio',
-  image: 'https://robertsamalonis.github.io/personal-portfolio-website/og-image.jpg',
-  url: 'https://robertsamalonis.github.io/personal-portfolio-website/',
+  image: 'https://robertsamalonis.github.io/og-image.jpg',
+  url: 'https://robertsamalonis.github.io/',
   type: 'website'
 };

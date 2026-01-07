@@ -8,47 +8,32 @@ import { theme } from '../../../styles/theme';
 jest.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => {
-      const { 
-        whileHover, 
-        whileTap, 
-        animate, 
-        transition, 
-        initial, 
+      const {
+        whileHover,
+        whileTap,
+        animate,
+        transition,
+        initial,
         exit,
         variants,
         whileInView,
         viewport,
-        ...domProps 
+        ...domProps
       } = props;
       return <div {...domProps}>{children}</div>;
     },
   },
 }));
 
-// Mock AnimatedSection component
-jest.mock('../../common/AnimatedSection', () => {
-  const MockAnimatedSection = ({ children }: { children: React.ReactNode }) => {
-    return <div data-testid="animated-section">{children}</div>;
-  };
-  return {
-    __esModule: true,
-    default: MockAnimatedSection,
-  };
-});
-
 describe('Contact Component', () => {
   const renderWithTheme = (component: React.ReactElement) => {
-    return render(
-      <ThemeProvider theme={theme}>
-        {component}
-      </ThemeProvider>
-    );
+    return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
   };
 
   describe('Contact Content Rendering', () => {
     test('renders main heading', () => {
       renderWithTheme(<Contact />);
-      
+
       const heading = screen.getByRole('heading', { level: 2 });
       expect(heading).toBeInTheDocument();
       expect(heading).toHaveTextContent('Get In Touch');
@@ -56,15 +41,17 @@ describe('Contact Component', () => {
 
     test('renders subtitle description', () => {
       renderWithTheme(<Contact />);
-      
+
       const description = screen.getByText(/Ready to collaborate/i);
       expect(description).toBeInTheDocument();
-      expect(description).toHaveTextContent(/create something amazing together/i);
+      expect(description).toHaveTextContent(
+        /create something amazing together/i
+      );
     });
 
     test('renders contact section with proper semantic structure', () => {
       renderWithTheme(<Contact />);
-      
+
       const contactSection = document.getElementById('contact');
       expect(contactSection).toBeInTheDocument();
       expect(contactSection).toHaveAttribute('id', 'contact');
@@ -73,67 +60,76 @@ describe('Contact Component', () => {
 
     test('renders all contact methods', () => {
       renderWithTheme(<Contact />);
-      
+
       // Check for contact method headings
-      expect(screen.getByRole('heading', { name: /email/i })).toBeInTheDocument();
-      expect(screen.getByRole('heading', { name: /phone/i })).toBeInTheDocument();
-      expect(screen.getByRole('heading', { name: /linkedin/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /email/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /linkedin/i })
+      ).toBeInTheDocument();
     });
 
     test('renders contact cards with proper attributes', () => {
       renderWithTheme(<Contact />);
-      
+
       // Check for email card button
-      const emailCard = screen.getByRole('button', { name: /contact via email/i });
+      const emailCard = screen.getByRole('button', {
+        name: /contact via email/i,
+      });
       expect(emailCard).toBeInTheDocument();
       expect(emailCard).toHaveAttribute('tabindex', '0');
-      
-      // Check for phone card button
-      const phoneCard = screen.getByRole('button', { name: /contact via phone/i });
-      expect(phoneCard).toBeInTheDocument();
-      expect(phoneCard).toHaveAttribute('tabindex', '0');
-      
+
       // Check for LinkedIn card button
-      const linkedinCard = screen.getByRole('button', { name: /contact via linkedin/i });
+      const linkedinCard = screen.getByRole('button', {
+        name: /contact via linkedin/i,
+      });
       expect(linkedinCard).toBeInTheDocument();
       expect(linkedinCard).toHaveAttribute('tabindex', '0');
     });
 
-    test('renders content within animated sections', () => {
+    test('renders content without animated sections', () => {
       renderWithTheme(<Contact />);
-      
-      const animatedSections = screen.getAllByTestId('animated-section');
-      expect(animatedSections).toHaveLength(1); // Header section
+
+      // AnimatedSection should no longer be used in Contact component
+      const animatedSections = document.querySelectorAll(
+        '[data-testid="animated-section"]'
+      );
+      expect(animatedSections).toHaveLength(0);
     });
 
     test('supports keyboard interaction', () => {
       // Mock window.location.href and window.open
       const originalLocation = window.location;
       const originalOpen = window.open;
-      
+
       Object.defineProperty(window, 'location', {
         value: { href: '' },
         writable: true,
       });
-      
+
       window.open = jest.fn();
-      
+
       renderWithTheme(<Contact />);
-      
+
       // Test Enter key on email card
-      const emailCard = screen.getByRole('button', { name: /contact via email/i });
+      const emailCard = screen.getByRole('button', {
+        name: /contact via email/i,
+      });
       fireEvent.keyDown(emailCard, { key: 'Enter' });
       expect(window.location.href).toContain('mailto:');
-      
+
       // Test Space key on LinkedIn card
-      const linkedinCard = screen.getByRole('button', { name: /contact via linkedin/i });
+      const linkedinCard = screen.getByRole('button', {
+        name: /contact via linkedin/i,
+      });
       fireEvent.keyDown(linkedinCard, { key: ' ' });
       expect(window.open).toHaveBeenCalledWith(
         expect.stringContaining('https://'),
         '_blank',
         'noopener,noreferrer'
       );
-      
+
       // Restore original functions
       Object.defineProperty(window, 'location', {
         value: originalLocation,
@@ -146,10 +142,10 @@ describe('Contact Component', () => {
   describe('Visual Design Requirements', () => {
     test('contact section has proper styling and background', () => {
       renderWithTheme(<Contact />);
-      
+
       const contactSection = document.getElementById('contact');
       expect(contactSection).toBeInTheDocument();
-      
+
       // Check that it's positioned relatively for background effects
       expect(contactSection).toHaveStyle({
         position: 'relative',
@@ -158,7 +154,7 @@ describe('Contact Component', () => {
 
     test('contact cards have retro-futuristic styling', () => {
       const { container } = renderWithTheme(<Contact />);
-      
+
       // Check for MUI Card components (each contact method has a card + nested elements)
       const cards = container.querySelectorAll('[class*="MuiCard"]');
       expect(cards.length).toBeGreaterThanOrEqual(3); // At least 3 contact methods
@@ -166,13 +162,13 @@ describe('Contact Component', () => {
 
     test('contact cards have clickable styling', () => {
       const { container } = renderWithTheme(<Contact />);
-      
+
       // Check for clickable Card components (one per contact method)
       const clickableCards = container.querySelectorAll('[role="button"]');
-      expect(clickableCards.length).toBe(3); // Email, Phone, LinkedIn
-      
+      expect(clickableCards.length).toBe(2); // Email, LinkedIn
+
       // Verify cards have cursor pointer styling
-      clickableCards.forEach(card => {
+      clickableCards.forEach((card) => {
         expect(card).toHaveAttribute('tabindex', '0');
         expect(card).toHaveAttribute('role', 'button');
       });

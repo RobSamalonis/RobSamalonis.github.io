@@ -9,21 +9,13 @@ import {
 } from '@mui/material';
 import {
   Email as EmailIcon,
-  Phone as PhoneIcon,
   LinkedIn as LinkedInIcon,
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
-import AnimatedSection from '../common/AnimatedSection';
 import { colorPalette } from '../../styles/theme';
 import { resumeData } from '../../data/resumeData';
 import { ContactMethod } from '../../types';
-import { animationConfigs } from '../../utils/animationPresets';
-import { useMobileSpacing } from '../../hooks/useMobileSpacing';
 
 const Contact: React.FC = () => {
-  // Use mobile spacing hook for dynamic bottom padding
-  const { safeBottomPadding } = useMobileSpacing();
-
   // Contact methods data
   const contactMethods: ContactMethod[] = [
     {
@@ -31,12 +23,6 @@ const Contact: React.FC = () => {
       value: resumeData.personalInfo.email,
       label: 'Email',
       icon: EmailIcon,
-    },
-    {
-      type: 'phone',
-      value: resumeData.personalInfo.phone,
-      label: 'Phone',
-      icon: PhoneIcon,
     },
     {
       type: 'linkedin',
@@ -131,39 +117,37 @@ const Contact: React.FC = () => {
         }}
       >
         {/* Section Header */}
-        <AnimatedSection animation={animationConfigs.scrollReveal}>
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
-            <Typography
-              id="contact-heading"
-              variant="h2"
-              component="h2"
-              sx={{
-                fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
-                fontWeight: 700,
-                background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                mb: 2,
-                textShadow: `0 0 30px ${colorPalette.accent.electricBlue}50`,
-              }}
-            >
-              Get In Touch
-            </Typography>
-            <Typography
-              variant="h5"
-              component="p"
-              sx={{
-                color: colorPalette.neutral.lightGray,
-                maxWidth: '600px',
-                mx: 'auto',
-                fontSize: { xs: '1.1rem', sm: '1.25rem' },
-              }}
-            >
-              Ready to collaborate? Let's create something amazing together.
-            </Typography>
-          </Box>
-        </AnimatedSection>
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography
+            id="contact-heading"
+            variant="h2"
+            component="h2"
+            sx={{
+              fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+              fontWeight: 700,
+              background: `linear-gradient(45deg, ${colorPalette.accent.electricBlue}, ${colorPalette.accent.hotPink})`,
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              mb: 2,
+              textShadow: `0 0 30px ${colorPalette.accent.electricBlue}50`,
+            }}
+          >
+            Get In Touch
+          </Typography>
+          <Typography
+            variant="h5"
+            component="p"
+            sx={{
+              color: colorPalette.neutral.lightGray,
+              maxWidth: '600px',
+              mx: 'auto',
+              fontSize: { xs: '1.1rem', sm: '1.25rem' },
+            }}
+          >
+            Ready to collaborate? Let's create something amazing together.
+          </Typography>
+        </Box>
 
         <Grid container spacing={{ xs: 3, md: 4 }} justifyContent="center">
           {/* Contact Information */}
@@ -175,20 +159,13 @@ const Contact: React.FC = () => {
                 gap: { xs: 2, sm: 3 },
               }}
             >
-              {contactMethods.map((method, index) => {
+              {contactMethods.map((method) => {
                 const IconComponent = method.icon;
                 const accentColor = getAccentColor(method.type);
 
                 return (
                   <Card
                     key={method.type}
-                    component={motion.div}
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.2 }}
-                    viewport={{ once: true }}
-                    whileHover={{ scale: 1.02, y: -4 }}
-                    whileTap={{ scale: 0.98 }}
                     onClick={() => handleContactClick(method)}
                     sx={{
                       background: `linear-gradient(135deg, ${colorPalette.primary.darkGray} 0%, ${colorPalette.primary.mediumGray} 100%)`,
@@ -199,7 +176,6 @@ const Contact: React.FC = () => {
                       '&:hover': {
                         boxShadow: `0 12px 35px ${accentColor}20`,
                         borderColor: `${accentColor}60`,
-                        transform: 'scale(1.02) translateY(-4px)',
                       },
                       '&:focus-visible': {
                         outline: `3px solid ${accentColor}`,
@@ -214,7 +190,6 @@ const Contact: React.FC = () => {
                         borderColor: `${accentColor}80`,
                       },
                       '&:active': {
-                        transform: 'scale(0.98)',
                         boxShadow: `0 6px 20px ${accentColor}15`,
                       },
                       transition: 'all 0.3s ease-in-out',

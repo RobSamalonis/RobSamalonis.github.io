@@ -15,8 +15,8 @@ jest.mock('../utils/smartScrolling', () => ({
     getCurrentSection: jest.fn(),
     getSectionProgress: jest.fn(),
     cancelScroll: jest.fn(),
-    isScrolling: false
-  })
+    isScrolling: false,
+  }),
 }));
 
 // Mock framer-motion to avoid animation complexities
@@ -24,14 +24,34 @@ jest.mock('framer-motion', () => ({
   motion: Object.assign(
     (component: any) => {
       const MotionComponent = ({ children, ...props }: any) => {
-        const { whileHover, whileTap, animate, transition, initial, exit, variants, whileInView, ...domProps } = props;
+        const {
+          whileHover,
+          whileTap,
+          animate,
+          transition,
+          initial,
+          exit,
+          variants,
+          whileInView,
+          ...domProps
+        } = props;
         return React.createElement(component, domProps, children);
       };
       return MotionComponent;
     },
     {
       div: ({ children, ...props }: any) => {
-        const { whileHover, whileTap, animate, transition, initial, exit, variants, whileInView, ...domProps } = props;
+        const {
+          whileHover,
+          whileTap,
+          animate,
+          transition,
+          initial,
+          exit,
+          variants,
+          whileInView,
+          ...domProps
+        } = props;
         return <div {...domProps}>{children}</div>;
       },
     }
@@ -39,30 +59,40 @@ jest.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
   useScroll: () => ({
     scrollY: { get: () => 0, on: jest.fn(), destroy: jest.fn() },
-    scrollYProgress: { get: () => 0, on: jest.fn(), destroy: jest.fn() }
+    scrollYProgress: { get: () => 0, on: jest.fn(), destroy: jest.fn() },
   }),
   useTransform: () => ({ get: () => 0, on: jest.fn(), destroy: jest.fn() }),
-  useSpring: (value: any) => value || { get: () => 0, on: jest.fn(), destroy: jest.fn() },
-  useMotionValue: (initial: any) => ({ get: () => initial, set: jest.fn(), on: jest.fn(), destroy: jest.fn() }),
+  useSpring: (value: any) =>
+    value || { get: () => 0, on: jest.fn(), destroy: jest.fn() },
+  useMotionValue: (initial: any) => ({
+    get: () => initial,
+    set: jest.fn(),
+    on: jest.fn(),
+    destroy: jest.fn(),
+  }),
   useAnimationControls: () => ({
     start: jest.fn(),
     stop: jest.fn(),
-    set: jest.fn()
+    set: jest.fn(),
   }),
 }));
 
 // Mock PDF generator
 jest.mock('../utils/pdfGenerator', () => ({
-  generateResumePDF: jest.fn().mockResolvedValue(undefined)
+  generateResumePDF: jest.fn().mockResolvedValue(undefined),
 }));
 jest.mock('../components/common/AnimatedSection', () => ({
   __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 jest.mock('../components/common/EntranceAnimation', () => ({
   __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 // Mock scroll utilities
@@ -81,16 +111,12 @@ Object.defineProperty(document, 'getElementById', {
 
 describe('Component Interactions Integration Tests', () => {
   const renderWithTheme = (component: React.ReactElement) => {
-    return render(
-      <ThemeProvider theme={theme}>
-        {component}
-      </ThemeProvider>
-    );
+    return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
   };
 
   beforeEach(() => {
     mockScrollIntoView.mockClear();
-    
+
     // Mock getElementById for navigation
     jest.spyOn(document, 'getElementById').mockImplementation((id) => {
       const mockElement = document.createElement('div');
@@ -106,7 +132,7 @@ describe('Component Interactions Integration Tests', () => {
 
   test('hero and contact components work together', async () => {
     const user = userEvent.setup();
-    
+
     renderWithTheme(
       <div>
         <Hero />
@@ -115,27 +141,30 @@ describe('Component Interactions Integration Tests', () => {
     );
 
     // Hero content is visible
-    expect(screen.getByRole('heading', { level: 1, name: /robert samalonis/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: /robert samalonis/i })
+    ).toBeInTheDocument();
 
     // Navigation works
-    const getInTouchButton = screen.getByRole('button', { name: /get in touch/i });
+    const getInTouchButton = screen.getByRole('button', {
+      name: /get in touch/i,
+    });
     await user.click(getInTouchButton);
     expect(mockScrollIntoView).toHaveBeenCalled();
 
     // Contact information is visible
     expect(screen.getByText('robsamalonis@gmail.com')).toBeInTheDocument();
-    expect(screen.getByText('267-772-1647')).toBeInTheDocument();
   });
 
   test.skip('navigation component works with sections', async () => {
     const user = userEvent.setup();
     const mockSectionChange = jest.fn();
-    
+
     // Mock getElementById to return a mock element
     const mockElement = {
       scrollIntoView: mockScrollIntoView,
       offsetTop: 100,
-      offsetHeight: 500
+      offsetHeight: 500,
     };
     mockGetElementById.mockReturnValue(mockElement);
 
@@ -150,7 +179,7 @@ describe('Component Interactions Integration Tests', () => {
     // Click first nav button
     await user.click(navButtons[0]);
     expect(mockSectionChange).toHaveBeenCalled();
-    
+
     // Clean up
     mockGetElementById.mockClear();
     mockScrollIntoView.mockClear();
@@ -159,7 +188,7 @@ describe('Component Interactions Integration Tests', () => {
   test('resume section displays and download works', async () => {
     const user = userEvent.setup();
     const { generateResumePDF } = await import('../utils/pdfGenerator');
-    
+
     renderWithTheme(<Resume />);
 
     // Content is visible
@@ -167,7 +196,9 @@ describe('Component Interactions Integration Tests', () => {
     expect(screen.getByText('Senior Software Engineer')).toBeInTheDocument();
 
     // Download button works
-    const downloadButton = screen.getByRole('button', { name: /download pdf version of resume/i });
+    const downloadButton = screen.getByRole('button', {
+      name: /download pdf version of resume/i,
+    });
     await user.click(downloadButton);
     expect(generateResumePDF).toHaveBeenCalled();
   });
@@ -177,10 +208,13 @@ describe('Component Interactions Integration Tests', () => {
 
     // Contact information is visible
     expect(screen.getByText('robsamalonis@gmail.com')).toBeInTheDocument();
-    expect(screen.getByText('267-772-1647')).toBeInTheDocument();
-    
+
     // Contact links work (now buttons due to full card clickability)
-    expect(screen.getByRole('button', { name: /contact via email/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /contact via phone/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /contact via email/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /contact via linkedin/i })
+    ).toBeInTheDocument();
   });
 });

@@ -4,7 +4,13 @@ import { ThemeProvider } from '@mui/material/styles';
 import fc from 'fast-check';
 import { theme } from '../../styles/theme';
 import App from '../../App';
-import { updateMetaTags, SEOConfig, defaultSEOConfig, generatePersonStructuredData, injectStructuredData } from '../seo';
+import {
+  updateMetaTags,
+  SEOConfig,
+  defaultSEOConfig,
+  generatePersonStructuredData,
+  injectStructuredData,
+} from '../seo';
 
 // Mock framer-motion to avoid animation issues in tests
 jest.mock('framer-motion', () => {
@@ -34,11 +40,11 @@ jest.mock('framer-motion', () => {
         y,
         ...domProps
       } = props;
-      
+
       return React.createElement(component, domProps, children);
     };
   };
-  
+
   return {
     motion: {
       div: mockMotion('div'),
@@ -63,23 +69,24 @@ jest.mock('framer-motion', () => {
     useInView: () => true,
     useScroll: () => ({
       scrollY: { get: () => 0, on: jest.fn(), destroy: jest.fn() },
-      scrollYProgress: { get: () => 0, on: jest.fn(), destroy: jest.fn() }
+      scrollYProgress: { get: () => 0, on: jest.fn(), destroy: jest.fn() },
     }),
-    useTransform: () => ({ 
-      get: () => 0, 
-      on: jest.fn(), 
-      destroy: jest.fn() 
+    useTransform: () => ({
+      get: () => 0,
+      on: jest.fn(),
+      destroy: jest.fn(),
     }),
-    useSpring: (value: any) => value || { 
-      get: () => 0, 
-      on: jest.fn(), 
-      destroy: jest.fn() 
-    },
-    useMotionValue: (initial: any) => ({ 
-      get: () => initial, 
-      set: jest.fn(), 
-      on: jest.fn(), 
-      destroy: jest.fn() 
+    useSpring: (value: any) =>
+      value || {
+        get: () => 0,
+        on: jest.fn(),
+        destroy: jest.fn(),
+      },
+    useMotionValue: (initial: any) => ({
+      get: () => initial,
+      set: jest.fn(),
+      on: jest.fn(),
+      destroy: jest.fn(),
     }),
   };
 });
@@ -108,14 +115,16 @@ describe('SEO Meta Tags Property Tests', () => {
     cleanup();
     // Clear any existing meta tags from previous tests
     const existingMetas = document.querySelectorAll('meta[data-test="true"]');
-    existingMetas.forEach(meta => meta.remove());
-    
+    existingMetas.forEach((meta) => meta.remove());
+
     // Reset document title
     document.title = '';
-    
+
     // Clear any existing structured data scripts
-    const existingScripts = document.querySelectorAll('script[type="application/ld+json"]');
-    existingScripts.forEach(script => script.remove());
+    const existingScripts = document.querySelectorAll(
+      'script[type="application/ld+json"]'
+    );
+    existingScripts.forEach((script) => script.remove());
   });
 
   afterEach(() => {
@@ -129,22 +138,21 @@ describe('SEO Meta Tags Property Tests', () => {
         fc.constant('App'), // Test the main App component which initializes SEO
         (componentType) => {
           cleanup();
-          
+
           // Render the App component which should initialize SEO
           renderApp();
 
           // Property: Document should have all required basic meta tags that are dynamically set
           // Note: Some meta tags like 'author', 'robots', 'theme-color' are only in static HTML
-          const requiredMetaTags = [
-            'description',
-            'keywords'
-          ];
+          const requiredMetaTags = ['description', 'keywords'];
 
-          requiredMetaTags.forEach(tagName => {
+          requiredMetaTags.forEach((tagName) => {
             const metaTag = document.querySelector(`meta[name="${tagName}"]`);
             expect(metaTag).toBeTruthy();
             expect(metaTag?.getAttribute('content')).toBeTruthy();
-            expect(metaTag?.getAttribute('content')?.trim().length).toBeGreaterThan(0);
+            expect(
+              metaTag?.getAttribute('content')?.trim().length
+            ).toBeGreaterThan(0);
           });
 
           // Property: Document should have all required Open Graph meta tags that are dynamically set
@@ -154,14 +162,18 @@ describe('SEO Meta Tags Property Tests', () => {
             'og:url',
             'og:title',
             'og:description',
-            'og:image'
+            'og:image',
           ];
 
-          requiredOGTags.forEach(tagName => {
-            const metaTag = document.querySelector(`meta[property="${tagName}"]`);
+          requiredOGTags.forEach((tagName) => {
+            const metaTag = document.querySelector(
+              `meta[property="${tagName}"]`
+            );
             expect(metaTag).toBeTruthy();
             expect(metaTag?.getAttribute('content')).toBeTruthy();
-            expect(metaTag?.getAttribute('content')?.trim().length).toBeGreaterThan(0);
+            expect(
+              metaTag?.getAttribute('content')?.trim().length
+            ).toBeGreaterThan(0);
           });
 
           // Property: Document should have all required Twitter Card meta tags that are dynamically set
@@ -170,21 +182,27 @@ describe('SEO Meta Tags Property Tests', () => {
             'twitter:url',
             'twitter:title',
             'twitter:description',
-            'twitter:image'
+            'twitter:image',
           ];
 
-          requiredTwitterTags.forEach(tagName => {
-            const metaTag = document.querySelector(`meta[property="${tagName}"]`);
+          requiredTwitterTags.forEach((tagName) => {
+            const metaTag = document.querySelector(
+              `meta[property="${tagName}"]`
+            );
             expect(metaTag).toBeTruthy();
             expect(metaTag?.getAttribute('content')).toBeTruthy();
-            expect(metaTag?.getAttribute('content')?.trim().length).toBeGreaterThan(0);
+            expect(
+              metaTag?.getAttribute('content')?.trim().length
+            ).toBeGreaterThan(0);
           });
 
           // Property: Document should have canonical link
           const canonicalLink = document.querySelector('link[rel="canonical"]');
           expect(canonicalLink).toBeTruthy();
           expect(canonicalLink?.getAttribute('href')).toBeTruthy();
-          expect(canonicalLink?.getAttribute('href')?.trim().length).toBeGreaterThan(0);
+          expect(
+            canonicalLink?.getAttribute('href')?.trim().length
+          ).toBeGreaterThan(0);
 
           // Property: Document title should be set
           expect(document.title).toBeTruthy();
@@ -200,22 +218,26 @@ describe('SEO Meta Tags Property Tests', () => {
     fc.assert(
       fc.property(
         fc.record({
-          title: fc.string().filter(s => s.trim().length > 0 && s.trim().length <= 60),
-          description: fc.string().filter(s => s.trim().length > 0 && s.trim().length <= 160),
-          keywords: fc.string().filter(s => s.trim().length > 0),
+          title: fc
+            .string()
+            .filter((s) => s.trim().length > 0 && s.trim().length <= 60),
+          description: fc
+            .string()
+            .filter((s) => s.trim().length > 0 && s.trim().length <= 160),
+          keywords: fc.string().filter((s) => s.trim().length > 0),
           url: fc.constantFrom(
             'https://example.com',
-            'https://robertsamalonis.github.io/personal-portfolio-website/',
+            'https://robertsamalonis.github.io/',
             'https://portfolio.example.org'
           ),
           image: fc.constantFrom(
             'https://example.com/image.jpg',
-            'https://robertsamalonis.github.io/personal-portfolio-website/og-image.jpg'
-          )
+            'https://robertsamalonis.github.io/og-image.jpg'
+          ),
         }),
         (seoConfig) => {
           cleanup();
-          
+
           // Test the updateMetaTags function with random valid SEO config
           updateMetaTags(seoConfig);
 
@@ -225,35 +247,53 @@ describe('SEO Meta Tags Property Tests', () => {
             // Browser trims and collapses multiple spaces in document.title
             const expectedTitle = seoConfig.title.trim().replace(/\s+/g, ' ');
             expect(document.title).toBe(expectedTitle);
-            
+
             const ogTitle = document.querySelector('meta[property="og:title"]');
             expect(ogTitle?.getAttribute('content')).toBe(seoConfig.title);
-            
-            const twitterTitle = document.querySelector('meta[property="twitter:title"]');
+
+            const twitterTitle = document.querySelector(
+              'meta[property="twitter:title"]'
+            );
             expect(twitterTitle?.getAttribute('content')).toBe(seoConfig.title);
           }
 
           // Property: Description should be consistent across all description meta tags
           if (seoConfig.description) {
-            const metaDescription = document.querySelector('meta[name="description"]');
-            expect(metaDescription?.getAttribute('content')).toBe(seoConfig.description);
-            
-            const ogDescription = document.querySelector('meta[property="og:description"]');
-            expect(ogDescription?.getAttribute('content')).toBe(seoConfig.description);
-            
-            const twitterDescription = document.querySelector('meta[property="twitter:description"]');
-            expect(twitterDescription?.getAttribute('content')).toBe(seoConfig.description);
+            const metaDescription = document.querySelector(
+              'meta[name="description"]'
+            );
+            expect(metaDescription?.getAttribute('content')).toBe(
+              seoConfig.description
+            );
+
+            const ogDescription = document.querySelector(
+              'meta[property="og:description"]'
+            );
+            expect(ogDescription?.getAttribute('content')).toBe(
+              seoConfig.description
+            );
+
+            const twitterDescription = document.querySelector(
+              'meta[property="twitter:description"]'
+            );
+            expect(twitterDescription?.getAttribute('content')).toBe(
+              seoConfig.description
+            );
           }
 
           // Property: URL should be consistent across all URL meta tags
           if (seoConfig.url) {
             const ogUrl = document.querySelector('meta[property="og:url"]');
             expect(ogUrl?.getAttribute('content')).toBe(seoConfig.url);
-            
-            const twitterUrl = document.querySelector('meta[property="twitter:url"]');
+
+            const twitterUrl = document.querySelector(
+              'meta[property="twitter:url"]'
+            );
             expect(twitterUrl?.getAttribute('content')).toBe(seoConfig.url);
-            
-            const canonicalLink = document.querySelector('link[rel="canonical"]');
+
+            const canonicalLink = document.querySelector(
+              'link[rel="canonical"]'
+            );
             expect(canonicalLink?.getAttribute('href')).toBe(seoConfig.url);
           }
 
@@ -261,16 +301,22 @@ describe('SEO Meta Tags Property Tests', () => {
           if (seoConfig.image) {
             const ogImage = document.querySelector('meta[property="og:image"]');
             expect(ogImage?.getAttribute('content')).toBe(seoConfig.image);
-            
-            const twitterImage = document.querySelector('meta[property="twitter:image"]');
+
+            const twitterImage = document.querySelector(
+              'meta[property="twitter:image"]'
+            );
             expect(twitterImage?.getAttribute('content')).toBe(seoConfig.image);
           }
 
           // Property: Keywords should be properly formatted
           if (seoConfig.keywords) {
-            const keywordsMeta = document.querySelector('meta[name="keywords"]');
-            expect(keywordsMeta?.getAttribute('content')).toBe(seoConfig.keywords);
-            
+            const keywordsMeta = document.querySelector(
+              'meta[name="keywords"]'
+            );
+            expect(keywordsMeta?.getAttribute('content')).toBe(
+              seoConfig.keywords
+            );
+
             // Keywords should not be empty and should contain meaningful content
             const keywordsContent = keywordsMeta?.getAttribute('content') || '';
             expect(keywordsContent.trim().length).toBeGreaterThan(0);
@@ -286,42 +332,46 @@ describe('SEO Meta Tags Property Tests', () => {
     fc.assert(
       fc.property(
         fc.record({
-          name: fc.string().filter(s => s.trim().length > 0),
-          jobTitle: fc.string().filter(s => s.trim().length > 0),
-          description: fc.string().filter(s => s.trim().length > 0),
+          name: fc.string().filter((s) => s.trim().length > 0),
+          jobTitle: fc.string().filter((s) => s.trim().length > 0),
+          description: fc.string().filter((s) => s.trim().length > 0),
           url: fc.constantFrom(
             'https://example.com',
-            'https://robertsamalonis.github.io/personal-portfolio-website/'
+            'https://robertsamalonis.github.io/'
           ),
           email: fc.constantFrom(
             'test@example.com',
             'robsamalonis@gmail.com',
             'user@domain.org'
           ),
-          telephone: fc.constantFrom(
-            '+1-555-123-4567',
-            '+1-267-772-1647',
-            '555-123-4567'
+          telephone: fc.constantFrom('+1-555-123-4567', '555-123-4567'),
+          worksFor: fc.string().filter((s) => s.trim().length > 0),
+          alumniOf: fc.string().filter((s) => s.trim().length > 0),
+          knowsAbout: fc.array(
+            fc.string().filter((s) => s.trim().length > 0),
+            { minLength: 1, maxLength: 10 }
           ),
-          worksFor: fc.string().filter(s => s.trim().length > 0),
-          alumniOf: fc.string().filter(s => s.trim().length > 0),
-          knowsAbout: fc.array(fc.string().filter(s => s.trim().length > 0), { minLength: 1, maxLength: 10 }),
-          skills: fc.array(fc.string().filter(s => s.trim().length > 0), { minLength: 1, maxLength: 10 })
+          skills: fc.array(
+            fc.string().filter((s) => s.trim().length > 0),
+            { minLength: 1, maxLength: 10 }
+          ),
         }),
         (profileData) => {
           cleanup();
-          
+
           // Generate structured data with the test profile data
           const structuredData = generatePersonStructuredData({
             ...profileData,
-            sameAs: ['https://linkedin.com/in/test-profile']
+            sameAs: ['https://linkedin.com/in/test-profile'],
           });
 
           // Inject the structured data into the document
           injectStructuredData(structuredData);
 
           // Property: Structured data script should be present in document head
-          const structuredDataScript = document.querySelector('script[type="application/ld+json"]');
+          const structuredDataScript = document.querySelector(
+            'script[type="application/ld+json"]'
+          );
           expect(structuredDataScript).toBeTruthy();
           expect(structuredDataScript?.textContent).toBeTruthy();
 
@@ -375,7 +425,7 @@ describe('SEO Meta Tags Property Tests', () => {
         fc.constant('defaultConfig'), // Test the default configuration
         (configType) => {
           cleanup();
-          
+
           // Property: Default SEO config should contain all required fields
           expect(defaultSEOConfig.title).toBeTruthy();
           expect(defaultSEOConfig.description).toBeTruthy();
@@ -389,7 +439,9 @@ describe('SEO Meta Tags Property Tests', () => {
           expect(defaultSEOConfig.title).toContain('Senior Software Engineer');
 
           // Property: Default description should contain key professional details
-          expect(defaultSEOConfig.description).toContain('Senior Software Engineer');
+          expect(defaultSEOConfig.description).toContain(
+            'Senior Software Engineer'
+          );
           expect(defaultSEOConfig.description).toContain('React');
           expect(defaultSEOConfig.description).toContain('TypeScript');
           expect(defaultSEOConfig.description).toContain('eMoney Advisor');
@@ -407,7 +459,9 @@ describe('SEO Meta Tags Property Tests', () => {
           expect(defaultSEOConfig.url).toContain('robertsamalonis');
 
           // Property: Default image should be properly formatted
-          expect(defaultSEOConfig.image).toMatch(/^https?:\/\/.+\.(jpg|jpeg|png|webp)$/i);
+          expect(defaultSEOConfig.image).toMatch(
+            /^https?:\/\/.+\.(jpg|jpeg|png|webp)$/i
+          );
 
           // Property: Default type should be appropriate for a portfolio website
           expect(defaultSEOConfig.type).toBe('website');
@@ -417,12 +471,18 @@ describe('SEO Meta Tags Property Tests', () => {
 
           // Property: All meta tags should be properly set with default values
           expect(document.title).toBe(defaultSEOConfig.title);
-          
-          const metaDescription = document.querySelector('meta[name="description"]');
-          expect(metaDescription?.getAttribute('content')).toBe(defaultSEOConfig.description);
-          
+
+          const metaDescription = document.querySelector(
+            'meta[name="description"]'
+          );
+          expect(metaDescription?.getAttribute('content')).toBe(
+            defaultSEOConfig.description
+          );
+
           const metaKeywords = document.querySelector('meta[name="keywords"]');
-          expect(metaKeywords?.getAttribute('content')).toBe(defaultSEOConfig.keywords);
+          expect(metaKeywords?.getAttribute('content')).toBe(
+            defaultSEOConfig.keywords
+          );
         }
       ),
       { numRuns: 100 }
@@ -433,31 +493,35 @@ describe('SEO Meta Tags Property Tests', () => {
   test('meta tag updates properly override existing values without duplication', () => {
     fc.assert(
       fc.property(
-        fc.record({
-          initialConfig: fc.record({
-            title: fc.string().filter(s => s.trim().length > 0),
-            description: fc.string().filter(s => s.trim().length > 0),
-            url: fc.constantFrom('https://initial.com', 'https://first.org')
-          }),
-          updatedConfig: fc.record({
-            title: fc.string().filter(s => s.trim().length > 0),
-            description: fc.string().filter(s => s.trim().length > 0),
-            url: fc.constantFrom('https://updated.com', 'https://second.org')
+        fc
+          .record({
+            initialConfig: fc.record({
+              title: fc.string().filter((s) => s.trim().length > 0),
+              description: fc.string().filter((s) => s.trim().length > 0),
+              url: fc.constantFrom('https://initial.com', 'https://first.org'),
+            }),
+            updatedConfig: fc.record({
+              title: fc.string().filter((s) => s.trim().length > 0),
+              description: fc.string().filter((s) => s.trim().length > 0),
+              url: fc.constantFrom('https://updated.com', 'https://second.org'),
+            }),
           })
-        }).filter(configs => 
-          configs.initialConfig.title !== configs.updatedConfig.title ||
-          configs.initialConfig.description !== configs.updatedConfig.description ||
-          configs.initialConfig.url !== configs.updatedConfig.url
-        ),
+          .filter(
+            (configs) =>
+              configs.initialConfig.title !== configs.updatedConfig.title ||
+              configs.initialConfig.description !==
+                configs.updatedConfig.description ||
+              configs.initialConfig.url !== configs.updatedConfig.url
+          ),
         (configs) => {
           cleanup();
-          
+
           // Apply initial configuration
           updateMetaTags(configs.initialConfig);
-          
+
           // Verify initial state - browser trims document.title
           expect(document.title).toBe(configs.initialConfig.title.trim());
-          
+
           // Apply updated configuration
           updateMetaTags(configs.updatedConfig);
 
@@ -465,32 +529,50 @@ describe('SEO Meta Tags Property Tests', () => {
           // Note: Browser automatically trims whitespace from document.title
           const expectedTitle = configs.updatedConfig.title.trim(); // Browser trims document.title
           expect(document.title).toBe(expectedTitle);
-          
-          const metaDescription = document.querySelector('meta[name="description"]');
-          expect(metaDescription?.getAttribute('content')).toBe(configs.updatedConfig.description);
-          
+
+          const metaDescription = document.querySelector(
+            'meta[name="description"]'
+          );
+          expect(metaDescription?.getAttribute('content')).toBe(
+            configs.updatedConfig.description
+          );
+
           const canonicalLink = document.querySelector('link[rel="canonical"]');
-          expect(canonicalLink?.getAttribute('href')).toBe(configs.updatedConfig.url);
+          expect(canonicalLink?.getAttribute('href')).toBe(
+            configs.updatedConfig.url
+          );
 
           // Property: There should be no duplicate meta tags
-          const titleMetas = document.querySelectorAll('meta[property="og:title"]');
+          const titleMetas = document.querySelectorAll(
+            'meta[property="og:title"]'
+          );
           expect(titleMetas.length).toBe(1);
-          
-          const descriptionMetas = document.querySelectorAll('meta[name="description"]');
+
+          const descriptionMetas = document.querySelectorAll(
+            'meta[name="description"]'
+          );
           expect(descriptionMetas.length).toBe(1);
-          
+
           const urlMetas = document.querySelectorAll('meta[property="og:url"]');
           expect(urlMetas.length).toBe(1);
-          
-          const canonicalLinks = document.querySelectorAll('link[rel="canonical"]');
+
+          const canonicalLinks = document.querySelectorAll(
+            'link[rel="canonical"]'
+          );
           expect(canonicalLinks.length).toBe(1);
 
           // Property: All related meta tags should be updated consistently
           const ogTitle = document.querySelector('meta[property="og:title"]');
-          expect(ogTitle?.getAttribute('content')).toBe(configs.updatedConfig.title);
-          
-          const twitterTitle = document.querySelector('meta[property="twitter:title"]');
-          expect(twitterTitle?.getAttribute('content')).toBe(configs.updatedConfig.title);
+          expect(ogTitle?.getAttribute('content')).toBe(
+            configs.updatedConfig.title
+          );
+
+          const twitterTitle = document.querySelector(
+            'meta[property="twitter:title"]'
+          );
+          expect(twitterTitle?.getAttribute('content')).toBe(
+            configs.updatedConfig.title
+          );
         }
       ),
       { numRuns: 100 }
@@ -506,20 +588,25 @@ describe('SEO Meta Tags Property Tests', () => {
         fc.constant('AppSEOIntegration'), // Test SEO integration with App
         async (testType) => {
           cleanup();
-          
+
           // Clear any existing meta tags
-          const existingMetas = document.querySelectorAll('meta[name], meta[property]');
-          existingMetas.forEach(meta => {
-            if (!meta.getAttribute('charset') && !meta.getAttribute('name')?.includes('viewport')) {
+          const existingMetas = document.querySelectorAll(
+            'meta[name], meta[property]'
+          );
+          existingMetas.forEach((meta) => {
+            if (
+              !meta.getAttribute('charset') &&
+              !meta.getAttribute('name')?.includes('viewport')
+            ) {
               meta.remove();
             }
           });
-          
+
           // Render the App component
           renderApp();
 
           // Wait for App to initialize SEO
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 100));
 
           // Property: App should initialize all required SEO meta tags
           const requiredTags = [
@@ -532,13 +619,15 @@ describe('SEO Meta Tags Property Tests', () => {
             { type: 'property', name: 'og:type' },
             { type: 'property', name: 'twitter:title' },
             { type: 'property', name: 'twitter:description' },
-            { type: 'property', name: 'twitter:image' }
+            { type: 'property', name: 'twitter:image' },
           ];
 
-          requiredTags.forEach(tag => {
-            const metaTag = document.querySelector(`meta[${tag.type}="${tag.name}"]`);
+          requiredTags.forEach((tag) => {
+            const metaTag = document.querySelector(
+              `meta[${tag.type}="${tag.name}"]`
+            );
             expect(metaTag).toBeTruthy();
-            
+
             const content = metaTag?.getAttribute('content');
             expect(content).toBeTruthy();
             expect(content?.trim().length).toBeGreaterThan(0);
@@ -560,9 +649,14 @@ describe('SEO Meta Tags Property Tests', () => {
           expect(titleContent.toLowerCase()).toContain('robert samalonis');
           expect(titleContent.toLowerCase()).toContain('software engineer');
 
-          const metaDescription = document.querySelector('meta[name="description"]');
-          const descriptionContent = metaDescription?.getAttribute('content') || '';
-          expect(descriptionContent.toLowerCase()).toContain('software engineer');
+          const metaDescription = document.querySelector(
+            'meta[name="description"]'
+          );
+          const descriptionContent =
+            metaDescription?.getAttribute('content') || '';
+          expect(descriptionContent.toLowerCase()).toContain(
+            'software engineer'
+          );
           expect(descriptionContent.toLowerCase()).toContain('react');
           expect(descriptionContent.toLowerCase()).toContain('typescript');
         }

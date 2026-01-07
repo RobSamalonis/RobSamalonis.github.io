@@ -1,7 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motion';
+import {
+  motion,
+  useAnimation,
+  useMotionValue,
+  useTransform,
+} from 'framer-motion';
 import { Box, styled } from '@mui/material';
-import { respectsReducedMotion } from '../../utils/performance';
+import {
+  respectsReducedMotion,
+  getOptimizedAnimationConfig,
+} from '../../utils/performance';
 
 // Particle effect component for enhanced interactions
 interface Particle {
@@ -38,24 +46,44 @@ export const ParticleEffect: React.FC<ParticleEffectProps> = ({
   duration = 1000,
 }) => {
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [performanceConfig, setPerformanceConfig] = useState(
+    getOptimizedAnimationConfig()
+  );
   const animationRef = useRef<number>();
   const startTimeRef = useRef<number>();
 
   useEffect(() => {
-    if (trigger && !respectsReducedMotion()) {
+    setPerformanceConfig(getOptimizedAnimationConfig());
+  }, []);
+
+  useEffect(() => {
+    if (
+      trigger &&
+      !respectsReducedMotion() &&
+      performanceConfig.enableParticles
+    ) {
+      // Adjust particle count based on device performance
+      const adjustedParticleCount = Math.min(
+        particleCount,
+        performanceConfig.particleCount
+      );
+
       // Generate particles
-      const newParticles: Particle[] = Array.from({ length: particleCount }, (_, i) => ({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        velocity: {
-          x: (Math.random() - 0.5) * 4,
-          y: (Math.random() - 0.5) * 4,
-        },
-        life: 1,
-        color,
-        size: Math.random() * 3 + 1,
-      }));
+      const newParticles: Particle[] = Array.from(
+        { length: adjustedParticleCount },
+        (_, i) => ({
+          id: i,
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          velocity: {
+            x: (Math.random() - 0.5) * 4,
+            y: (Math.random() - 0.5) * 4,
+          },
+          life: 1,
+          color,
+          size: Math.random() * 3 + 1,
+        })
+      );
 
       setParticles(newParticles);
       startTimeRef.current = Date.now();
@@ -69,12 +97,14 @@ export const ParticleEffect: React.FC<ParticleEffectProps> = ({
           return;
         }
 
-        setParticles(prev => prev.map(particle => ({
-          ...particle,
-          x: particle.x + particle.velocity.x,
-          y: particle.y + particle.velocity.y,
-          life: 1 - progress,
-        })));
+        setParticles((prev) =>
+          prev.map((particle) => ({
+            ...particle,
+            x: particle.x + particle.velocity.x,
+            y: particle.y + particle.velocity.y,
+            life: 1 - progress,
+          }))
+        );
 
         animationRef.current = requestAnimationFrame(animate);
       };
@@ -87,11 +117,11 @@ export const ParticleEffect: React.FC<ParticleEffectProps> = ({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [trigger, color, particleCount, duration]);
+  }, [trigger, color, particleCount, duration, performanceConfig]);
 
   return (
     <ParticleContainer>
-      {particles.map(particle => (
+      {particles.map((particle) => (
         <motion.div
           key={particle.id}
           style={{
@@ -140,24 +170,37 @@ export const HoverInteraction: React.FC<HoverInteractionProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showParticles, setShowParticles] = useState(false);
+  const [performanceConfig, setPerformanceConfig] = useState(
+    getOptimizedAnimationConfig()
+  );
   const controls = useAnimation();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  
+
   // Transform mouse position to rotation values
   const rotateX = useTransform(y, [-100, 100], [hoverRotation, -hoverRotation]);
   const rotateY = useTransform(x, [-100, 100], [-hoverRotation, hoverRotation]);
 
+  useEffect(() => {
+    setPerformanceConfig(getOptimizedAnimationConfig());
+  }, []);
+
+  // Adjust spring config based on device performance
+  const adjustedSpringConfig = performanceConfig.enableComplexTransforms
+    ? springConfig
+    : { stiffness: 200, damping: 30 };
+
   const handleMouseEnter = () => {
-    if (respectsReducedMotion()) return;
-    
+    if (respectsReducedMotion() || !performanceConfig.enableComplexTransforms)
+      return;
+
     setIsHovered(true);
     controls.start({
       scale: hoverScale,
-      transition: { type: 'spring', ...springConfig },
+      transition: { type: 'spring', ...adjustedSpringConfig },
     });
 
-    if (enableParticles) {
+    if (enableParticles && performanceConfig.enableParticles) {
       setShowParticles(true);
       setTimeout(() => setShowParticles(false), 100);
     }
@@ -167,19 +210,20 @@ export const HoverInteraction: React.FC<HoverInteractionProps> = ({
     setIsHovered(false);
     controls.start({
       scale: 1,
-      transition: { type: 'spring', ...springConfig },
+      transition: { type: 'spring', ...adjustedSpringConfig },
     });
     x.set(0);
     y.set(0);
   };
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (respectsReducedMotion()) return;
-    
+    if (respectsReducedMotion() || !performanceConfig.enableComplexTransforms)
+      return;
+
     const rect = event.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    
+
     x.set((event.clientX - centerX) / 5);
     y.set((event.clientY - centerY) / 5);
   };
@@ -189,8 +233,14 @@ export const HoverInteraction: React.FC<HoverInteractionProps> = ({
       className={className}
       animate={controls}
       style={{
-        rotateX: respectsReducedMotion() ? 0 : rotateX,
-        rotateY: respectsReducedMotion() ? 0 : rotateY,
+        rotateX:
+          respectsReducedMotion() || !performanceConfig.enableComplexTransforms
+            ? 0
+            : rotateX,
+        rotateY:
+          respectsReducedMotion() || !performanceConfig.enableComplexTransforms
+            ? 0
+            : rotateY,
         position: 'relative',
       }}
       onMouseEnter={handleMouseEnter}
@@ -199,27 +249,29 @@ export const HoverInteraction: React.FC<HoverInteractionProps> = ({
       whileTap={respectsReducedMotion() ? {} : { scale: 0.95 }}
     >
       {children}
-      
+
       {/* Glow effect */}
-      {isHovered && !respectsReducedMotion() && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
-          exit={{ opacity: 0 }}
-          style={{
-            position: 'absolute',
-            top: -2,
-            left: -2,
-            right: -2,
-            bottom: -2,
-            background: `radial-gradient(circle, ${glowColor}20 0%, transparent 70%)`,
-            borderRadius: 'inherit',
-            zIndex: -1,
-            filter: 'blur(4px)',
-          }}
-        />
-      )}
-      
+      {isHovered &&
+        !respectsReducedMotion() &&
+        performanceConfig.enableGlow && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.6 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'absolute',
+              top: -2,
+              left: -2,
+              right: -2,
+              bottom: -2,
+              background: `radial-gradient(circle, ${glowColor}20 0%, transparent 70%)`,
+              borderRadius: 'inherit',
+              zIndex: -1,
+              filter: 'blur(4px)',
+            }}
+          />
+        )}
+
       {/* Particle effect */}
       {enableParticles && (
         <ParticleEffect trigger={showParticles} color={glowColor} />
@@ -244,14 +296,28 @@ export const ClickAnimation: React.FC<ClickAnimationProps> = ({
   springIntensity = 'moderate',
   className,
 }) => {
-  const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
+  const [ripples, setRipples] = useState<
+    Array<{ id: number; x: number; y: number }>
+  >([]);
+  const [performanceConfig, setPerformanceConfig] = useState(
+    getOptimizedAnimationConfig()
+  );
   const rippleIdRef = useRef(0);
+
+  useEffect(() => {
+    setPerformanceConfig(getOptimizedAnimationConfig());
+  }, []);
 
   const springConfigs = {
     subtle: { stiffness: 300, damping: 25 },
     moderate: { stiffness: 400, damping: 17 },
     enhanced: { stiffness: 500, damping: 15 },
   };
+
+  // Reduce spring intensity on low-end devices
+  const adjustedSpringIntensity = performanceConfig.enableComplexTransforms
+    ? springIntensity
+    : 'subtle';
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (respectsReducedMotion()) {
@@ -269,11 +335,11 @@ export const ClickAnimation: React.FC<ClickAnimationProps> = ({
       y,
     };
 
-    setRipples(prev => [...prev, newRipple]);
+    setRipples((prev) => [...prev, newRipple]);
 
     // Remove ripple after animation
     setTimeout(() => {
-      setRipples(prev => prev.filter(ripple => ripple.id !== newRipple.id));
+      setRipples((prev) => prev.filter((ripple) => ripple.id !== newRipple.id));
     }, 600);
 
     onClick?.();
@@ -283,16 +349,23 @@ export const ClickAnimation: React.FC<ClickAnimationProps> = ({
     <motion.div
       className={className}
       onClick={handleClick}
-      whileTap={respectsReducedMotion() ? {} : {
-        scale: 0.95,
-        transition: { type: 'spring', ...springConfigs[springIntensity] },
-      }}
+      whileTap={
+        respectsReducedMotion()
+          ? {}
+          : {
+              scale: 0.95,
+              transition: {
+                type: 'spring',
+                ...springConfigs[adjustedSpringIntensity],
+              },
+            }
+      }
       style={{ position: 'relative', overflow: 'hidden' }}
     >
       {children}
-      
+
       {/* Ripple effects */}
-      {ripples.map(ripple => (
+      {ripples.map((ripple) => (
         <motion.div
           key={ripple.id}
           initial={{
@@ -338,29 +411,37 @@ export const MorphingShape: React.FC<MorphingShapeProps> = ({
   size = 20,
   morphType = 'circle-to-square',
 }) => {
+  const [performanceConfig, setPerformanceConfig] = useState(
+    getOptimizedAnimationConfig()
+  );
+
+  useEffect(() => {
+    setPerformanceConfig(getOptimizedAnimationConfig());
+  }, []);
+
   const getMorphPath = () => {
     switch (morphType) {
       case 'circle-to-square':
         return isActive
-          ? `M 0 ${size/4} L 0 ${size*3/4} L ${size} ${size*3/4} L ${size} ${size/4} Z`
-          : `M ${size/2} 0 A ${size/2} ${size/2} 0 1 1 ${size/2-0.1} 0 Z`;
-      
+          ? `M 0 ${size / 4} L 0 ${(size * 3) / 4} L ${size} ${(size * 3) / 4} L ${size} ${size / 4} Z`
+          : `M ${size / 2} 0 A ${size / 2} ${size / 2} 0 1 1 ${size / 2 - 0.1} 0 Z`;
+
       case 'triangle-to-circle':
         return isActive
-          ? `M ${size/2} 0 A ${size/2} ${size/2} 0 1 1 ${size/2-0.1} 0 Z`
-          : `M ${size/2} 0 L ${size} ${size} L 0 ${size} Z`;
-      
+          ? `M ${size / 2} 0 A ${size / 2} ${size / 2} 0 1 1 ${size / 2 - 0.1} 0 Z`
+          : `M ${size / 2} 0 L ${size} ${size} L 0 ${size} Z`;
+
       case 'star-to-circle':
         return isActive
-          ? `M ${size/2} 0 A ${size/2} ${size/2} 0 1 1 ${size/2-0.1} 0 Z`
-          : `M ${size/2} 0 L ${size*0.6} ${size*0.35} L ${size} ${size*0.35} L ${size*0.75} ${size*0.6} L ${size*0.85} ${size} L ${size/2} ${size*0.8} L ${size*0.15} ${size} L ${size*0.25} ${size*0.6} L 0 ${size*0.35} L ${size*0.4} ${size*0.35} Z`;
-      
+          ? `M ${size / 2} 0 A ${size / 2} ${size / 2} 0 1 1 ${size / 2 - 0.1} 0 Z`
+          : `M ${size / 2} 0 L ${size * 0.6} ${size * 0.35} L ${size} ${size * 0.35} L ${size * 0.75} ${size * 0.6} L ${size * 0.85} ${size} L ${size / 2} ${size * 0.8} L ${size * 0.15} ${size} L ${size * 0.25} ${size * 0.6} L 0 ${size * 0.35} L ${size * 0.4} ${size * 0.35} Z`;
+
       default:
-        return `M ${size/2} 0 A ${size/2} ${size/2} 0 1 1 ${size/2-0.1} 0 Z`;
+        return `M ${size / 2} 0 A ${size / 2} ${size / 2} 0 1 1 ${size / 2 - 0.1} 0 Z`;
     }
   };
 
-  if (respectsReducedMotion()) {
+  if (respectsReducedMotion() || !performanceConfig.enableComplexTransforms) {
     return (
       <div
         style={{
@@ -412,14 +493,18 @@ export const FocusEnhancement: React.FC<FocusEnhancementProps> = ({
       className={className}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
-      animate={respectsReducedMotion() ? {} : {
-        scale: isFocused ? focusScale : 1,
-        transition: { type: 'spring', stiffness: 300, damping: 20 },
-      }}
+      animate={
+        respectsReducedMotion()
+          ? {}
+          : {
+              scale: isFocused ? focusScale : 1,
+              transition: { type: 'spring', stiffness: 300, damping: 20 },
+            }
+      }
       style={{ position: 'relative' }}
     >
       {children}
-      
+
       {/* Focus ring */}
       {isFocused && (
         <motion.div
